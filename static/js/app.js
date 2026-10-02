@@ -1,0 +1,450 @@
+(() => {
+  'use strict';
+
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+  const providerNames = {
+    ubuntu: 'Ubuntu', almalinux: 'AlmaLinux', fedora: 'Fedora',
+    rockylinux: 'Rocky Linux', debian: 'Debian', archlinux: 'Arch Linux', centos: 'CentOS Stream'
+  };
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[char]);
+  }
+
+  async function api(path, options = {}) {
+    const response = await fetch(path, { credentials: 'same-origin', ...options });
+    if (response.status === 401) {
+      window.location.assign('/login');
+      throw new Error('Your session has expired. Please sign in again.');
+    }
+    const contentType = response.headers.get('content-type') || '';
+    const body = contentType.includes('application/json') ? await response.json() : null;
+    if (!response.ok) throw new Error(body?.detail || body?.error || `Request failed (${response.status})`);
+    return body;
+  }
+
+  function dateText(value) {
+    if (!value) return '—';
+    const date = parseApiDate(value);
+    return Number.isNaN(date.valueOf()) ? String(value) : new Intl.DateTimeFormat(undefined, {
+      year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
+    }).format(date);
+  }
+
+  function relativeTime(value) {
+    if (!value) return '—';
+    const date = parseApiDate(value);
+    if (Number.isNaN(date.valueOf())) return '—';
+    const seconds = Math.max(0, Math.floor((Date.now() - date.valueOf()) / 1000));
+    if (seconds < 60) return 'just now';
+    if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)} hr ago`;
+    return `${Math.floor(seconds / 86400)} days ago`;
+  }
+
+  function parseApiDate(value) {
+    if (value instanceof Date) return value;
+    const normalized = typeof value === 'string' && !/(Z|[+-]\d{2}:?\d{2})$/i.test(value)
+      ? `${value}Z`
+      : value;
+    return new Date(normalized);
+  }
+
+  function relativeUntil(value) {
+    if (!value) return '—';
+    const date = parseApiDate(value);
+    if (Number.isNaN(date.valueOf())) return '—';
+    const minutes = Math.ceil((date.valueOf() - Date.now()) / 60000);
+    if (minutes <= 0) return 'Due now';
+    if (minutes < 60) return `In ${minutes} min`;
+    const hours = Math.floor(minutes / 60);
+    const remainder = minutes % 60;
+    return remainder ? `In ${hours} hr ${remainder} min` : `In ${hours} hr`;
+  }
+
+  function typeLabel(value) {
+    if (!value) return 'Unknown';
+    if (value === 'rolling') return 'Rolling';
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+
+  function toast(message) {
+    const region = $('#toast-region');
+    if (!region) return;
+    const item = document.createElement('div');
+    item.className = 'toast';
+    item.textContent = message;
+    region.append(item);
+    window.setTimeout(() => item.remove(), 4500);
+  }
+
+  function initializeTheme() {
+    const saved = window.localStorage.getItem('os-tracker-theme');
+    if (saved === 'dark' || saved === 'light') document.documentElement.dataset.theme = saved;
+    $$('#theme-toggle').forEach(button => button.addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      window.localStorage.setItem('os-tracker-theme', next);
+    }));
+  }
+
+  function initializeMobileMenu() {
+    const button = $('#menu-toggle');
+    const scrim = $('#mobile-scrim');
+    if (!button || !scrim) return;
+    const close = () => {
+      document.body.classList.remove('menu-open');
+      button.setAttribute('aria-expanded', 'false');
+    };
+    button.addEventListener('click', () => {
+      const open = document.body.classList.toggle('menu-open');
+      button.setAttribute('aria-expanded', String(open));
+    });
+    scrim.addEventListener('click', close);
+    $$('.nav-link').forEach(link => link.addEventListener('click', close));
+  }
+
+  function initializeLogin() {
+    const form = $('#login-form');
+    if (!form) return;
+    const errorBox = $('#login-error');
+    const button = $('#login-submit');
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      errorBox.hidden = true;
+      button.disabled = true;
+      button.querySelector('span').textContent = 'Signing in…';
+      try {
+        const body = new URLSearchParams({
+          username: $('#username').value,
+          password: $('#password').value
+        });
+        const response = await fetch('/api/v1/auth/token', {
+          method: 'POST', credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.detail || 'Unable to sign in. Check your credentials.');
+        const session = await fetch('/web/session', {
+          method: 'POST', credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ access_token: payload.access_token })
+        });
+        if (!session.ok) throw new Error('Could not establish a secure browser session.');
+        window.location.assign('/dashboard');
+      } catch (error) {
+        errorBox.textContent = error.message || 'Sign in failed.';
+        errorBox.hidden = false;
+        button.disabled = false;
+        button.querySelector('span').textContent = 'Sign in';
+      }
+    });
+  }
+
+  function renderStatus(label, kind) {
+    const classes = { good: 'status-good', error: 'status-error', major: 'status-major', unknown: 'status-unknown' };
+    return `<span class="status-badge ${classes[kind] || classes.unknown}">${escapeHtml(label)}</span>`;
+  }
+
+  function renderOsRows(osRows, providerSlugs, statusData) {
+    const body = $('#os-table-body');
+    if (!body) return;
+    const bySlug = new Map(osRows.map(row => [row.slug, row]));
+    const errors = new Map((statusData.errors || []).map(item => [item.slug, item.error]));
+    const checked = new Set((statusData.results || []).map(item => item.slug));
+    const slugs = [...new Set([...providerSlugs, ...osRows.map(row => row.slug)])];
+    if (!slugs.length) {
+      body.innerHTML = '<tr><td colspan="6" class="empty-state">No providers are configured.</td></tr>';
+      return;
+    }
+    body.innerHTML = slugs.map(slug => {
+      const row = bySlug.get(slug);
+      const name = row?.name || providerNames[slug] || slug;
+      const error = errors.get(slug);
+      let status;
+      let detail = '';
+      if (error) { status = renderStatus('Error', 'error'); detail = `<span class="provider-error-detail">${escapeHtml(error)}</span>`; }
+      else if (statusData.checked !== null && statusData.checked !== undefined) {
+        status = checked.has(slug) ? renderStatus('Up to date', 'good') : renderStatus('Not checked', 'unknown');
+      } else if (!row || !row.checked_at) status = renderStatus('Never checked', 'unknown');
+      else status = renderStatus('Status unavailable', 'unknown');
+      const version = row ? escapeHtml(row.version) : '—';
+      const major = row?.is_rolling ? 'Rolling' : escapeHtml(row?.major_version || '—');
+      const type = row?.is_rolling ? 'rolling' : row?.release_type;
+      const lastChecked = row?.last_checked ?? row?.checked_at;
+      const checkedAt = relativeTime(lastChecked);
+      return `<tr>
+        <td><a class="os-name row-link" href="/os/${encodeURIComponent(slug)}"><span class="os-logo">${escapeHtml(name.slice(0, 2))}</span>${escapeHtml(name)}</a></td>
+        <td><a class="row-link" href="/os/${encodeURIComponent(slug)}">${version}</a></td>
+        <td>${major}</td><td><span class="release-type type-${escapeHtml(type || 'unknown')}">${escapeHtml(typeLabel(type))}</span></td>
+        <td title="${escapeHtml(dateText(lastChecked))}">${escapeHtml(checkedAt)}</td><td>${status}${detail}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderMajorAlerts(events) {
+    const container = $('#major-alerts');
+    if (!container) return;
+    container.innerHTML = events.length ? events.map(event => `<article class="release-alert">
+      <span class="alert-icon" aria-hidden="true">↗</span><div class="alert-copy">
+      <strong>New Major Release · ${escapeHtml(event.name)}</strong>
+      <span>${escapeHtml(event.previous_version || 'Unknown')} → ${escapeHtml(event.new_version)}</span></div>
+      <a class="button button-subtle" href="/os/${encodeURIComponent(event.os)}">View details</a></article>`).join('') : '';
+  }
+
+  function renderCheckSummary(result) {
+    const box = $('#check-summary');
+    if (!box) return;
+    const errors = result.errors || [];
+    box.hidden = false;
+    box.innerHTML = `<h3>Provider check complete</h3><div class="check-counts">
+      <span>Checked <strong>${Number(result.checked) || 0}</strong></span>
+      <span>Failed <strong>${Number(result.failed) || 0}</strong></span>
+      <span>Changed <strong>${Number(result.changed) || 0}</strong></span>
+      <span>Major releases <strong>${Number(result.major_releases) || 0}</strong></span></div>
+      ${errors.length ? `<ul class="error-list">${errors.map(item => `<li><strong>${escapeHtml(providerNames[item.slug] || item.slug)}:</strong> ${escapeHtml(item.error)}</li>`).join('')}</ul>` : ''}`;
+  }
+
+  let releaseChart;
+  async function renderReleaseChart() {
+    const canvas = $('#release-chart');
+    const fallback = $('#chart-fallback');
+    if (!canvas) return;
+    try {
+      const page = await api('/api/v1/releases?limit=100&offset=0');
+      const rows = page.items || [];
+      const counts = new Map();
+      rows.forEach(row => counts.set(row.name, (counts.get(row.name) || 0) + 1));
+      if (!window.Chart) throw new Error('Chart.js unavailable');
+      const labels = Array.from(counts.keys());
+      releaseChart?.destroy();
+      releaseChart = new window.Chart(canvas, {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Stored releases', data: labels.map(label => counts.get(label)), backgroundColor: '#537bd8', borderRadius: 5, maxBarThickness: 35 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--muted') } }, y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: getComputedStyle(document.documentElement).getPropertyValue('--line') } } } }
+      });
+      if (!rows.length) fallback.hidden = false;
+    } catch (_) {
+      fallback.hidden = false;
+    }
+  }
+
+  async function loadDashboard({ throwOnError = false } = {}) {
+    const isOsIndex = document.body.dataset.osIndex === 'true';
+    try {
+      const [osRows, providerData, statusData] = await Promise.all([
+        api('/api/v1/os'), api('/api/v1/providers'), api('/api/v1/status')
+      ]);
+      renderOsRows(osRows, providerData.providers || [], statusData);
+      if (!isOsIndex) {
+        try { renderMajorAlerts((await api('/api/v1/events?event_type=new_major_release')).slice(0, 5)); } catch (_) {}
+      }
+      if (isOsIndex) return;
+      $('#summary-tracked').textContent = statusData.tracked_os ?? '—';
+      $('#summary-healthy').textContent = statusData.checked == null ? '—' : statusData.checked;
+      $('#summary-errors').textContent = statusData.provider_errors == null ? '—' : statusData.provider_errors;
+      $('#summary-majors').textContent = statusData.major_releases ?? '—';
+      $('#summary-last-check').textContent = relativeTime(statusData.scheduler.last_check);
+      $('#summary-next-check').textContent = relativeUntil(statusData.scheduler.next_check);
+      const jobState = statusData.scheduler.job_state || (statusData.scheduler.running ? 'scheduled' : 'stopped');
+      const jobHealthy = jobState === 'scheduled';
+      $('#scheduler-label').textContent = jobHealthy ? 'Check job scheduled' : `Check job ${jobState}`;
+      const state = $('#scheduler-state');
+      state.classList.toggle('scheduler-error', !jobHealthy);
+      const jobStateLabel = jobState.charAt(0).toUpperCase() + jobState.slice(1);
+      state.innerHTML = `<span class="status-dot"></span><strong>${escapeHtml(jobStateLabel)}</strong>`;
+      $('#scheduler-interval').textContent = statusData.scheduler.schedule || '—';
+      $('#scheduler-last').textContent = dateText(statusData.scheduler.last_check);
+      $('#scheduler-next').textContent = dateText(statusData.scheduler.next_check);
+      const button = $('#check-now');
+      if (button) button.onclick = async () => {
+        button.disabled = true;
+        button.querySelector('span:last-child').textContent = 'Checking…';
+        try {
+          const result = await api('/api/v1/check', { method: 'POST' });
+          renderCheckSummary(result);
+          await loadDashboard({ throwOnError: true });
+          if (result.failed) toast(`${result.failed} provider check(s) failed. See the check summary.`);
+          else toast('Provider check completed successfully.');
+        } catch (error) { toast(error.message); }
+        finally { button.disabled = false; button.querySelector('span:last-child').textContent = 'Check now'; }
+      };
+      if (!window.__osTrackerRefreshBound) {
+        window.__osTrackerRefreshBound = true;
+        window.setInterval(() => loadDashboard().catch(error => toast(`Dashboard refresh failed: ${error.message}`)), 30000);
+      }
+      renderReleaseChart();
+    } catch (error) {
+      if (throwOnError) throw error;
+      const body = $('#os-table-body');
+      if (body) body.innerHTML = `<tr><td colspan="6" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
+    }
+  }
+
+  async function loadOsDetail() {
+    const container = $('#os-detail');
+    if (!container) return;
+    const slug = container.dataset.slug;
+    try {
+      const [os, history, status] = await Promise.all([
+        api(`/api/v1/os/${encodeURIComponent(slug)}`),
+        api(`/api/v1/releases/${encodeURIComponent(slug)}`),
+        api('/api/v1/status')
+      ]);
+      $('#detail-name').textContent = os.name;
+      $('#detail-subtitle').textContent = os.is_rolling ? 'Rolling release · ISO publication tracking' : `Current ${typeLabel(os.release_type).toLowerCase()} release`;
+      $('#detail-version').textContent = os.version;
+      $('#detail-major').textContent = os.is_rolling ? 'Rolling' : os.major_version;
+      $('#detail-type').textContent = os.is_rolling ? 'Rolling' : typeLabel(os.release_type);
+      $('#detail-checked').textContent = dateText(os.last_checked || os.checked_at);
+      const source = $('#detail-source');
+      if (os.source_url) { source.href = os.source_url; source.textContent = 'Open official release source ↗'; }
+      const error = (status.errors || []).find(item => item.slug === slug);
+      const hasLatestCheck = status.checked !== null && status.checked !== undefined;
+      $('#detail-status').outerHTML = error ? renderStatus('Provider error', 'error') : (hasLatestCheck ? renderStatus('Up to date', 'good') : renderStatus('Status unavailable', 'unknown'));
+      $('#detail-provider-status').textContent = error ? error.error : (hasLatestCheck ? 'The provider returned successfully during the latest check.' : 'No current provider check status is available.');
+      const body = $('#detail-history');
+      body.innerHTML = history.length ? history.map(item => `<tr><td><strong>${escapeHtml(item.version)}</strong></td><td>${os.is_rolling ? 'Rolling' : escapeHtml(item.major_version)}</td><td><span class="release-type type-${escapeHtml(item.release_type)}">${escapeHtml(typeLabel(item.release_type))}</span></td><td>${escapeHtml(item.release_date || '—')}</td><td title="${escapeHtml(dateText(item.detected_at))}">${escapeHtml(relativeTime(item.detected_at))}</td></tr>`).join('') : '<tr><td colspan="5" class="empty-state">No release history is available.</td></tr>';
+    } catch (error) {
+      $('#detail-name').textContent = 'Operating system unavailable';
+      $('#detail-subtitle').textContent = error.message;
+      $('#detail-history').innerHTML = '<tr><td colspan="5" class="empty-state">Unable to load release history.</td></tr>';
+    }
+  }
+
+  function queryValue(params, key) { return params.get(key) || ''; }
+  function updateQuery(params) {
+    const search = params.toString();
+    window.history.replaceState({}, '', `${window.location.pathname}${search ? `?${search}` : ''}`);
+  }
+
+  async function fillOsFilter(select) {
+    const rows = await api('/api/v1/os');
+    rows.forEach(row => {
+      const option = document.createElement('option');
+      option.value = row.slug;
+      option.textContent = row.name;
+      select.append(option);
+    });
+  }
+
+  async function loadReleases(offset) {
+    const params = new URLSearchParams(window.location.search);
+    params.set('limit', '50');
+    params.set('offset', String(offset));
+    const query = new URLSearchParams();
+    for (const key of ['os', 'type', 'date', 'limit', 'offset']) if (params.has(key)) query.set(key, params.get(key));
+    try {
+      const result = await api(`/api/v1/releases?${query.toString()}`);
+      $('#release-table').innerHTML = result.items.length ? result.items.map(row => `<tr><td><a class="row-link" href="/os/${encodeURIComponent(row.os)}">${escapeHtml(row.name)}</a></td><td><strong>${escapeHtml(row.version)}</strong></td><td>${escapeHtml(row.major_version)}</td><td><span class="release-type type-${escapeHtml(row.release_type)}">${escapeHtml(typeLabel(row.release_type))}</span></td><td>${escapeHtml(row.release_date || '—')}</td><td title="${escapeHtml(dateText(row.detected_at))}">${escapeHtml(relativeTime(row.detected_at))}</td></tr>`).join('') : '<tr><td colspan="6" class="empty-state">No releases match these filters.</td></tr>';
+      $('#release-count').textContent = `${result.total} release${result.total === 1 ? '' : 's'} found`;
+      const page = Math.floor(result.offset / result.limit) + 1;
+      const pages = Math.max(1, Math.ceil(result.total / result.limit));
+      $('#page-label').textContent = `Page ${page} of ${pages}`;
+      $('#page-previous').disabled = result.offset <= 0;
+      $('#page-next').disabled = result.offset + result.limit >= result.total;
+      $('#page-previous').onclick = () => loadReleases(Math.max(0, result.offset - result.limit));
+      $('#page-next').onclick = () => loadReleases(result.offset + result.limit);
+    } catch (error) { $('#release-table').innerHTML = `<tr><td colspan="6" class="empty-state">${escapeHtml(error.message)}</td></tr>`; }
+  }
+
+  async function initializeReleases() {
+    const params = new URLSearchParams(window.location.search);
+    const osFilter = $('#filter-os');
+    try { await fillOsFilter(osFilter); } catch (_) {}
+    osFilter.value = queryValue(params, 'os');
+    $('#filter-type').value = queryValue(params, 'type');
+    $('#filter-date').value = queryValue(params, 'date');
+    $('#release-filters').addEventListener('submit', event => {
+      event.preventDefault();
+      const next = new URLSearchParams();
+      if (osFilter.value) next.set('os', osFilter.value);
+      if ($('#filter-type').value) next.set('type', $('#filter-type').value);
+      if ($('#filter-date').value) next.set('date', $('#filter-date').value);
+      updateQuery(next);
+      loadReleases(0);
+    });
+    loadReleases(Number(params.get('offset')) || 0);
+  }
+
+  async function loadEvents() {
+    const params = new URLSearchParams(window.location.search);
+    const query = new URLSearchParams();
+    if (params.has('os')) query.set('os', params.get('os'));
+    if (params.has('event_type')) query.set('event_type', params.get('event_type'));
+    try {
+      const items = await api(`/api/v1/events${query.size ? `?${query}` : ''}`);
+      const body = $('#event-table');
+      body.innerHTML = items.length ? items.map(item => {
+        const isMajor = item.event_type === 'new_major_release';
+        const isRolling = item.event_type === 'new_rolling_release';
+        const label = isMajor ? 'New major release' : (isRolling ? 'New rolling release' : (item.event_type === 'new_minor_release' ? 'New minor release' : typeLabel(item.event_type)));
+        const kind = isMajor ? 'major' : 'unknown';
+        return `<tr><td>${renderStatus(label, kind)}</td><td><a class="row-link" href="/os/${encodeURIComponent(item.os)}">${escapeHtml(item.name)}</a></td><td>${escapeHtml(item.previous_version || '—')} → <strong>${escapeHtml(item.new_version)}</strong></td><td title="${escapeHtml(dateText(item.detected_at))}">${escapeHtml(relativeTime(item.detected_at))}</td><td>${item.notification_sent ? renderStatus('Sent', 'good') : renderStatus('Pending', 'unknown')}</td></tr>`;
+      }).join('') : '<tr><td colspan="5" class="empty-state">No recorded release events match these filters.</td></tr>';
+    } catch (error) { $('#event-table').innerHTML = `<tr><td colspan="5" class="empty-state">${escapeHtml(error.message)}</td></tr>`; }
+  }
+
+  async function initializeEvents() {
+    const params = new URLSearchParams(window.location.search);
+    const osFilter = $('#event-os');
+    try { await fillOsFilter(osFilter); } catch (_) {}
+    osFilter.value = queryValue(params, 'os');
+    $('#event-type').value = queryValue(params, 'event_type');
+    $('#event-filters').addEventListener('submit', event => {
+      event.preventDefault();
+      const next = new URLSearchParams();
+      if (osFilter.value) next.set('os', osFilter.value);
+      if ($('#event-type').value) next.set('event_type', $('#event-type').value);
+      updateQuery(next);
+      loadEvents();
+    });
+    loadEvents();
+  }
+
+  async function initializeSettings() {
+    try {
+      const [status, providers] = await Promise.all([api('/api/v1/status'), api('/api/v1/providers')]);
+      $('#settings-interval').textContent = status.scheduler.schedule || '—';
+      const jobState = status.scheduler.job_state || (status.scheduler.running ? 'scheduled' : 'stopped');
+      $('#settings-scheduler').textContent = jobState.charAt(0).toUpperCase() + jobState.slice(1);
+      $('#settings-discord').outerHTML = renderStatus(status.notifications.discord_enabled ? 'Enabled' : 'Disabled', status.notifications.discord_enabled ? 'good' : 'unknown');
+      $('#settings-telegram').outerHTML = renderStatus(status.notifications.telegram_enabled ? 'Enabled' : 'Disabled', status.notifications.telegram_enabled ? 'good' : 'unknown');
+      $('#settings-telegram-chat').outerHTML = renderStatus(status.notifications.telegram_chat_configured ? 'Configured' : 'Not configured', status.notifications.telegram_chat_configured ? 'good' : 'unknown');
+      $('#settings-providers').innerHTML = providers.providers.map(slug => `<div class="provider-item"><strong>${escapeHtml(providerNames[slug] || slug)}</strong>${renderStatus('Enabled', 'good')}</div>`).join('');
+    } catch (error) { $('#settings-providers').textContent = error.message; }
+
+    const button = $('#telegram-test-button');
+    const statusText = $('#telegram-test-status');
+    if (button && statusText) button.addEventListener('click', async () => {
+      button.disabled = true;
+      button.textContent = 'Sending test…';
+      statusText.textContent = 'Sending test message…';
+      try {
+        const result = await api('/api/v1/notifications/test/telegram', { method: 'POST' });
+        statusText.textContent = result.message || 'Telegram test message sent.';
+        toast('Telegram test sent successfully.');
+      } catch (error) {
+        statusText.textContent = `Telegram test failed: ${error.message}`;
+        toast(`Telegram test failed: ${error.message}`);
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Test Telegram Notifications';
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeTheme();
+    initializeMobileMenu();
+    initializeLogin();
+    if ($('#os-table-body')) loadDashboard();
+    if ($('#os-detail')) loadOsDetail();
+    if ($('#release-filters')) initializeReleases();
+    if ($('#event-filters')) initializeEvents();
+    if ($('#settings-providers')) initializeSettings();
+  });
+})();

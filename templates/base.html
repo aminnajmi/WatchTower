@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>{% block title %}OS Release Tracker{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/css/app.css">
+  {% block head %}{% endblock %}
+</head>
+<body data-page="{{ active|default('') }}" data-os-index="{{ os_index|default(false)|lower }}">
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <a class="brand" href="/dashboard">
+        <span class="brand-mark" aria-hidden="true">OS</span>
+        <span><strong>Release Tracker</strong><small>Infrastructure</small></span>
+      </a>
+      <nav class="nav-list">
+        <a class="nav-link {% if active == 'dashboard' %}active{% endif %}" href="/dashboard"><span>◫</span>Dashboard</a>
+        <a class="nav-link {% if active == 'os' %}active{% endif %}" href="/os"><span>▦</span>Operating Systems</a>
+        <a class="nav-link {% if active == 'releases' %}active{% endif %}" href="/releases"><span>↗</span>Releases</a>
+        <a class="nav-link {% if active == 'events' %}active{% endif %}" href="/events"><span>◉</span>Events</a>
+        <a class="nav-link {% if active == 'settings' %}active{% endif %}" href="/settings"><span>⚙</span>Settings</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="sidebar-status"><span class="status-dot" aria-hidden="true"></span><span>Release monitoring</span></div>
+        <span class="muted small">Signed in as {{ current_user }}</span>
+        <form action="/logout" method="post"><button class="nav-link logout-button" type="submit"><span>↪</span>Log out</button></form>
+      </div>
+    </aside>
+
+    <div class="main-column">
+      <header class="topbar">
+        <button class="icon-button menu-toggle" id="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false">☰</button>
+        <div class="topbar-context"><span class="eyebrow">INFRASTRUCTURE / RELEASES</span><span class="topbar-title">OS Release Tracker</span></div>
+        <div class="topbar-actions">
+          <span class="user-pill"><span class="avatar">{{ current_user[:1]|upper }}</span><span>{{ current_user }}</span></span>
+          <button class="icon-button" id="theme-toggle" type="button" aria-label="Toggle light or dark mode" title="Toggle theme">◐</button>
+        </div>
+      </header>
+      <main class="content" id="main-content">
+        {% block content %}{% endblock %}
+      </main>
+      <footer class="app-footer"><span>OS Release Tracker</span><span>Release data from configured providers</span></footer>
+    </div>
+  </div>
+  <div class="mobile-scrim" id="mobile-scrim"></div>
+  <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+  <script src="/static/js/app.js?v=utc-cron-telegram-test-1" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

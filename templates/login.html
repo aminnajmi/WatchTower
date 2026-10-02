@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Sign in · OS Release Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body class="login-body">
+  <main class="login-layout">
+    <section class="login-brand-panel" aria-label="OS Release Tracker">
+      <a class="brand brand-light" href="/login"><span class="brand-mark" aria-hidden="true">OS</span><span><strong>Release Tracker</strong><small>Infrastructure</small></span></a>
+      <div class="login-intro"><span class="eyebrow">RELEASE OPERATIONS</span><h1>Know what’s changing across your fleet.</h1><p>One clear view of operating system releases, provider health, and major version events.</p></div>
+      <div class="login-footnote">Secure access for your operations team</div>
+    </section>
+    <section class="login-form-panel">
+      <div class="login-card">
+        <div class="brand-mark login-mobile-mark" aria-hidden="true">OS</div>
+        <span class="eyebrow">WELCOME BACK</span>
+        <h2>Sign in to your account</h2>
+        <p class="muted">Use your existing OS Release Tracker administrator credentials.</p>
+        <form id="login-form" class="stack-form">
+          <label for="username">Username</label>
+          <input id="username" name="username" autocomplete="username" required>
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required>
+          <div class="form-error" id="login-error" role="alert" hidden></div>
+          <button class="button button-primary button-wide" id="login-submit" type="submit"><span>Sign in</span><span aria-hidden="true">→</span></button>
+        </form>
+        <div class="secure-note"><span aria-hidden="true">▣</span> Session protected with an HTTP-only JWT cookie</div>
+      </div>
+      <button class="icon-button login-theme" id="theme-toggle" type="button" aria-label="Toggle light or dark mode" title="Toggle theme">◐</button>
+    </section>
+  </main>
+  <script src="/static/js/app.js" defer></script>
+</body>
+</html>

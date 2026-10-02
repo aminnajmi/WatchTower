@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Operating system · OS Release Tracker{% endblock %}
+{% block content %}
+  <a class="back-link" href="/os">← All operating systems</a>
+  <section class="page-heading detail-heading"><div><span class="eyebrow">OPERATING SYSTEM</span><h1 id="detail-name">Loading…</h1><p id="detail-subtitle">Release source and provider status</p></div><span id="detail-status" class="status-badge">Loading</span></section>
+  <section class="detail-grid" id="os-detail" data-slug="{{ slug }}">
+    <article class="panel detail-main"><div class="panel-heading"><div><h2>Current release</h2><p>Latest version reported by the configured provider</p></div></div><div class="detail-metrics"><div><span>Current version</span><strong id="detail-version">—</strong></div><div><span>Major version</span><strong id="detail-major">—</strong></div><div><span>Release type</span><strong id="detail-type">—</strong></div><div><span>Last checked</span><strong id="detail-checked">—</strong></div></div><div class="source-row"><span>Official source</span><a id="detail-source" href="#" target="_blank" rel="noopener noreferrer">Unavailable</a></div></article>
+    <article class="panel"><div class="panel-heading"><div><h2>Provider status</h2><p>Latest check information</p></div></div><div id="detail-provider-status" class="status-message">Loading provider status…</div></article>
+  </section>
+  <section class="panel"><div class="panel-heading"><div><h2>Release history</h2><p>Versions stored by the release tracker</p></div></div><div class="table-wrap"><table><thead><tr><th>Version</th><th>Major version</th><th>Type</th><th>Release date</th><th>Detected at</th></tr></thead><tbody id="detail-history"><tr><td colspan="5" class="empty-state">Loading release history…</td></tr></tbody></table></div></section>
+{% endblock %}

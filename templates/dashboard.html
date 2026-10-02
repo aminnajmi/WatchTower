@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{% if os_index|default(false) %}Operating Systems{% else %}Dashboard{% endif %} · OS Release Tracker{% endblock %}
+{% block head %}{% if not os_index|default(false) %}<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>{% endif %}{% endblock %}
+{% block content %}
+  <section class="page-heading">
+    <div><span class="eyebrow">{% if os_index|default(false) %}INVENTORY{% else %}OVERVIEW{% endif %}</span><h1>{% if os_index|default(false) %}Operating systems{% else %}Release overview{% endif %}</h1><p>{% if os_index|default(false) %}Current versions and provider check status for each distribution.{% else %}Monitor current releases, provider health, and upcoming checks.{% endif %}</p></div>
+    {% if not os_index|default(false) %}<button class="button button-primary" id="check-now"><span class="button-icon" aria-hidden="true">↻</span><span>Check now</span></button>{% endif %}
+  </section>
+
+  {% if not os_index|default(false) %}
+  <section class="summary-grid" aria-label="Monitoring summary">
+    <article class="summary-card"><span class="summary-label">Tracked OSes</span><strong class="summary-value" id="summary-tracked">—</strong><span class="summary-hint">Configured providers</span></article>
+    <article class="summary-card"><span class="summary-label">Healthy</span><strong class="summary-value" id="summary-healthy">—</strong><span class="summary-hint">Successful latest check</span></article>
+    <article class="summary-card"><span class="summary-label">Provider errors</span><strong class="summary-value" id="summary-errors">—</strong><span class="summary-hint">Latest check result</span></article>
+    <article class="summary-card"><span class="summary-label">New major releases</span><strong class="summary-value" id="summary-majors">—</strong><span class="summary-hint">Recorded events</span></article>
+    <article class="summary-card summary-card-wide"><span class="summary-label">Last check</span><strong class="summary-value summary-value-small" id="summary-last-check">—</strong><span class="summary-hint">Most recent provider run</span></article>
+    <article class="summary-card summary-card-wide"><span class="summary-label">Next check</span><strong class="summary-value summary-value-small" id="summary-next-check">—</strong><span class="summary-hint" id="scheduler-label">Scheduler status unavailable</span></article>
+  </section>
+  <section class="alert-stack" id="major-alerts" aria-live="polite">
+    {% for event in major_events|default([]) %}
+    <article class="release-alert"><span class="alert-icon" aria-hidden="true">↗</span><div class="alert-copy"><strong>New Major Release · {{ event.name }}</strong><span>{{ event.previous_version or 'Unknown' }} → {{ event.new_version }}</span></div><a class="button button-subtle" href="/os/{{ event.os }}">View details</a></article>
+    {% endfor %}
+  </section>
+  <section class="check-summary" id="check-summary" hidden aria-live="polite"></section>
+  {% if provider_errors|default([]) %}<section class="check-summary server-error-summary" aria-live="polite"><h3>Provider errors from the latest check</h3><ul class="error-list">{% for error in provider_errors %}<li><strong>{{ error.slug }}</strong>: {{ error.error }}</li>{% endfor %}</ul></section>{% endif %}
+  {% endif %}
+
+  <section class="panel">
+    <div class="panel-heading"><div><h2>{% if os_index|default(false) %}Tracked operating systems{% else %}Operating system releases{% endif %}</h2><p>Latest version reported by each configured provider</p></div><span class="live-label"><span class="status-dot"></span>Backend data</span></div>
+    <div class="table-wrap"><table><thead><tr><th>Operating system</th><th>Current version</th><th>Major version</th><th>Release type</th><th>Last checked</th><th>Status</th></tr></thead><tbody id="os-table-body"><tr><td colspan="6" class="empty-state">Loading operating system data…</td></tr></tbody></table></div>
+  </section>
+
+  {% if not os_index|default(false) %}
+  <section class="dashboard-bottom">
+    <article class="panel chart-panel"><div class="panel-heading"><div><h2>Release history by OS</h2><p>Detected versions recorded in the release history</p></div></div><div class="chart-box"><canvas id="release-chart" aria-label="Release history counts by operating system"></canvas><p class="chart-fallback" id="chart-fallback" hidden>Chart data is unavailable.</p></div></article>
+    <article class="panel scheduler-panel"><div class="panel-heading"><div><h2>Scheduler</h2><p>Automated provider polling</p></div></div><div class="scheduler-state" id="scheduler-state"><span class="status-dot"></span><strong>Checking status…</strong></div><dl class="detail-list"><div><dt>Schedule</dt><dd id="scheduler-interval">09:00 UTC / 23:00 UTC</dd></div><div><dt>Last run</dt><dd id="scheduler-last">—</dd></div><div><dt>Next run</dt><dd id="scheduler-next">—</dd></div></dl></article>
+  </section>
+  {% endif %}
+{% endblock %}
