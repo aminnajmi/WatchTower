@@ -1,10 +1,18 @@
 services:
   os-release-tracker:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+
     container_name: os-release-tracker
+
     restart: unless-stopped
-    env_file: .env
+
+    env_file:
+      - .env
+
     ports:
       - "8000:8000"
+
     volumes:
-      - ./data:/app/data
+      - ./os_tracker.db:/app/os_tracker.db
