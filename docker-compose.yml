@@ -15,4 +15,4 @@ services:
       - "8000:8000"
 
     volumes:
-      - ./os_tracker.db:/app/os_tracker.db
+      - ./data:/app/data

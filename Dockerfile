@@ -10,6 +10,8 @@ COPY app ./app
 COPY static ./static
 COPY templates ./templates
 
+RUN mkdir -p /app/data
+
 EXPOSE 8000
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
