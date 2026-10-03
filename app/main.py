@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import hashlib
 import logging
 from pathlib import Path
 
@@ -51,12 +52,32 @@ if allowed_hosts and "*" not in allowed_hosts:
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=allowed_hosts)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 templates = Jinja2Templates(directory=str(PROJECT_ROOT / "templates"))
+templates.env.globals["asset_version"] = hashlib.sha256(
+    (PROJECT_ROOT / "static/js/app.js").read_bytes()
+).hexdigest()[:12]
 app.mount("/static", StaticFiles(directory=str(PROJECT_ROOT / "static")), name="static")
 
 
 @app.middleware("http")
 async def security_headers(request: Request, call_next):
-    response = await call_next(request)
+    try:
+        response = await call_next(request)
+    except Exception as exc:
+        # Do not log query strings: legacy GET login attempts may contain
+        # credentials in them, and framework access logs include that string.
+        logger.error(
+            "http_request method=%s path=%s status=500 exception=%s",
+            request.method,
+            request.url.path,
+            type(exc).__name__,
+        )
+        raise
+    logger.info(
+        "http_request method=%s path=%s status=%s",
+        request.method,
+        request.url.path,
+        response.status_code,
+    )
     response.headers.setdefault("X-Content-Type-Options", "nosniff")
     response.headers.setdefault("X-Frame-Options", "DENY")
     response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
@@ -114,6 +135,36 @@ def login_page(request: Request):
     return templates.TemplateResponse(request=request, name="login.html", context={})
 
 
+@app.post("/login", response_class=HTMLResponse, include_in_schema=False)
+async def login_form(request: Request, username: str = Form(...), password: str = Form(...)):
+    """POST fallback for browsers when client-side JavaScript is unavailable."""
+    if username != settings.admin_username or not verify_password(password):
+        logger.warning("Authentication rejected stage=html_form status=401")
+        return templates.TemplateResponse(
+            request=request,
+            name="login.html",
+            context={"login_error": "Invalid username or password."},
+            status_code=401,
+        )
+    logger.info("Authentication accepted stage=html_form status=303")
+    response = RedirectResponse("/dashboard", status_code=303)
+    _set_session_cookie(response, create_access_token(username), request)
+    return response
+
+
+def _set_session_cookie(response, access_token: str, request: Request) -> None:
+    secure_cookie = request.url.scheme == "https"
+    response.set_cookie(
+        SESSION_COOKIE_NAME,
+        access_token,
+        max_age=settings.access_token_expire_minutes * 60,
+        httponly=True,
+        secure=secure_cookie,
+        samesite="strict",
+        path="/",
+    )
+
+
 @app.post("/web/session", include_in_schema=False)
 def create_web_session(payload: WebSessionRequest, request: Request):
     username = verify_access_token(payload.access_token)
@@ -121,16 +172,8 @@ def create_web_session(payload: WebSessionRequest, request: Request):
         logger.warning("Authentication rejected stage=browser_session status=401")
         raise HTTPException(status_code=401, detail="Invalid or expired token")
     response = JSONResponse({"ok": True})
+    _set_session_cookie(response, payload.access_token, request)
     secure_cookie = request.url.scheme == "https"
-    response.set_cookie(
-        SESSION_COOKIE_NAME,
-        payload.access_token,
-        max_age=settings.access_token_expire_minutes * 60,
-        httponly=True,
-        secure=secure_cookie,
-        samesite="strict",
-        path="/",
-    )
     logger.info("Browser session created status=200 secure_cookie=%s", secure_cookie)
     return response
 

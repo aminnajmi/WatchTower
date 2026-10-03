@@ -149,7 +149,7 @@ cp .env.example .env
 For local development set `APP_ENV=development`, use a local `DATABASE_URL` such as `sqlite:///./os_tracker.db`, then start:
 
 ```bash
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload --no-access-log
 ```
 
 Visit `http://127.0.0.1:8000/login` or `http://127.0.0.1:8000/docs`. The dashboard refreshes status from the backend every 30 seconds, and **Check now** refreshes it immediately after a manual check.

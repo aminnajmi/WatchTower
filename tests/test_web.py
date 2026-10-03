@@ -1,3 +1,4 @@
+import hashlib
 import tempfile
 import unittest
 from datetime import datetime, timedelta, timezone
@@ -74,7 +75,9 @@ class WebDashboardTests(unittest.TestCase):
         self.assertEqual(page.status_code, 200)
         self.assertIn("WatchTower", page.text)
         self.assertIn('id="login-form"', page.text)
-        self.assertIn('/static/js/app.js?v=watchtower-auth-2', page.text)
+        self.assertIn('method="post" action="/login"', page.text)
+        version = hashlib.sha256(Path("static/js/app.js").read_bytes()).hexdigest()[:12]
+        self.assertIn(f'/static/js/app.js?v={version}', page.text)
         self.assertNotIn("cdn.tailwindcss.com", page.text)
         script = (Path("static/js/app.js")).read_text()
         self.assertIn("/api/v1/auth/token", script)
@@ -117,6 +120,46 @@ class WebDashboardTests(unittest.TestCase):
             self.assertNotIn("; secure", cookie_header)
             self.assertEqual(self.client.get("/dashboard").status_code, 200)
             self.assertEqual(self.client.get("/api/v1/status").status_code, 200)
+
+    def test_html_form_fallback_posts_credentials_without_putting_them_in_url(self):
+        password = "temporary-post-fallback-password"
+        password_hash, password_salt = generate_password_hash(password)
+        with patch.object(settings, "jwt_secret", "watchtower-test-secret-with-at-least-32-bytes"), \
+             patch.object(settings, "admin_username", "watchtower-post-admin"), \
+             patch.object(settings, "admin_password_hash", password_hash), \
+             patch.object(settings, "admin_password_salt", password_salt):
+            rejected = self.client.post(
+                "/login",
+                data={"username": "watchtower-post-admin", "password": "wrong-password"},
+                follow_redirects=False,
+            )
+            self.assertEqual(rejected.status_code, 401)
+            self.assertNotIn("password=", rejected.headers.get("location", ""))
+            self.assertNotIn(password, rejected.text)
+
+            accepted = self.client.post(
+                "/login",
+                data={"username": "watchtower-post-admin", "password": password},
+                follow_redirects=False,
+            )
+            self.assertEqual(accepted.status_code, 303)
+            self.assertEqual(accepted.headers["location"], "/dashboard")
+            self.assertNotIn(password, accepted.headers.get("location", ""))
+            self.assertIn("httponly", accepted.headers["set-cookie"].lower())
+
+    def test_static_javascript_full_and_range_responses_are_well_formed(self):
+        source = Path("static/js/app.js").read_bytes()
+        full = self.client.get("/static/js/app.js?v=test")
+        self.assertEqual(full.status_code, 200)
+        self.assertEqual(full.content, source)
+        self.assertEqual(full.headers["content-type"].split(";", 1)[0], "application/javascript")
+        self.assertEqual(int(full.headers["content-length"]), len(source))
+
+        partial = self.client.get("/static/js/app.js?v=test", headers={"Range": "bytes=0-100"})
+        self.assertEqual(partial.status_code, 206)
+        self.assertEqual(partial.content, source[:101])
+        self.assertEqual(partial.headers["content-range"], f"bytes 0-100/{len(source)}")
+        self.assertEqual(int(partial.headers["content-length"]), 101)
 
     def test_https_browser_session_marks_cookie_secure(self):
         with patch.object(settings, "jwt_secret", "watchtower-test-secret-with-at-least-32-bytes"), \
@@ -184,7 +227,8 @@ class WebDashboardTests(unittest.TestCase):
         dashboard = self.client.get("/dashboard")
         self.assertEqual(dashboard.status_code, 200)
         self.assertIn('id="summary-last-check"', dashboard.text)
-        self.assertIn("app.js?v=watchtower-auth-2", dashboard.text)
+        version = hashlib.sha256(Path("static/js/app.js").read_bytes()).hexdigest()[:12]
+        self.assertIn(f"app.js?v={version}", dashboard.text)
         initial_status = self.client.get("/api/v1/status", headers=headers).json()
         initial_last_check = datetime.fromisoformat(initial_status["scheduler"]["last_check"])
         scheduled_next = datetime.now(timezone.utc) + timedelta(hours=5)

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <title>Sign in · WatchTower</title>
+  <link rel="icon" type="image/svg+xml" href="/static/watchtower.svg">
   <link rel="stylesheet" href="/static/css/app.css">
 </head>
 <body class="login-body">
@@ -20,12 +21,12 @@
         <span class="eyebrow">WELCOME BACK</span>
         <h2>Sign in to your account</h2>
         <p class="muted">Sign in with your WatchTower administrator credentials.</p>
-        <form id="login-form" class="stack-form">
+        <form id="login-form" class="stack-form" method="post" action="/login">
           <label for="username">Username</label>
           <input id="username" name="username" autocomplete="username" required>
           <label for="password">Password</label>
           <input id="password" name="password" type="password" autocomplete="current-password" required>
-          <div class="form-error" id="login-error" role="alert" hidden></div>
+          <div class="form-error" id="login-error" role="alert" {% if not login_error|default('') %}hidden{% endif %}>{{ login_error|default('') }}</div>
           <button class="button button-primary button-wide" id="login-submit" type="submit"><span>Sign in</span><span aria-hidden="true">→</span></button>
         </form>
         <div class="secure-note"><span aria-hidden="true">▣</span> Session protected with an HTTP-only JWT cookie</div>
@@ -33,6 +34,6 @@
       <button class="icon-button login-theme" id="theme-toggle" type="button" aria-label="Toggle light or dark mode" title="Toggle theme">◐</button>
     </section>
   </main>
-  <script src="/static/js/app.js?v=watchtower-auth-2" defer></script>
+  <script src="/static/js/app.js?v={{ asset_version }}" defer></script>
 </body>
 </html>
