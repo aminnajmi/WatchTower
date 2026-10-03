@@ -1,12 +1,12 @@
-# Graph Report - os-release-tracker-updated  (2026-10-02)
+# Graph Report - os-release-tracker-updated  (2026-10-03)
 
 ## Corpus Check
-- 43 files · ~21,499 words
+- 43 files · ~21,754 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 5 file(s) not represented in the graph (top: (none) 3, .example 1, .css 1)
 
 ## Summary
-- 281 nodes · 767 edges · 16 communities (12 shown, 4 thin omitted)
+- 285 nodes · 772 edges · 16 communities (12 shown, 4 thin omitted)
 - Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 52 edges (avg confidence: 0.93)
 - Token cost: 0 input · 0 output
 
@@ -66,7 +66,7 @@ Nodes (21): Settings, Base, OSRelease, ReleaseEvent, ReleaseHistory, BaseSetting
 
 ### Community 1 - "main.py"
 Cohesion: 0.10
-Nodes (37): verify_access_token(), check(), create_web_session(), dashboard_page(), events(), events_page(), get_os(), health() (+29 more)
+Nodes (39): verify_access_token(), verify_password(), check(), create_web_session(), dashboard_page(), events(), events_page(), get_os() (+31 more)
 
 ### Community 2 - "Release"
 Cohesion: 0.21
@@ -77,8 +77,8 @@ Cohesion: 0.22
 Nodes (23): api(), dateText(), escapeHtml(), fillOsFilter(), initializeEvents(), initializeReleases(), initializeSettings(), loadDashboard() (+15 more)
 
 ### Community 4 - "auth.py"
-Cohesion: 0.14
-Nodes (16): authenticate_token(), generate_password_hash(), _hash_password(), Request, _request_origin(), verify_password(), login(), fastapi (+8 more)
+Cohesion: 0.16
+Nodes (14): authenticate_token(), generate_password_hash(), _hash_password(), Request, _request_origin(), fastapi, fastapi_security, getpass (+6 more)
 
 ### Community 5 - "Graphify Instructions"
 Cohesion: 0.14
@@ -105,12 +105,12 @@ Cohesion: 0.11
 Nodes (7): create_access_token(), FakeProvider, SchedulerExecutionTests, ApplicationStartupTests, TelegramTestEndpointTests, latest(), _done()
 
 ### Community 15 - "scheduler.py"
-Cohesion: 0.24
-Nodes (9): _add_check_job(), Run the shared check service and log failures without stopping APScheduler., Ensure the single UTC cron job exists on FastAPI's active event loop., scheduled_check(), start_scheduler(), apscheduler_schedulers_asyncio, apscheduler_schedulers_base, apscheduler_triggers_cron (+1 more)
+Cohesion: 0.18
+Nodes (12): _add_check_job(), Run the shared check service and log failures without stopping APScheduler., Record only real APScheduler lifecycle events for the tracked job., Ensure the single UTC cron job exists on FastAPI's active event loop., _record_job_event(), scheduled_check(), start_scheduler(), apscheduler_events (+4 more)
 
 ## Knowledge Gaps
 - **22 isolated node(s):** `Docker Compose Configuration`, `Docker Deployment`, `Python Dependencies`, `Incremental Graph Update`, `Graphify Knowledge Graph` (+17 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 73 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 75 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
@@ -119,7 +119,7 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `Release` connect `Release` to `test_telegram.py`, `versioning.py`, `WebDashboardTests`, `TelegramClientTests`, `create_access_token`?**
   _High betweenness centrality (0.140) - this node is a cross-community bridge._
 - **Why does `WebDashboardTests` connect `WebDashboardTests` to `test_telegram.py`, `Release`?**
-  _High betweenness centrality (0.053) - this node is a cross-community bridge._
+  _High betweenness centrality (0.052) - this node is a cross-community bridge._
 - **Why does `OSRelease` connect `test_telegram.py` to `WebDashboardTests`, `main.py`, `create_access_token`, `TelegramClientTests`?**
   _High betweenness centrality (0.047) - this node is a cross-community bridge._
 - **Are the 14 inferred relationships involving `Release` (e.g. with `AlmaLinuxProvider` and `ArchLinuxProvider`) actually correct?**

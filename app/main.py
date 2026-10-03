@@ -91,6 +91,14 @@ class WebSessionRequest(BaseModel):
 
 @app.get("/health")
 def health():
+    required_ui_assets = (
+        PROJECT_ROOT / "static/css/app.css",
+        PROJECT_ROOT / "static/js/app.js",
+        PROJECT_ROOT / "static/watchtower.svg",
+        PROJECT_ROOT / "templates/login.html",
+    )
+    if any(not asset.is_file() or asset.stat().st_size == 0 for asset in required_ui_assets):
+        raise HTTPException(status_code=503, detail="WatchTower UI assets are unavailable")
     return {"status": "ok"}
 
 

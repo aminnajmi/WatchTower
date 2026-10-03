@@ -160,7 +160,7 @@
       "file_type": "code",
       "norm_label": "fakeprovider",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L19"
+      "source_location": "L20"
     },
     {
       "id": "tests_test_scheduler_schedulerexecutiontests",
@@ -173,7 +173,7 @@
       "file_type": "code",
       "norm_label": "schedulerexecutiontests",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L32"
+      "source_location": "L33"
     },
     {
       "id": "tests_test_startup_applicationstartuptests",
@@ -509,6 +509,18 @@
       "source_location": "L46"
     },
     {
+      "id": "app_auth_verify_password",
+      "label": "verify_password()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "verify_password()",
+      "source_file": "app/auth.py",
+      "source_location": "L29"
+    },
+    {
       "id": "app_main_check",
       "label": "check()",
       "_callable": true,
@@ -615,6 +627,18 @@
       "norm_label": "list_os()",
       "source_file": "app/main.py",
       "source_location": "L187"
+    },
+    {
+      "id": "app_main_login",
+      "label": "login()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "login()",
+      "source_file": "app/main.py",
+      "source_location": "L56"
     },
     {
       "id": "app_main_login_page",
@@ -842,7 +866,7 @@
       "file_type": "code",
       "norm_label": "stop_scheduler()",
       "source_file": "app/scheduler.py",
-      "source_location": "L91"
+      "source_location": "L134"
     },
     {
       "id": "app_auth_create_access_token",
@@ -902,7 +926,7 @@
       "file_type": "code",
       "norm_label": ".__init__()",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L20"
+      "source_location": "L21"
     },
     {
       "id": "tests_test_scheduler_fakeprovider_latest",
@@ -914,7 +938,7 @@
       "file_type": "code",
       "norm_label": ".latest()",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L25"
+      "source_location": "L26"
     },
     {
       "id": "tests_test_scheduler_schedulerexecutiontests_run_with_scheduler",
@@ -926,7 +950,7 @@
       "file_type": "code",
       "norm_label": "._run_with_scheduler()",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L89"
+      "source_location": "L91"
     },
     {
       "id": "tests_test_scheduler_schedulerexecutiontests_setup",
@@ -938,7 +962,7 @@
       "file_type": "code",
       "norm_label": ".setup()",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L33"
+      "source_location": "L34"
     },
     {
       "id": "tests_test_scheduler_schedulerexecutiontests_teardown",
@@ -950,7 +974,7 @@
       "file_type": "code",
       "norm_label": ".teardown()",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L75"
+      "source_location": "L77"
     },
     {
       "id": "tests_test_scheduler_schedulerexecutiontests_test_cron_next_runs_are_0900_and_2300_utc",
@@ -962,7 +986,19 @@
       "file_type": "code",
       "norm_label": ".test_cron_next_runs_are_0900_and_2300_utc()",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L189"
+      "source_location": "L196"
+    },
+    {
+      "id": "tests_test_scheduler_schedulerexecutiontests_test_missed_execution_is_observable",
+      "label": ".test_missed_execution_is_observable()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "create_access_token",
+      "file_type": "code",
+      "norm_label": ".test_missed_execution_is_observable()",
+      "source_file": "tests/test_scheduler.py",
+      "source_location": "L206"
     },
     {
       "id": "tests_test_scheduler_schedulerexecutiontests_test_provider_failure_does_not_stop_scheduler",
@@ -974,7 +1010,7 @@
       "file_type": "code",
       "norm_label": ".test_provider_failure_does_not_stop_scheduler()",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L163"
+      "source_location": "L169"
     },
     {
       "id": "tests_test_scheduler_schedulerexecutiontests_test_scheduled_job_runs_shared_service_and_updates_state",
@@ -986,7 +1022,7 @@
       "file_type": "code",
       "norm_label": ".test_scheduled_job_runs_shared_service_and_updates_state()",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L118"
+      "source_location": "L120"
     },
     {
       "id": "tests_test_scheduler_schedulerexecutiontests_test_unexpected_job_exception_is_logged_and_scheduler_keeps_running",
@@ -998,7 +1034,7 @@
       "file_type": "code",
       "norm_label": ".test_unexpected_job_exception_is_logged_and_scheduler_keeps_running()",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L177"
+      "source_location": "L183"
     },
     {
       "id": "tests_test_scheduler_schedulerexecutiontests_wait_until",
@@ -1010,7 +1046,7 @@
       "file_type": "code",
       "norm_label": "._wait_until()",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L81"
+      "source_location": "L83"
     },
     {
       "id": "tests_test_startup_applicationstartuptests_test_real_startup_scheduler_health_docs_and_status",
@@ -1118,7 +1154,19 @@
       "file_type": "code",
       "norm_label": "_add_check_job()",
       "source_file": "app/scheduler.py",
-      "source_location": "L44"
+      "source_location": "L80"
+    },
+    {
+      "id": "app_scheduler_record_job_event",
+      "label": "_record_job_event()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "scheduler.py",
+      "file_type": "code",
+      "norm_label": "_record_job_event()",
+      "source_file": "app/scheduler.py",
+      "source_location": "L56"
     },
     {
       "id": "app_scheduler_scheduled_check",
@@ -1130,7 +1178,7 @@
       "file_type": "code",
       "norm_label": "scheduled_check()",
       "source_file": "app/scheduler.py",
-      "source_location": "L21"
+      "source_location": "L29"
     },
     {
       "id": "app_scheduler_start_scheduler",
@@ -1142,7 +1190,7 @@
       "file_type": "code",
       "norm_label": "start_scheduler()",
       "source_file": "app/scheduler.py",
-      "source_location": "L56"
+      "source_location": "L98"
     },
     {
       "id": "app_providers_almalinux_almalinuxprovider_latest",
@@ -1647,30 +1695,6 @@
       "norm_label": "_request_origin()",
       "source_file": "app/auth.py",
       "source_location": "L17"
-    },
-    {
-      "id": "app_auth_verify_password",
-      "label": "verify_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "verify_password()",
-      "source_file": "app/auth.py",
-      "source_location": "L29"
-    },
-    {
-      "id": "app_main_login",
-      "label": "login()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "login()",
-      "source_file": "app/main.py",
-      "source_location": "L56"
     },
     {
       "id": "app_versioning_compare_releases",
@@ -2372,7 +2396,7 @@
       "source_location": "L1"
     },
     {
-      "id": "app_scheduler_rationale_22",
+      "id": "app_scheduler_rationale_30",
       "label": "Run the shared check service and log failures without stopping APScheduler.",
       "_origin": "ast",
       "community": 15,
@@ -2380,10 +2404,21 @@
       "file_type": "rationale",
       "norm_label": "run the shared check service and log failures without stopping apscheduler.",
       "source_file": "app/scheduler.py",
-      "source_location": "L22"
+      "source_location": "L30"
     },
     {
       "id": "app_scheduler_rationale_57",
+      "label": "Record only real APScheduler lifecycle events for the tracked job.",
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "scheduler.py",
+      "file_type": "rationale",
+      "norm_label": "record only real apscheduler lifecycle events for the tracked job.",
+      "source_file": "app/scheduler.py",
+      "source_location": "L57"
+    },
+    {
+      "id": "app_scheduler_rationale_99",
       "label": "Ensure the single UTC cron job exists on FastAPI's active event loop.",
       "_origin": "ast",
       "community": 15,
@@ -2391,7 +2426,7 @@
       "file_type": "rationale",
       "norm_label": "ensure the single utc cron job exists on fastapi's active event loop.",
       "source_file": "app/scheduler.py",
-      "source_location": "L57"
+      "source_location": "L99"
     },
     {
       "id": "abc",
@@ -3459,6 +3494,17 @@
       "norm_label": "logging",
       "source_file": "",
       "type": "external"
+    },
+    {
+      "id": "apscheduler_events",
+      "label": "apscheduler_events",
+      "community": 15,
+      "community_name": "scheduler.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "apscheduler_events",
+      "source_file": "",
+      "type": "external"
     }
   ],
   "links": [
@@ -4035,7 +4081,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/scheduler.py",
-      "source_location": "L28",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -4047,7 +4093,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/scheduler.py",
-      "source_location": "L62",
+      "source_location": "L104",
       "weight": 1.0
     },
     {
@@ -4875,7 +4921,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L111",
+      "source_location": "L113",
       "weight": 1.0
     },
     {
@@ -4887,7 +4933,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L43",
+      "source_location": "L44",
       "weight": 1.0
     },
     {
@@ -4899,7 +4945,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L54",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -4911,7 +4957,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L164",
+      "source_location": "L170",
       "weight": 1.0
     },
     {
@@ -4923,7 +4969,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L166",
+      "source_location": "L172",
       "weight": 1.0
     },
     {
@@ -4935,7 +4981,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L167",
+      "source_location": "L173",
       "weight": 1.0
     },
     {
@@ -4947,7 +4993,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L119",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -4959,7 +5005,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L120",
+      "source_location": "L122",
       "weight": 1.0
     },
     {
@@ -4971,7 +5017,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L123",
+      "source_location": "L125",
       "weight": 1.0
     },
     {
@@ -4983,7 +5029,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L137",
+      "source_location": "L140",
       "weight": 1.0
     },
     {
@@ -4995,7 +5041,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L179",
+      "source_location": "L185",
       "weight": 1.0
     },
     {
@@ -5007,7 +5053,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L180",
+      "source_location": "L186",
       "weight": 1.0
     },
     {
@@ -5019,7 +5065,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L182",
+      "source_location": "L188",
       "weight": 1.0
     },
     {
@@ -6776,6 +6822,18 @@
     },
     {
       "source": "app_scheduler",
+      "target": "app_service_check_all",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "app/scheduler.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "app_scheduler",
       "target": "logging",
       "relation": "imports",
       "_origin": "ast",
@@ -6784,18 +6842,6 @@
       "context": "import",
       "source_file": "app/scheduler.py",
       "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "app_scheduler",
-      "target": "app_service_check_all",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "app/scheduler.py",
-      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -7035,7 +7081,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L13",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -7047,7 +7093,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -7059,7 +7105,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -7071,7 +7117,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -8096,6 +8142,18 @@
     },
     {
       "source": "app_scheduler",
+      "target": "app_service",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "app/scheduler.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "app_scheduler",
       "target": "datetime",
       "relation": "imports_from",
       "_origin": "ast",
@@ -8108,7 +8166,7 @@
     },
     {
       "source": "app_scheduler",
-      "target": "apscheduler_schedulers_asyncio",
+      "target": "apscheduler_events",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8120,7 +8178,7 @@
     },
     {
       "source": "app_scheduler",
-      "target": "apscheduler_schedulers_base",
+      "target": "apscheduler_schedulers_asyncio",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8132,7 +8190,7 @@
     },
     {
       "source": "app_scheduler",
-      "target": "apscheduler_triggers_cron",
+      "target": "apscheduler_schedulers_base",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8144,14 +8202,14 @@
     },
     {
       "source": "app_scheduler",
-      "target": "app_service",
+      "target": "apscheduler_triggers_cron",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "app/scheduler.py",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -8420,7 +8478,7 @@
     },
     {
       "source": "tests_test_scheduler",
-      "target": "sqlalchemy_orm",
+      "target": "sqlalchemy",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8432,19 +8490,19 @@
     },
     {
       "source": "tests_test_scheduler",
-      "target": "app_init",
+      "target": "sqlalchemy_orm",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L12",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
       "source": "tests_test_scheduler",
-      "target": "app_auth",
+      "target": "app_init",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8456,7 +8514,7 @@
     },
     {
       "source": "tests_test_scheduler",
-      "target": "app_config",
+      "target": "app_auth",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8468,7 +8526,7 @@
     },
     {
       "source": "tests_test_scheduler",
-      "target": "app_models",
+      "target": "app_config",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8480,7 +8538,7 @@
     },
     {
       "source": "tests_test_scheduler",
-      "target": "app_providers_base",
+      "target": "app_models",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8488,6 +8546,18 @@
       "context": "import",
       "source_file": "tests/test_scheduler.py",
       "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_scheduler",
+      "target": "app_providers_base",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "tests/test_scheduler.py",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -8516,7 +8586,7 @@
     },
     {
       "source": "tests_test_scheduler",
-      "target": "unittest_mock",
+      "target": "types",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8528,19 +8598,19 @@
     },
     {
       "source": "tests_test_scheduler",
-      "target": "fastapi_testclient",
+      "target": "unittest_mock",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L8",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
       "source": "tests_test_scheduler",
-      "target": "sqlalchemy",
+      "target": "fastapi_testclient",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -9387,7 +9457,7 @@
       "confidence_score": 1.0,
       "context": "submodule_import",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L12",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -9399,7 +9469,7 @@
       "confidence_score": 1.0,
       "context": "submodule_import",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L12",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -9411,7 +9481,7 @@
       "confidence_score": 1.0,
       "context": "submodule_import",
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L12",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -10197,29 +10267,29 @@
     },
     {
       "source": "app_scheduler",
+      "target": "app_scheduler_stop_scheduler",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/scheduler.py",
+      "source_location": "L134",
+      "weight": 1.0
+    },
+    {
+      "source": "app_scheduler",
       "target": "app_scheduler_scheduled_check",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/scheduler.py",
-      "source_location": "L21",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
       "source": "app_scheduler",
-      "target": "app_scheduler_add_check_job",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "app/scheduler.py",
-      "source_location": "L44",
-      "weight": 1.0
-    },
-    {
-      "source": "app_scheduler",
-      "target": "app_scheduler_start_scheduler",
+      "target": "app_scheduler_record_job_event",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -10230,13 +10300,24 @@
     },
     {
       "source": "app_scheduler",
-      "target": "app_scheduler_stop_scheduler",
+      "target": "app_scheduler_add_check_job",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/scheduler.py",
-      "source_location": "L91",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "app_scheduler",
+      "target": "app_scheduler_start_scheduler",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/scheduler.py",
+      "source_location": "L98",
       "weight": 1.0
     },
     {
@@ -10566,7 +10647,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -10577,7 +10658,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L32",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -11072,7 +11153,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -11083,7 +11164,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -11094,7 +11175,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L118",
+      "source_location": "L120",
       "weight": 1.0
     },
     {
@@ -11105,7 +11186,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L163",
+      "source_location": "L169",
       "weight": 1.0
     },
     {
@@ -11116,7 +11197,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L177",
+      "source_location": "L183",
       "weight": 1.0
     },
     {
@@ -11127,7 +11208,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L189",
+      "source_location": "L196",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_scheduler_schedulerexecutiontests",
+      "target": "tests_test_scheduler_schedulerexecutiontests_test_missed_execution_is_observable",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_scheduler.py",
+      "source_location": "L206",
       "weight": 1.0
     },
     {
@@ -11138,7 +11230,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L33",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -11149,7 +11241,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L75",
+      "source_location": "L77",
       "weight": 1.0
     },
     {
@@ -11160,7 +11252,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L81",
+      "source_location": "L83",
       "weight": 1.0
     },
     {
@@ -11171,7 +11263,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L89",
+      "source_location": "L91",
       "weight": 1.0
     },
     {
@@ -11560,25 +11652,36 @@
       "weight": 1.0
     },
     {
-      "source": "app_scheduler_rationale_22",
+      "source": "app_scheduler_rationale_30",
       "target": "app_scheduler_scheduled_check",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/scheduler.py",
-      "source_location": "L22",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
       "source": "app_scheduler_rationale_57",
-      "target": "app_scheduler_start_scheduler",
+      "target": "app_scheduler_record_job_event",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/scheduler.py",
       "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "app_scheduler_rationale_99",
+      "target": "app_scheduler_start_scheduler",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/scheduler.py",
+      "source_location": "L99",
       "weight": 1.0
     },
     {
@@ -11624,7 +11727,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "app/scheduler.py",
-      "source_location": "L46",
+      "source_location": "L82",
       "weight": 1.0
     },
     {
@@ -11928,7 +12031,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L39",
+      "source_location": "L40",
       "weight": 0.8
     },
     {
@@ -11939,7 +12042,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L43",
+      "source_location": "L44",
       "weight": 0.8
     },
     {
@@ -11950,7 +12053,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "tests/test_scheduler.py",
-      "source_location": "L54",
+      "source_location": "L55",
       "weight": 0.8
     },
     {
