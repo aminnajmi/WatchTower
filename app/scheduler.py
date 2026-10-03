@@ -12,11 +12,7 @@ from .service import check_all
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-if not logger.handlers:
-    _scheduler_log_handler = logging.StreamHandler()
-    _scheduler_log_handler.setFormatter(logging.Formatter("%(levelname)s %(name)s: %(message)s"))
-    logger.addHandler(_scheduler_log_handler)
-logger.propagate = False
+logger.propagate = True
 
 JOB_ID = "os-release-check"
 SCHEDULE_LABEL = "09:00,23:00 UTC"
@@ -40,7 +36,8 @@ def get_scheduler() -> Optional[AsyncIOScheduler]:
 
 async def scheduled_check():
     """Run the shared check service without taking down APScheduler."""
-    global last_scheduled_run_started_at, last_scheduled_run_finished_at, last_scheduled_run_error
+    global last_scheduled_run_started_at, last_scheduled_run_finished_at
+    global last_scheduled_run_error, last_scheduled_run_status
 
     last_scheduled_run_started_at = datetime.now(UTC)
     last_scheduled_run_error = None
@@ -53,12 +50,15 @@ async def scheduled_check():
     except Exception as exc:
         last_scheduled_run_error = type(exc).__name__
         last_scheduled_run_finished_at = datetime.now(UTC)
+        last_scheduled_run_status = "error"
         logger.exception("SCHEDULER JOB FAILED")
         # Re-raise so APScheduler emits EVENT_JOB_ERROR. The cron job itself
         # remains registered and will run again at the next scheduled time.
         raise
 
     last_scheduled_run_finished_at = datetime.now(UTC)
+    last_scheduled_run_status = "success"
+    last_scheduled_run_error = None
     logger.info("SCHEDULER JOB COMPLETED")
     logger.info("Checked: %s", result.get("checked", 0))
     logger.info("Failed: %s", result.get("failed", 0))
@@ -109,8 +109,6 @@ def start_scheduler():
     """Create and start one scheduler on FastAPI's currently running loop."""
     global scheduler
 
-    loop = asyncio.get_running_loop()
-
     if scheduler is not None and scheduler.running:
         job = scheduler.get_job(JOB_ID)
         if job is None:
@@ -127,6 +125,8 @@ def start_scheduler():
         logger.info("Job ID: %s", JOB_ID)
         logger.info("Next run: %s", job.next_run_time if job else None)
         return job
+
+    loop = asyncio.get_running_loop()
 
     # A previous TestClient/app lifecycle may have shut down the old instance.
     # Always create a fresh scheduler for a fresh application lifecycle.

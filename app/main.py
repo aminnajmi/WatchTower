@@ -8,6 +8,7 @@ from fastapi import Depends, FastAPI, Form, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import BaseModel
 from sqlalchemy import func, select
 
@@ -27,8 +28,11 @@ from . import scheduler as scheduler_module
 from .service import check_all
 from .scheduler import JOB_ID, SCHEDULE_LABEL, start_scheduler, stop_scheduler
 
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
+    settings.validate_production_settings()
     init_db()
     start_scheduler()
     try:
@@ -39,9 +43,25 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(title="OS Release Tracker", version="2.0.0", lifespan=lifespan)
 logger = logging.getLogger(__name__)
+# Compatibility seam for tests/integrations that inject a scheduler instance.
+# Normal operation always reads the lifecycle-owned scheduler from its module.
+scheduler = None
+allowed_hosts = [host.strip() for host in settings.allowed_hosts.split(",") if host.strip()]
+if allowed_hosts and "*" not in allowed_hosts:
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=allowed_hosts)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 templates = Jinja2Templates(directory=str(PROJECT_ROOT / "templates"))
 app.mount("/static", StaticFiles(directory=str(PROJECT_ROOT / "static")), name="static")
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+    return response
 
 
 class WebSessionRequest(BaseModel):
@@ -98,8 +118,7 @@ def create_web_session(payload: WebSessionRequest, request: Request):
     if not username:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
     response = JSONResponse({"ok": True})
-    forwarded_proto = request.headers.get("x-forwarded-proto", "").split(",", 1)[0].strip()
-    secure_cookie = request.url.scheme == "https" or forwarded_proto == "https"
+    secure_cookie = request.url.scheme == "https"
     response.set_cookie(
         SESSION_COOKIE_NAME,
         payload.access_token,
@@ -340,14 +359,14 @@ def status():
         default=None,
     )
     try:
-        scheduler = scheduler_module.get_scheduler()
-        job = scheduler.get_job(JOB_ID) if scheduler is not None else None
-        apscheduler_running = bool(scheduler is not None and scheduler.running)
+        active_scheduler = scheduler or scheduler_module.get_scheduler()
+        job = active_scheduler.get_job(JOB_ID) if active_scheduler is not None else None
+        apscheduler_running = bool(active_scheduler is not None and active_scheduler.running)
         if not apscheduler_running:
             job_state = "stopped"
         elif job is None:
             job_state = "missing"
-        elif scheduler.state == scheduler_module.STATE_PAUSED or job.next_run_time is None:
+        elif active_scheduler.state == scheduler_module.STATE_PAUSED or job.next_run_time is None:
             job_state = "paused"
         else:
             job_state = "scheduled"

@@ -3,16 +3,40 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-
+    image: os-release-tracker:local
     container_name: os-release-tracker
-
+    init: true
     restart: unless-stopped
-
     env_file:
       - .env
-
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      DATABASE_URL: ${DATABASE_URL:-sqlite:////app/data/os_tracker.db}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1}
+      FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-127.0.0.1}
     ports:
-      - "8000:8000"
-
+      - "${HOST_BIND:-127.0.0.1}:${PORT:-8000}:8000"
     volumes:
-      - ./data:/app/data
+      - tracker-data:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 128
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+volumes:
+  tracker-data:

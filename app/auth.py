@@ -15,10 +15,10 @@ SESSION_COOKIE_NAME = "os_tracker_session"
 
 
 def _request_origin(request: Request) -> str:
-    scheme = request.headers.get("x-forwarded-proto", "").split(",", 1)[0].strip()
-    if scheme not in {"http", "https"}:
-        scheme = request.url.scheme
-    host = request.headers.get("x-forwarded-host", request.headers.get("host", request.url.netloc))
+    # Uvicorn rewrites request.url.scheme only for configured trusted proxies.
+    # Ignore X-Forwarded-Host here so a client cannot spoof the CSRF origin.
+    scheme = request.url.scheme
+    host = request.headers.get("host", request.url.netloc)
     return f"{scheme}://{host}".rstrip("/")
 
 

@@ -1,5 +1,7 @@
 from datetime import datetime
-from sqlalchemy import DateTime, Integer, String, Text, Boolean, ForeignKey, UniqueConstraint, create_engine
+from pathlib import Path
+from sqlalchemy import DateTime, Integer, String, Text, Boolean, ForeignKey, UniqueConstraint, create_engine, event
+from sqlalchemy.engine import make_url
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 from .config import settings
 
@@ -54,14 +56,32 @@ class ReleaseEvent(Base):
     notification_sent_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
 
+def ensure_sqlite_directory(database_url: str) -> None:
+    url = make_url(database_url)
+    if url.get_backend_name() != "sqlite" or not url.database or url.database == ":memory:":
+        return
+    Path(url.database).expanduser().resolve().parent.mkdir(parents=True, exist_ok=True)
+
+
 engine = create_engine(
     settings.database_url,
-    connect_args={"check_same_thread": False} if settings.database_url.startswith("sqlite") else {},
+    connect_args={"check_same_thread": False, "timeout": 30} if settings.database_url.startswith("sqlite") else {},
 )
+
+if engine.dialect.name == "sqlite":
+    @event.listens_for(engine, "connect")
+    def _configure_sqlite_connection(connection, _record):
+        cursor = connection.cursor()
+        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.execute("PRAGMA synchronous=NORMAL")
+        cursor.execute("PRAGMA busy_timeout=30000")
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 
 def init_db():
+    ensure_sqlite_directory(settings.database_url)
     Base.metadata.create_all(engine)
     # Lightweight migration for the existing SQLite database shipped with v1.x.
     if settings.database_url.startswith("sqlite"):
