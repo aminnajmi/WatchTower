@@ -1,4 +1,3 @@
-<img width="1910" height="888" alt="Screenshot 2026-10-03 at 13 06 00" src="https://github.com/user-attachments/assets/0f4421e3-78cb-4654-8999-86d892397a79" />
 # WatchTower
 
 WatchTower monitors official Linux operating system releases and reports changes through its dashboard, REST API, and optional notifications.
