@@ -5,18 +5,299 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     name: Deploy WatchTower
     runs-on: ubuntu-latest
-
     steps:
-      - name: Deploy to production server
+      - name: Record deployment start
+        id: metadata
+        run: echo "started_at=$(date +%s)" >> "$GITHUB_OUTPUT"
+
+      - name: Notify deployment started
+        continue-on-error: true
+        env:
+          MESSAGE_KIND: started
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          REPOSITORY: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+          COMMIT_SHA: ${{ github.sha }}
+          COMMIT_AUTHOR: ${{ github.event.head_commit.author.name || github.actor }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event_name }}
+          SERVER: ${{ secrets.SERVER_HOST }}
+          WORKFLOW: ${{ github.workflow }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          STARTED_AT: ${{ steps.metadata.outputs.started_at }}
+        run: |
+          python3 - <<'PY'
+          import html
+          import os
+          import sys
+          import urllib.parse
+          import urllib.request
+
+          def value(name, default="unknown"):
+              return os.environ.get(name, "").strip() or default
+
+          def esc(name, default="unknown"):
+              return html.escape(value(name, default), quote=True)
+
+          token = value("TELEGRAM_BOT_TOKEN", "")
+          chat_id = value("TELEGRAM_CHAT_ID", "")
+          if not token or not chat_id:
+              print("::warning::Telegram notification skipped: required Telegram secrets are not configured")
+              sys.exit(0)
+
+          message = (
+              "🚀 <b>WatchTower Deployment Started</b>\n\n"
+              f"Repository: <code>{esc('REPOSITORY')}</code>\n"
+              f"Branch: <code>{esc('BRANCH')}</code>\n"
+              f"Commit: <code>{esc('COMMIT_SHA')[:7]}</code>\n"
+              f"Author: {esc('COMMIT_AUTHOR')}\n"
+              f"Message: {esc('COMMIT_MESSAGE')[:900]}\n\n"
+              f"Server: <code>{esc('SERVER')}</code>\n"
+              f"Workflow: {esc('WORKFLOW')}\n"
+              f"Run: <a href=\"{esc('RUN_URL')}\">Open GitHub Actions run</a>"
+          )
+          data = urllib.parse.urlencode({"chat_id": chat_id, "text": message, "parse_mode": "HTML", "disable_web_page_preview": "true"}).encode()
+          request = urllib.request.Request(f"https://api.telegram.org/bot{token}/sendMessage", data=data)
+          try:
+              with urllib.request.urlopen(request, timeout=15) as response:
+                  if response.status != 200:
+                      raise RuntimeError("non-200 response")
+          except Exception:
+              print("::warning::Telegram start notification failed; deployment will continue")
+              sys.exit(0)
+          print("Telegram start notification sent")
+          PY
+
+      - name: Deploy to production server and check health
+        id: deploy
+        continue-on-error: true
         uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           port: 2299
           key: ${{ secrets.SERVER_SSH_KEY }}
+          capture_stdout: true
           script: |
-            /opt/WatchTower/deploy.sh           
+            set +e
+            cd /opt/WatchTower 2>/dev/null
+            if [ "$?" -ne 0 ]; then
+              printf 'WATCHTOWER_RESULT=failure\nWATCHTOWER_STEP=Open deployment directory\nWATCHTOWER_ERROR=Remote directory /opt/WatchTower is unavailable\n'
+              exit 0
+            fi
+
+            /opt/WatchTower/deploy.sh >/dev/null 2>&1
+            result=$?
+            if [ "$result" -ne 0 ]; then
+              printf 'WATCHTOWER_RESULT=failure\nWATCHTOWER_STEP=Pull, build, or restart\nWATCHTOWER_ERROR=deploy.sh exited with status %s\n' "$result"
+              exit 0
+            fi
+
+            container_id=$(docker compose ps -q watchtower 2>/dev/null)
+            if [ -z "$container_id" ]; then
+              printf 'WATCHTOWER_RESULT=failure\nWATCHTOWER_STEP=Container status\nWATCHTOWER_ERROR=Compose did not report a WatchTower container\nWATCHTOWER_IMAGE=built\nWATCHTOWER_CONTAINER=not found\nWATCHTOWER_HEALTH=not run\n'
+              exit 0
+            fi
+            container_status=$(docker inspect --format '{{.State.Status}}' "$container_id" 2>/dev/null)
+            if [ "$container_status" != "running" ]; then
+              printf 'WATCHTOWER_RESULT=failure\nWATCHTOWER_STEP=Container status\nWATCHTOWER_ERROR=WatchTower container status was %s\nWATCHTOWER_IMAGE=built\nWATCHTOWER_CONTAINER=%s\nWATCHTOWER_HEALTH=not run\n' "${container_status:-unknown}" "${container_status:-unknown}"
+              exit 0
+            fi
+
+            docker exec "$container_id" python -c "import urllib.request; r=urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=10); assert r.status == 200" >/dev/null 2>&1
+            result=$?
+            if [ "$result" -ne 0 ]; then
+              printf 'WATCHTOWER_RESULT=failure\nWATCHTOWER_STEP=HTTP health check\nWATCHTOWER_ERROR=/health did not return HTTP 200 (check exited with status %s)\nWATCHTOWER_IMAGE=built\nWATCHTOWER_CONTAINER=running\nWATCHTOWER_HEALTH=failed\n' "$result"
+              exit 0
+            fi
+
+            printf 'WATCHTOWER_RESULT=success\nWATCHTOWER_STEP=none\nWATCHTOWER_ERROR=none\nWATCHTOWER_IMAGE=built\nWATCHTOWER_CONTAINER=running\nWATCHTOWER_HEALTH=passed\n'
+            exit 0
+
+      - name: Record deployment result
+        id: result
+        if: ${{ always() }}
+        env:
+          DEPLOY_OUTCOME: ${{ steps.deploy.outcome }}
+          DEPLOY_OUTPUT: ${{ steps.deploy.outputs.stdout }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import re
+
+          output = os.environ.get("DEPLOY_OUTPUT", "")
+          values = {}
+          for line in output.splitlines():
+              match = re.search(r"WATCHTOWER_(RESULT|STEP|ERROR|IMAGE|CONTAINER|HEALTH)=([^\r\n]*)", line)
+              if match:
+                  values[match.group(1)] = match.group(2).strip()
+
+          success = values.get("RESULT") == "success" and os.environ.get("DEPLOY_OUTCOME") == "success"
+          if os.environ.get("DEPLOY_OUTCOME") != "success" and not values:
+              values = {
+                  "STEP": "SSH connection or remote execution",
+                  "ERROR": "SSH action failed before it returned a deployment result; review the deployment step logs",
+                  "IMAGE": "unknown",
+                  "CONTAINER": "unknown",
+                  "HEALTH": "not run",
+              }
+          if values.get("RESULT") == "failure":
+              values.setdefault("IMAGE", "unknown")
+              values.setdefault("CONTAINER", "unknown")
+              values.setdefault("HEALTH", "not run")
+          if not success and not values:
+              values = {
+                  "STEP": "Deployment result collection",
+                  "ERROR": "No deployment result was returned by the remote script",
+                  "IMAGE": "unknown",
+                  "CONTAINER": "unknown",
+                  "HEALTH": "not run",
+              }
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output_file:
+              output_file.write(f"success={'true' if success else 'false'}\n")
+              for key in ("STEP", "ERROR", "IMAGE", "CONTAINER", "HEALTH"):
+                  value = values.get(key, "unknown").replace("\n", " ").replace("\r", " ")
+                  output_file.write(f"{key.lower()}={value}\n")
+          PY
+
+      - name: Notify deployment completed
+        if: ${{ always() }}
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DEPLOY_SUCCESS: ${{ steps.result.outputs.success }}
+          FAILED_STEP: ${{ steps.result.outputs.step }}
+          ERROR_INFO: ${{ steps.result.outputs.error }}
+          IMAGE_STATUS: ${{ steps.result.outputs.image }}
+          CONTAINER_STATUS: ${{ steps.result.outputs.container }}
+          HEALTH_STATUS: ${{ steps.result.outputs.health }}
+          BRANCH: ${{ github.ref_name }}
+          COMMIT_SHA: ${{ github.sha }}
+          COMMIT_AUTHOR: ${{ github.event.head_commit.author.name || github.actor }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event_name }}
+          SERVER: ${{ secrets.SERVER_HOST }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          STARTED_AT: ${{ steps.metadata.outputs.started_at }}
+        run: |
+          python3 - <<'PY'
+          import html
+          import os
+          import sys
+          import time
+          import urllib.parse
+          import urllib.request
+
+          def value(name, default="unknown"):
+              return os.environ.get(name, "").strip() or default
+
+          def esc(name, default="unknown"):
+              return html.escape(value(name, default), quote=True)
+
+          token = value("TELEGRAM_BOT_TOKEN", "")
+          chat_id = value("TELEGRAM_CHAT_ID", "")
+          if not token or not chat_id:
+              print("::warning::Telegram notification skipped: required Telegram secrets are not configured")
+              sys.exit(0)
+
+          try:
+              duration_seconds = max(0, int(time.time()) - int(value("STARTED_AT", "0")))
+          except ValueError:
+              duration_seconds = 0
+          duration = f"{duration_seconds // 60}m {duration_seconds % 60}s"
+          if value("DEPLOY_SUCCESS") == "true":
+              message = (
+                  "✅ <b>WatchTower Deployment Successful</b>\n\n"
+                  f"Branch: <code>{esc('BRANCH')}</code>\n"
+                  f"Commit: <code>{esc('COMMIT_SHA')[:7]}</code>\n"
+                  f"Author: {esc('COMMIT_AUTHOR')}\n\n"
+                  f"Commit message:\n{esc('COMMIT_MESSAGE')[:900]}\n\n"
+                  f"Server: <code>{esc('SERVER')}</code>\n\n"
+                  "Docker:\n"
+                  f"✓ Image built: {esc('IMAGE_STATUS')}\n"
+                  f"✓ Container: {esc('CONTAINER_STATUS')}\n"
+                  f"✓ Health check: {esc('HEALTH_STATUS')}\n\n"
+                  f"Duration: {duration}\n\n"
+                  f"Run: <a href=\"{esc('RUN_URL')}\">Open GitHub Actions run</a>"
+              )
+          else:
+              message = (
+                  "❌ <b>WatchTower Deployment Failed</b>\n\n"
+                  f"Branch: <code>{esc('BRANCH')}</code>\n"
+                  f"Commit: <code>{esc('COMMIT_SHA')[:7]}</code>\n"
+                  f"Author: {esc('COMMIT_AUTHOR')}\n\n"
+                  f"Commit message:\n{esc('COMMIT_MESSAGE')[:900]}\n\n"
+                  f"Server: <code>{esc('SERVER')}</code>\n\n"
+                  f"Failed step: {esc('FAILED_STEP')}\n"
+                  f"Error: {esc('ERROR_INFO')[:700]}\n\n"
+                  f"Docker image/build: {esc('IMAGE_STATUS')}\n"
+                  f"Container: {esc('CONTAINER_STATUS')}\n"
+                  f"Health check: {esc('HEALTH_STATUS')}\n\n"
+                  f"Duration: {duration}\n\n"
+                  f"Run: <a href=\"{esc('RUN_URL')}\">Open GitHub Actions run</a>"
+              )
+
+          data = urllib.parse.urlencode({"chat_id": chat_id, "text": message, "parse_mode": "HTML", "disable_web_page_preview": "true"}).encode()
+          request = urllib.request.Request(f"https://api.telegram.org/bot{token}/sendMessage", data=data)
+          try:
+              with urllib.request.urlopen(request, timeout=15) as response:
+                  if response.status != 200:
+                      raise RuntimeError("non-200 response")
+          except Exception:
+              print("::warning::Telegram completion notification failed; deployment result is unchanged")
+              sys.exit(0)
+          print("Telegram completion notification sent")
+          PY
+
+      - name: Add deployment summary
+        if: ${{ always() }}
+        env:
+          DEPLOY_SUCCESS: ${{ steps.result.outputs.success }}
+          FAILED_STEP: ${{ steps.result.outputs.step }}
+          ERROR_INFO: ${{ steps.result.outputs.error }}
+          IMAGE_STATUS: ${{ steps.result.outputs.image }}
+          CONTAINER_STATUS: ${{ steps.result.outputs.container }}
+          HEALTH_STATUS: ${{ steps.result.outputs.health }}
+          BRANCH: ${{ github.ref_name }}
+          COMMIT_SHA: ${{ github.sha }}
+          SERVER: ${{ secrets.SERVER_HOST }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import re
+
+          def md(value):
+              value = re.sub(r"[\r\n\t]+", " ", value or "unknown")
+              return re.sub(r"([\\`*_{}\[\]()#+.!|>~-])", r"\\\1", value)[:1000]
+
+          success = os.environ.get("DEPLOY_SUCCESS") == "true"
+          rows = [
+              "## WatchTower Deployment Summary",
+              "",
+              f"- **Result:** {'Success' if success else 'Failure'}",
+              f"- **Branch:** `{md(os.environ.get('BRANCH', ''))}`",
+              f"- **Commit:** `{md(os.environ.get('COMMIT_SHA', '')[:7])}`",
+              f"- **Server:** `{md(os.environ.get('SERVER', ''))}`",
+              f"- **Docker image/build:** {md(os.environ.get('IMAGE_STATUS', 'unknown'))}",
+              f"- **Container:** {md(os.environ.get('CONTAINER_STATUS', 'unknown'))}",
+              f"- **Health check:** {md(os.environ.get('HEALTH_STATUS', 'unknown'))}",
+          ]
+          if not success:
+              rows.extend([f"- **Failed step:** {md(os.environ.get('FAILED_STEP', 'unknown'))}", f"- **Error:** {md(os.environ.get('ERROR_INFO', 'unknown'))}"])
+          rows.extend(["", f"[Open workflow run]({md(os.environ.get('RUN_URL', ''))})"])
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
+              summary.write("\n".join(rows) + "\n")
+          PY
+
+      - name: Fail job if deployment failed
+        if: ${{ always() && steps.result.outputs.success != 'true' }}
+        run: exit 1
