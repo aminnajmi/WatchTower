@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Release history · OS Release Tracker{% endblock %}
+{% block title %}Release history · WatchTower{% endblock %}
 {% block content %}
   <section class="page-heading"><div><span class="eyebrow">HISTORY</span><h1>Release history</h1><p>Versions detected and stored by the tracker.</p></div></section>
   <section class="panel filter-panel"><form id="release-filters" class="filter-row"><label>Operating system<select id="filter-os"><option value="">All operating systems</option></select></label><label>Release type<select id="filter-type"><option value="">All types</option><option value="major">Major</option><option value="minor">Minor</option><option value="rolling">Rolling</option></select></label><label>Release date<input id="filter-date" type="date"></label><button class="button button-primary" type="submit">Apply filters</button><a class="button button-quiet" href="/releases">Clear</a></form></section>

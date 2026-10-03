@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %}{% if os_index|default(false) %}Operating Systems{% else %}Dashboard{% endif %} · OS Release Tracker{% endblock %}
-{% block head %}{% if not os_index|default(false) %}<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>{% endif %}{% endblock %}
+{% block title %}{% if os_index|default(false) %}Operating Systems{% else %}Dashboard{% endif %} · WatchTower{% endblock %}
+{% block head %}{% if not os_index|default(false) %}<script async src="https://cdn.jsdelivr.net/npm/chart.js"></script>{% endif %}{% endblock %}
 {% block content %}
   <section class="page-heading">
     <div><span class="eyebrow">{% if os_index|default(false) %}INVENTORY{% else %}OVERVIEW{% endif %}</span><h1>{% if os_index|default(false) %}Operating systems{% else %}Release overview{% endif %}</h1><p>{% if os_index|default(false) %}Current versions and provider check status for each distribution.{% else %}Monitor current releases, provider health, and upcoming checks.{% endif %}</p></div>

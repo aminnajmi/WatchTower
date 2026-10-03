@@ -41,7 +41,7 @@ async def lifespan(_app: FastAPI):
         stop_scheduler()
 
 
-app = FastAPI(title="OS Release Tracker", version="2.0.0", lifespan=lifespan)
+app = FastAPI(title="WatchTower", version="2.0.0", lifespan=lifespan)
 logger = logging.getLogger(__name__)
 # Compatibility seam for tests/integrations that inject a scheduler instance.
 # Normal operation always reads the lifecycle-owned scheduler from its module.
@@ -76,7 +76,9 @@ def health():
 @app.post("/api/v1/auth/token", tags=["authentication"])
 async def login(username: str = Form(...), password: str = Form(...)):
     if username != settings.admin_username or not verify_password(password):
+        logger.warning("Authentication rejected stage=credentials status=401")
         raise HTTPException(status_code=401, detail="Invalid username or password")
+    logger.info("Authentication accepted stage=credentials status=200")
     return {
         "access_token": create_access_token(username),
         "token_type": "bearer",
@@ -116,6 +118,7 @@ def login_page(request: Request):
 def create_web_session(payload: WebSessionRequest, request: Request):
     username = verify_access_token(payload.access_token)
     if not username:
+        logger.warning("Authentication rejected stage=browser_session status=401")
         raise HTTPException(status_code=401, detail="Invalid or expired token")
     response = JSONResponse({"ok": True})
     secure_cookie = request.url.scheme == "https"
@@ -128,6 +131,7 @@ def create_web_session(payload: WebSessionRequest, request: Request):
         samesite="strict",
         path="/",
     )
+    logger.info("Browser session created status=200 secure_cookie=%s", secure_cookie)
     return response
 
 

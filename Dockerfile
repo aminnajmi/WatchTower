@@ -17,12 +17,12 @@ COPY templates ./templates
 # by this account on the host. Override at build time when required.
 ARG APP_UID=10001
 ARG APP_GID=10001
-RUN groupadd --gid "${APP_GID}" app \
-    && useradd --uid "${APP_UID}" --gid app --no-create-home --shell /usr/sbin/nologin app \
+RUN groupadd --gid "${APP_GID}" watchtower \
+    && useradd --uid "${APP_UID}" --gid watchtower --no-create-home --shell /usr/sbin/nologin watchtower \
     && mkdir -p /app/data \
-    && chown -R app:app /app
+    && chown -R watchtower:watchtower /app
 
-USER app:app
+USER watchtower:watchtower
 
 EXPOSE 8000
 

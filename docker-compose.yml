@@ -1,10 +1,12 @@
+name: watchtower
+
 services:
-  os-release-tracker:
+  watchtower:
     build:
       context: .
       dockerfile: Dockerfile
-    image: os-release-tracker:local
-    container_name: os-release-tracker
+    image: watchtower:local
+    container_name: watchtower
     init: true
     restart: unless-stopped
     env_file:
@@ -17,7 +19,7 @@ services:
     ports:
       - "${HOST_BIND:-127.0.0.1}:${PORT:-8000}:8000"
     volumes:
-      - tracker-data:/app/data
+      - watchtower-data:/app/data
     read_only: true
     tmpfs:
       - /tmp:rw,noexec,nosuid,size=16m
@@ -39,4 +41,4 @@ services:
         max-file: "3"
 
 volumes:
-  tracker-data:
+  watchtower-data:

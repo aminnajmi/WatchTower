@@ -161,7 +161,7 @@ async def check_all():
                 f"Previous Version: {event.previous_version or 'unknown'}\n"
                 f"New Version: {event.new_version}\n"
                 f"Major Version: {event.new_major_version}\n\n"
-                "The OS Release Tracker detected a new major release."
+                "WatchTower detected a new major release."
             )
             try:
                 delivery = await notify(message)
@@ -203,7 +203,7 @@ async def check_all():
     completion = (
         "✅ Check Completed\n\n"
         f"{summary['checked']}/{len(PROVIDERS)} providers healthy\n\n"
-        "The OS Release Tracker completed the provider check."
+        "WatchTower completed the provider check."
     )
     if errors:
         completion = (

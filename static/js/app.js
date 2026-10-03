@@ -82,12 +82,20 @@
   }
 
   function initializeTheme() {
-    const saved = window.localStorage.getItem('os-tracker-theme');
-    if (saved === 'dark' || saved === 'light') document.documentElement.dataset.theme = saved;
+    try {
+      const saved = window.localStorage.getItem('os-tracker-theme');
+      if (saved === 'dark' || saved === 'light') document.documentElement.dataset.theme = saved;
+    } catch (error) {
+      console.warn('WatchTower could not read the saved theme preference.', error);
+    }
     $$('#theme-toggle').forEach(button => button.addEventListener('click', () => {
       const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
       document.documentElement.dataset.theme = next;
-      window.localStorage.setItem('os-tracker-theme', next);
+      try {
+        window.localStorage.setItem('os-tracker-theme', next);
+      } catch (error) {
+        console.warn('WatchTower could not save the theme preference.', error);
+      }
     }));
   }
 
@@ -126,22 +134,52 @@
           method: 'POST', credentials: 'same-origin',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body
         });
-        const payload = await response.json();
-        if (!response.ok) throw new Error(payload.detail || 'Unable to sign in. Check your credentials.');
+        const payload = await readLoginResponse(response, 'sign-in');
+        if (!payload.access_token || typeof payload.access_token !== 'string') {
+          throw new Error('WatchTower returned an invalid sign-in response. Please try again.');
+        }
         const session = await fetch('/web/session', {
           method: 'POST', credentials: 'same-origin',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ access_token: payload.access_token })
         });
-        if (!session.ok) throw new Error('Could not establish a secure browser session.');
+        const sessionPayload = await readLoginResponse(session, 'session');
+        if (sessionPayload.ok !== true) {
+          throw new Error('WatchTower could not establish a browser session. Please try again.');
+        }
         window.location.assign('/dashboard');
       } catch (error) {
-        errorBox.textContent = error.message || 'Sign in failed.';
+        console.error('WatchTower sign-in failed.', error);
+        errorBox.textContent = error instanceof TypeError
+          ? 'Cannot connect to WatchTower. Check the server address and try again.'
+          : (error.message || 'Sign in failed. Please try again.');
         errorBox.hidden = false;
+      } finally {
         button.disabled = false;
         button.querySelector('span').textContent = 'Sign in';
       }
     });
+  }
+
+  async function readLoginResponse(response, stage) {
+    const contentType = response.headers.get('content-type') || '';
+    let payload = null;
+    if (contentType.includes('application/json')) {
+      try { payload = await response.json(); }
+      catch (error) {
+        console.error(`WatchTower ${stage} endpoint returned invalid JSON.`, error);
+        throw new Error('WatchTower returned an invalid response. Please try again.');
+      }
+    }
+    if (!response.ok) {
+      if (response.status === 401) throw new Error('Invalid username or password.');
+      if (response.status >= 500) throw new Error('WatchTower could not complete sign-in because of a server error.');
+      throw new Error(payload?.detail || `WatchTower sign-in failed (${response.status}).`);
+    }
+    if (!payload || typeof payload !== 'object') {
+      throw new Error('WatchTower returned an unexpected response. Please try again.');
+    }
+    return payload;
   }
 
   function renderStatus(label, kind) {
@@ -447,4 +485,8 @@
     if ($('#event-filters')) initializeEvents();
     if ($('#settings-providers')) initializeSettings();
   });
+
+  window.addEventListener('load', () => {
+    if (window.Chart && $('#release-chart')) renderReleaseChart();
+  }, { once: true });
 })();

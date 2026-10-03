@@ -58,4 +58,4 @@ async def send(message: str) -> TelegramSendResult:
 
 
 async def send_test() -> TelegramSendResult:
-    return await send("🧪 OS Release Tracker — TEST\n\nTelegram notification test successful.")
+    return await send("🧪 WatchTower — TEST\n\nTelegram notification test successful.")

@@ -4,23 +4,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <title>Sign in · OS Release Tracker</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Sign in · WatchTower</title>
   <link rel="stylesheet" href="/static/css/app.css">
 </head>
 <body class="login-body">
   <main class="login-layout">
-    <section class="login-brand-panel" aria-label="OS Release Tracker">
-      <a class="brand brand-light" href="/login"><span class="brand-mark" aria-hidden="true">OS</span><span><strong>Release Tracker</strong><small>Infrastructure</small></span></a>
+    <section class="login-brand-panel" aria-label="WatchTower">
+      <a class="brand brand-light" href="/login"><span class="brand-mark" aria-hidden="true">WT</span><span><strong>WatchTower</strong><small>Release Monitoring</small></span></a>
       <div class="login-intro"><span class="eyebrow">RELEASE OPERATIONS</span><h1>Know what’s changing across your fleet.</h1><p>One clear view of operating system releases, provider health, and major version events.</p></div>
       <div class="login-footnote">Secure access for your operations team</div>
     </section>
     <section class="login-form-panel">
       <div class="login-card">
-        <div class="brand-mark login-mobile-mark" aria-hidden="true">OS</div>
+        <div class="brand-mark login-mobile-mark" aria-hidden="true">WT</div>
         <span class="eyebrow">WELCOME BACK</span>
         <h2>Sign in to your account</h2>
-        <p class="muted">Use your existing OS Release Tracker administrator credentials.</p>
+        <p class="muted">Sign in with your WatchTower administrator credentials.</p>
         <form id="login-form" class="stack-form">
           <label for="username">Username</label>
           <input id="username" name="username" autocomplete="username" required>
@@ -34,6 +33,6 @@
       <button class="icon-button login-theme" id="theme-toggle" type="button" aria-label="Toggle light or dark mode" title="Toggle theme">◐</button>
     </section>
   </main>
-  <script src="/static/js/app.js" defer></script>
+  <script src="/static/js/app.js?v=watchtower-auth-2" defer></script>
 </body>
 </html>

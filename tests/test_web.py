@@ -10,7 +10,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app import main, service
-from app.auth import SESSION_COOKIE_NAME, create_access_token
+from app.auth import SESSION_COOKIE_NAME, create_access_token, generate_password_hash
 from app.config import settings
 from app.models import Base, OSRelease, ReleaseHistory, ReleaseEvent
 from app.providers.base import Release
@@ -72,12 +72,60 @@ class WebDashboardTests(unittest.TestCase):
     def test_login_page_and_existing_jwt_login_flow(self):
         page = self.client.get("/login")
         self.assertEqual(page.status_code, 200)
+        self.assertIn("WatchTower", page.text)
         self.assertIn('id="login-form"', page.text)
-        self.assertIn("/api/v1/auth/token", (Path("static/js/app.js")).read_text())
+        self.assertIn('/static/js/app.js?v=watchtower-auth-2', page.text)
+        self.assertNotIn("cdn.tailwindcss.com", page.text)
+        script = (Path("static/js/app.js")).read_text()
+        self.assertIn("/api/v1/auth/token", script)
+        self.assertIn("/web/session", script)
+        self.assertIn("Cannot connect to WatchTower", script)
+        self.assertEqual(self.client.get("/static/js/app.js").status_code, 200)
         self.sign_in()
         cookie = self.client.cookies.get(SESSION_COOKIE_NAME)
         self.assertTrue(cookie)
         self.assertIn("httponly", self.session_response.headers.get("set-cookie", "").lower())
+
+    def test_http_credentials_create_httponly_cookie_and_authenticated_dashboard(self):
+        password = "test-password-for-http-login"
+        password_hash, password_salt = generate_password_hash(password)
+        with patch.object(settings, "jwt_secret", "watchtower-test-secret-with-at-least-32-bytes"), \
+             patch.object(settings, "admin_username", "watchtower-test-admin"), \
+             patch.object(settings, "admin_password_hash", password_hash), \
+             patch.object(settings, "admin_password_salt", password_salt), \
+             patch.object(settings, "access_token_expire_minutes", 60):
+            rejected = self.client.post(
+                "/api/v1/auth/token",
+                data={"username": "watchtower-test-admin", "password": "wrong-password"},
+            )
+            self.assertEqual(rejected.status_code, 401)
+
+            token_response = self.client.post(
+                "/api/v1/auth/token",
+                data={"username": "watchtower-test-admin", "password": password},
+            )
+            self.assertEqual(token_response.status_code, 200)
+            token = token_response.json()["access_token"]
+            session_response = self.client.post("/web/session", json={"access_token": token})
+            self.assertEqual(session_response.status_code, 200)
+            cookie_header = session_response.headers["set-cookie"].lower()
+            self.assertIn(f"{SESSION_COOKIE_NAME}=", cookie_header)
+            self.assertIn("httponly", cookie_header)
+            self.assertIn("samesite=strict", cookie_header)
+            self.assertIn("path=/", cookie_header)
+            self.assertIn("max-age=3600", cookie_header)
+            self.assertNotIn("; secure", cookie_header)
+            self.assertEqual(self.client.get("/dashboard").status_code, 200)
+            self.assertEqual(self.client.get("/api/v1/status").status_code, 200)
+
+    def test_https_browser_session_marks_cookie_secure(self):
+        with patch.object(settings, "jwt_secret", "watchtower-test-secret-with-at-least-32-bytes"), \
+             patch.object(settings, "admin_username", "admin"):
+            token = create_access_token("admin")
+            with TestClient(main.app, base_url="https://testserver") as https_client:
+                response = https_client.post("/web/session", json={"access_token": token})
+            self.assertEqual(response.status_code, 200)
+            self.assertIn("; secure", response.headers["set-cookie"].lower())
 
     def test_unauthenticated_pages_redirect_to_login(self):
         for path in ("/dashboard", "/os", "/os/ubuntu", "/releases", "/events", "/settings"):
@@ -136,7 +184,7 @@ class WebDashboardTests(unittest.TestCase):
         dashboard = self.client.get("/dashboard")
         self.assertEqual(dashboard.status_code, 200)
         self.assertIn('id="summary-last-check"', dashboard.text)
-        self.assertIn("app.js?v=utc-cron-telegram-test-1", dashboard.text)
+        self.assertIn("app.js?v=watchtower-auth-2", dashboard.text)
         initial_status = self.client.get("/api/v1/status", headers=headers).json()
         initial_last_check = datetime.fromisoformat(initial_status["scheduler"]["last_check"])
         scheduled_next = datetime.now(timezone.utc) + timedelta(hours=5)

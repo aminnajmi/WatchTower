@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Release events · OS Release Tracker{% endblock %}
+{% block title %}Release events · WatchTower{% endblock %}
 {% block content %}
   <section class="page-heading"><div><span class="eyebrow">EVENT STREAM</span><h1>Release events</h1><p>Recorded release transitions from the provider checks.</p></div></section>
   <section class="panel filter-panel"><form id="event-filters" class="filter-row"><label>Operating system<select id="event-os"><option value="">All operating systems</option></select></label><label>Event type<select id="event-type"><option value="">All event types</option><option value="new_major_release">New major release</option><option value="new_minor_release">New minor release</option><option value="new_rolling_release">New rolling release</option></select></label><button class="button button-primary" type="submit">Apply filters</button><a class="button button-quiet" href="/events">Clear</a></form></section>

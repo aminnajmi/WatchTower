@@ -1,4 +1,6 @@
-# OS Release Tracker
+# WatchTower
+
+WatchTower monitors official Linux operating system releases and reports changes through its dashboard, REST API, and optional notifications.
 
 A FastAPI service that tracks official releases for Ubuntu, AlmaLinux, Fedora, Rocky Linux, Debian, Arch Linux, and CentOS Stream. It stores release history in SQLite, serves a dashboard and REST API, and can send optional Discord or Telegram notifications.
 
@@ -54,7 +56,7 @@ docker compose config --quiet
 docker compose build
 docker compose up -d
 docker compose ps
-docker compose logs --tail=100 os-release-tracker
+docker compose logs --tail=100 watchtower
 ```
 
 Wait for `healthy` in `docker compose ps`, then check `http://SERVER:PORT/health`, `/login`, and `/docs`. Sign in to the dashboard with the configured admin account. API clients can authenticate at `POST /api/v1/auth/token` and then use the returned bearer token.
@@ -83,7 +85,7 @@ Restrict the server firewall to ports 22 and 80/443 for a reverse-proxy setup. F
 docker compose stop
 docker compose start
 docker compose restart
-docker compose logs -f os-release-tracker
+docker compose logs -f watchtower
 docker compose down                 # retains tracker-data
 docker compose up -d --build        # rebuild and replace the service
 ```
@@ -95,18 +97,18 @@ Update by reviewing the desired Git revision, pulling it, then running `docker c
 Make a consistent SQLite backup while the app is running using SQLite's online backup API:
 
 ```bash
-docker compose exec -T os-release-tracker python -c \
+docker compose exec -T watchtower python -c \
   'import sqlite3; src=sqlite3.connect("/app/data/os_tracker.db"); dst=sqlite3.connect("/tmp/os_tracker-backup.db"); src.backup(dst); dst.close(); src.close()'
-docker compose cp os-release-tracker:/tmp/os_tracker-backup.db ./os_tracker-backup.db
+docker compose cp watchtower:/tmp/os_tracker-backup.db ./os_tracker-backup.db
 ```
 
 Store the resulting file off the server and protect it as application data. To restore, first put the backup at `./os_tracker-backup.db`, keep a second copy of the current database, then replace it while the service is stopped. This one-off Compose container mounts the same named volume and runs as the app user:
 
 ```bash
-docker compose stop os-release-tracker
+docker compose stop watchtower
 docker compose run --rm --no-deps \
   -v "$PWD/os_tracker-backup.db:/restore/source.db:ro" \
-  --entrypoint python os-release-tracker -c \
+  --entrypoint python watchtower -c \
   'import os, shutil; dst="/app/data/os_tracker.db"; shutil.copyfile("/restore/source.db", dst); os.chmod(dst, 0o600)'
 docker compose up -d
 ```
