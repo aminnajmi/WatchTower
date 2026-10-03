@@ -20,3 +20,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             /opt/WatchTower/deploy.sh
+
+
+
+            
