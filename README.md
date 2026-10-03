@@ -26,7 +26,7 @@ cp .env.example .env
 chmod 600 .env
 ```
 
-Edit `.env`. Set `ALLOWED_HOSTS` to the exact hostname or server IP users will enter in their browser (comma-separated for multiple hosts; do not include a scheme or port). For example, direct access by IP requires that IP in `ALLOWED_HOSTS`. Keep `HOST_BIND=127.0.0.1` when a local reverse proxy terminates HTTPS. For direct access, set `HOST_BIND=0.0.0.0`, then allow the selected `PORT` in the server firewall. Set `PORT` if the host port should differ.
+Edit `.env`. Set `ALLOWED_HOSTS` to the exact hostname or server IP users will enter in their browser (comma-separated for multiple hosts; do not include a scheme or port). The example config includes `37.120.198.236`; replace it if the server address changes. Keep `HOST_BIND=127.0.0.1` when a local reverse proxy terminates HTTPS. For direct access, set `HOST_BIND=0.0.0.0`, then allow the selected `PORT` in the server firewall. Set `PORT` if the host port should differ.
 
 Generate the JWT secret:
 
