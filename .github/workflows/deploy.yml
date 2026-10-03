@@ -19,8 +19,4 @@ jobs:
           port: 2299
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            /opt/WatchTower/deploy.sh
-
-
-
-            
+            /opt/WatchTower/deploy.sh           
