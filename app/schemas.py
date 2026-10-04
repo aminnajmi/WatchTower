@@ -1,5 +1,101 @@
 from datetime import datetime
-from pydantic import BaseModel
+import re
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
+
+class UserCreate(BaseModel):
+    username: str = Field(min_length=3, max_length=32)
+    password: str = Field(min_length=12, max_length=256)
+    confirm_password: str = Field(min_length=12, max_length=256)
+    role: str = "user"
+    is_active: bool = True
+
+    @field_validator("username")
+    @classmethod
+    def valid_username(cls, value: str) -> str:
+        value = value.strip()
+        if not re.fullmatch(r"[A-Za-z0-9_.-]{3,32}", value):
+            raise ValueError("Username must be 3-32 characters using letters, numbers, dot, underscore, or hyphen")
+        return value
+
+    @field_validator("role")
+    @classmethod
+    def valid_role(cls, value: str) -> str:
+        normalized = value.strip().lower()
+        if normalized not in {"admin", "user"}:
+            raise ValueError("Role must be Admin or User")
+        return normalized
+
+    @field_validator("is_active", mode="before")
+    @classmethod
+    def active_must_be_boolean(cls, value):
+        if not isinstance(value, bool):
+            raise ValueError("Active status must be true or false")
+        return value
+
+    @model_validator(mode="after")
+    def passwords_match(self):
+        if self.password != self.confirm_password:
+            raise ValueError("Password confirmation does not match")
+        return self
+
+
+class UserUpdate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    username: str | None = Field(default=None, min_length=3, max_length=32)
+    role: str | None = None
+    is_active: bool | None = None
+
+    @field_validator("username")
+    @classmethod
+    def valid_username(cls, value: str | None) -> str | None:
+        if value is None:
+            raise ValueError("Username cannot be empty")
+        value = value.strip()
+        if not re.fullmatch(r"[A-Za-z0-9_.-]{3,32}", value):
+            raise ValueError("Username must be 3-32 characters using letters, numbers, dot, underscore, or hyphen")
+        return value
+
+    @field_validator("role")
+    @classmethod
+    def valid_role(cls, value: str | None) -> str | None:
+        if value is None:
+            raise ValueError("Role cannot be empty")
+        normalized = value.strip().lower()
+        if normalized not in {"admin", "user"}:
+            raise ValueError("Role must be Admin or User")
+        return normalized
+
+    @field_validator("is_active", mode="before")
+    @classmethod
+    def active_must_be_boolean(cls, value):
+        if not isinstance(value, bool):
+            raise ValueError("Active status must be true or false")
+        return value
+
+
+class PasswordReset(BaseModel):
+    new_password: str = Field(min_length=12, max_length=256)
+    confirm_password: str = Field(min_length=12, max_length=256)
+
+    @model_validator(mode="after")
+    def passwords_match(self):
+        if self.new_password != self.confirm_password:
+            raise ValueError("Password confirmation does not match")
+        return self
+
+
+class PasswordChange(BaseModel):
+    current_password: str = Field(min_length=1, max_length=256)
+    new_password: str = Field(min_length=12, max_length=256)
+    confirm_password: str = Field(min_length=12, max_length=256)
+
+    @model_validator(mode="after")
+    def passwords_match(self):
+        if self.new_password != self.confirm_password:
+            raise ValueError("Password confirmation does not match")
+        return self
 
 
 class ReleaseInfo(BaseModel):

@@ -6,22 +6,31 @@ from pathlib import Path
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, Form, HTTPException, Query, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import BaseModel
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError, OperationalError
 
 from .auth import (
     SESSION_COOKIE_NAME,
     authenticate_token,
+    configure_session_factory_provider,
     create_access_token,
+    hash_user_password,
+    principal_for_username,
+    Principal,
+    require_admin,
     verify_access_token,
+    verify_user_password,
     verify_password,
 )
 from .config import settings
-from .models import init_db, SessionLocal, OSRelease, ReleaseHistory, ReleaseEvent
+from .models import init_db, SessionLocal, OSRelease, ReleaseHistory, ReleaseEvent, User
+from .schemas import UserCreate, UserUpdate, PasswordReset, PasswordChange
 from .notifications.telegram import send_test as send_telegram_test
 from .providers import PROVIDERS
 from . import service
@@ -30,6 +39,7 @@ from .service import check_all
 from .scheduler import JOB_ID, SCHEDULE_LABEL, start_scheduler, stop_scheduler
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+configure_session_factory_provider(lambda: SessionLocal)
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
@@ -56,6 +66,13 @@ templates.env.globals["asset_version"] = hashlib.sha256(
     (PROJECT_ROOT / "static/js/app.js").read_bytes()
 ).hexdigest()[:12]
 app.mount("/static", StaticFiles(directory=str(PROJECT_ROOT / "static")), name="static")
+
+
+@app.exception_handler(RequestValidationError)
+async def sanitized_validation_error(_request: Request, _exc: RequestValidationError):
+    # Pydantic's default error payload includes the submitted input, which can
+    # include a password. Return only field locations and generic messages.
+    return JSONResponse({"detail": "Request validation failed"}, status_code=422)
 
 
 @app.middleware("http")
@@ -104,7 +121,8 @@ def health():
 
 @app.post("/api/v1/auth/token", tags=["authentication"])
 async def login(username: str = Form(...), password: str = Form(...)):
-    if username != settings.admin_username or not verify_password(password):
+    principal = _authenticate_login(username, password)
+    if not principal:
         logger.warning("Authentication rejected stage=credentials status=401")
         raise HTTPException(status_code=401, detail="Invalid username or password")
     logger.info("Authentication accepted stage=credentials status=200")
@@ -112,6 +130,7 @@ async def login(username: str = Form(...), password: str = Form(...)):
         "access_token": create_access_token(username),
         "token_type": "bearer",
         "expires_in": settings.access_token_expire_minutes * 60,
+        "user": {"username": principal.username, "role": principal.role},
     }
 
 
@@ -121,18 +140,56 @@ def home(request: Request):
 
 
 def _web_user(request: Request) -> str | None:
+    principal = _web_principal(request)
+    return principal.username if principal else None
+
+
+def _web_principal(request: Request) -> Principal | None:
     token = request.cookies.get(SESSION_COOKIE_NAME)
-    return verify_access_token(token) if token else None
+    username = verify_access_token(token) if token else None
+    return principal_for_username(username) if username else None
+
+
+def _authenticate_login(username: str, password: str) -> Principal | None:
+    """DB user credentials first; retain the configured admin as bootstrap fallback."""
+    db = SessionLocal()
+    allow_legacy_fallback = False
+    try:
+        user = db.scalar(select(User).where(User.username == username))
+        if user is not None:
+            if not user.is_active or not verify_user_password(password, user.password_hash):
+                return None
+            user.last_login_at = datetime.utcnow()
+            db.commit()
+            return Principal(user.id, user.username, user.role, user.is_active)
+        allow_legacy_fallback = (db.scalar(select(func.count(User.id))) or 0) == 0
+    except OperationalError as exc:
+        if "no such table: users" in str(exc).lower() or "doesn't exist" in str(exc).lower():
+            allow_legacy_fallback = True
+        else:
+            return None
+    finally:
+        db.close()
+
+    if allow_legacy_fallback and username == settings.admin_username and verify_password(password):
+        return Principal(None, username, "admin", True)
+    return None
 
 
 def _render_page(request: Request, template: str, active: str, **context):
-    username = _web_user(request)
-    if not username:
+    principal = _web_principal(request)
+    if not principal:
         return RedirectResponse("/login", status_code=303)
     return templates.TemplateResponse(
         request=request,
         name=template,
-        context={"active": active, "current_user": username, **context},
+        context={
+            "active": active,
+            "current_user": principal.username,
+            "current_role": principal.role,
+            "is_admin": principal.role == "admin",
+            **context,
+        },
     )
 
 
@@ -146,7 +203,8 @@ def login_page(request: Request):
 @app.post("/login", response_class=HTMLResponse, include_in_schema=False)
 async def login_form(request: Request, username: str = Form(...), password: str = Form(...)):
     """POST fallback for browsers when client-side JavaScript is unavailable."""
-    if username != settings.admin_username or not verify_password(password):
+    principal = _authenticate_login(username, password)
+    if not principal:
         logger.warning("Authentication rejected stage=html_form status=401")
         return templates.TemplateResponse(
             request=request,
@@ -176,7 +234,7 @@ def _set_session_cookie(response, access_token: str, request: Request) -> None:
 @app.post("/web/session", include_in_schema=False)
 def create_web_session(payload: WebSessionRequest, request: Request):
     username = verify_access_token(payload.access_token)
-    if not username:
+    if not username or not principal_for_username(username):
         logger.warning("Authentication rejected stage=browser_session status=401")
         raise HTTPException(status_code=401, detail="Invalid or expired token")
     response = JSONResponse({"ok": True})
@@ -228,7 +286,27 @@ def events_page(request: Request):
 
 @app.get("/settings", response_class=HTMLResponse, include_in_schema=False)
 def settings_page(request: Request):
+    principal = _web_principal(request)
+    if not principal:
+        return RedirectResponse("/login", status_code=303)
+    if principal.role != "admin":
+        raise HTTPException(status_code=403, detail="Administrator role required")
     return _render_page(request, "settings.html", "settings")
+
+
+@app.get("/users", response_class=HTMLResponse, include_in_schema=False)
+def users_page(request: Request):
+    principal = _web_principal(request)
+    if not principal:
+        return RedirectResponse("/login", status_code=303)
+    if principal.role != "admin":
+        raise HTTPException(status_code=403, detail="Administrator role required")
+    return _render_page(request, "users.html", "users")
+
+
+@app.get("/account", response_class=HTMLResponse, include_in_schema=False)
+def account_page(request: Request):
+    return _render_page(request, "account.html", "account")
 
 
 def serialize_os(row: OSRelease):
@@ -360,12 +438,12 @@ def events(
         db.close()
 
 
-@app.post("/api/v1/check", dependencies=[Depends(authenticate_token)])
+@app.post("/api/v1/check", dependencies=[Depends(require_admin)])
 async def check():
     return await check_all()
 
 
-@app.post("/api/v1/notifications/test/telegram", dependencies=[Depends(authenticate_token)])
+@app.post("/api/v1/notifications/test/telegram", dependencies=[Depends(require_admin)])
 async def test_telegram_notification():
     if not settings.telegram_enabled:
         return JSONResponse(
@@ -475,3 +553,208 @@ def status():
             "telegram_chat_configured": bool(settings.telegram_chat_id),
         },
     }
+
+
+def _serialize_user(user: User) -> dict:
+    return {
+        "id": user.id,
+        "username": user.username,
+        "role": user.role,
+        "is_active": user.is_active,
+        "created_at": _utc_timestamp(user.created_at),
+        "updated_at": _utc_timestamp(user.updated_at),
+        "last_login_at": _utc_timestamp(user.last_login_at),
+    }
+
+
+def _get_managed_user(db, user_id: int) -> User:
+    user = db.get(User, user_id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+
+def _ensure_another_active_admin(db, user: User) -> None:
+    if user.role == "admin" and user.is_active:
+        active_admins = db.scalar(select(func.count(User.id)).where(User.role == "admin", User.is_active.is_(True))) or 0
+        if active_admins <= 1:
+            raise HTTPException(status_code=409, detail="WatchTower must retain at least one active administrator")
+
+
+@app.get("/api/v1/account", dependencies=[Depends(authenticate_token)])
+def get_account(current: Principal = Depends(authenticate_token)):
+    db = SessionLocal()
+    try:
+        user = db.scalar(select(User).where(User.username == current.username))
+        if user is None:
+            return {"username": current.username, "role": current.role, "is_active": True,
+                    "created_at": None, "updated_at": None, "last_login_at": None}
+        return _serialize_user(user)
+    finally:
+        db.close()
+
+
+@app.post("/api/v1/account/change-password", dependencies=[Depends(authenticate_token)])
+def change_own_password(payload: PasswordChange, current: Principal = Depends(authenticate_token)):
+    db = SessionLocal()
+    try:
+        user = db.scalar(select(User).where(User.username == current.username))
+        if user is None:
+            raise HTTPException(status_code=409, detail="This account password is managed by server configuration")
+        if not verify_user_password(payload.current_password, user.password_hash):
+            raise HTTPException(status_code=400, detail="Current password is incorrect")
+        user.password_hash = hash_user_password(payload.new_password)
+        user.updated_at = datetime.utcnow()
+        db.commit()
+        logger.info("user_audit actor=%s action=password_changed_self target=%s", current.username, user.username)
+        return {"success": True}
+    finally:
+        db.close()
+
+
+@app.get("/api/v1/users", dependencies=[Depends(require_admin)])
+def list_users():
+    db = SessionLocal()
+    try:
+        users = db.scalars(select(User).order_by(User.created_at, User.id)).all()
+        return [_serialize_user(user) for user in users]
+    finally:
+        db.close()
+
+
+@app.post("/api/v1/users", status_code=201, dependencies=[Depends(require_admin)])
+def create_user(payload: UserCreate, current: Principal = Depends(require_admin)):
+    db = SessionLocal()
+    try:
+        if db.scalar(select(User.id).where(User.username == payload.username)) is not None:
+            raise HTTPException(status_code=409, detail="Username is already in use")
+        user = User(
+            username=payload.username,
+            password_hash=hash_user_password(payload.password),
+            role=payload.role,
+            is_active=payload.is_active,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+        )
+        db.add(user)
+        try:
+            db.commit()
+        except IntegrityError:
+            db.rollback()
+            raise HTTPException(status_code=409, detail="Username is already in use")
+        db.refresh(user)
+        logger.info("user_audit actor=%s action=user_created target_id=%s target=%s role=%s", current.username, user.id, user.username, user.role)
+        return _serialize_user(user)
+    finally:
+        db.close()
+
+
+@app.get("/api/v1/users/{user_id}", dependencies=[Depends(require_admin)])
+def get_user(user_id: int):
+    db = SessionLocal()
+    try:
+        return _serialize_user(_get_managed_user(db, user_id))
+    finally:
+        db.close()
+
+
+@app.patch("/api/v1/users/{user_id}", dependencies=[Depends(require_admin)])
+def update_user(user_id: int, payload: UserUpdate, current: Principal = Depends(require_admin)):
+    db = SessionLocal()
+    try:
+        user = _get_managed_user(db, user_id)
+        changes = payload.model_dump(exclude_unset=True)
+        if not changes:
+            raise HTTPException(status_code=400, detail="No user changes were provided")
+        if "username" in changes and changes["username"] != user.username:
+            if current.id == user.id:
+                raise HTTPException(status_code=409, detail="Sign in again before changing your own username")
+            if db.scalar(select(User.id).where(User.username == changes["username"])) is not None:
+                raise HTTPException(status_code=409, detail="Username is already in use")
+        becoming_inactive_admin = user.role == "admin" and user.is_active and (
+            changes.get("role", user.role) != "admin" or changes.get("is_active", user.is_active) is False
+        )
+        if becoming_inactive_admin:
+            _ensure_another_active_admin(db, user)
+        if current.id == user.id and (changes.get("role", user.role) != "admin" or changes.get("is_active", user.is_active) is False):
+            raise HTTPException(status_code=409, detail="You cannot disable or demote your own account")
+        old_role, old_active, old_username = user.role, user.is_active, user.username
+        for key, value in changes.items():
+            setattr(user, key, value)
+        user.updated_at = datetime.utcnow()
+        try:
+            db.commit()
+        except IntegrityError:
+            db.rollback()
+            raise HTTPException(status_code=409, detail="Username is already in use")
+        db.refresh(user)
+        logger.info("user_audit actor=%s action=user_updated target_id=%s target=%s role_changed=%s active_changed=%s", current.username, user.id, user.username, old_role != user.role, old_active != user.is_active)
+        if old_role != user.role:
+            logger.info("user_audit actor=%s action=role_changed target_id=%s old_role=%s new_role=%s", current.username, user.id, old_role, user.role)
+        if old_username != user.username:
+            logger.info("user_audit actor=%s action=username_changed target_id=%s old_username=%s new_username=%s", current.username, user.id, old_username, user.username)
+        if old_active != user.is_active:
+            logger.info("user_audit actor=%s action=user_%s target_id=%s target=%s", current.username, "enabled" if user.is_active else "disabled", user.id, user.username)
+        return _serialize_user(user)
+    finally:
+        db.close()
+
+
+@app.post("/api/v1/users/{user_id}/reset-password", dependencies=[Depends(require_admin)])
+def reset_user_password(user_id: int, payload: PasswordReset, current: Principal = Depends(require_admin)):
+    db = SessionLocal()
+    try:
+        user = _get_managed_user(db, user_id)
+        user.password_hash = hash_user_password(payload.new_password)
+        user.updated_at = datetime.utcnow()
+        db.commit()
+        logger.info("user_audit actor=%s action=password_reset target_id=%s target=%s", current.username, user.id, user.username)
+        return {"success": True}
+    finally:
+        db.close()
+
+
+@app.post("/api/v1/users/{user_id}/enable", dependencies=[Depends(require_admin)])
+def enable_user(user_id: int, current: Principal = Depends(require_admin)):
+    return _set_user_active(user_id, True, current)
+
+
+@app.post("/api/v1/users/{user_id}/disable", dependencies=[Depends(require_admin)])
+def disable_user(user_id: int, current: Principal = Depends(require_admin)):
+    return _set_user_active(user_id, False, current)
+
+
+def _set_user_active(user_id: int, active: bool, current: Principal):
+    db = SessionLocal()
+    try:
+        user = _get_managed_user(db, user_id)
+        if current.id == user.id and not active:
+            raise HTTPException(status_code=409, detail="You cannot disable your own account")
+        if user.is_active == active:
+            return _serialize_user(user)
+        if not active:
+            _ensure_another_active_admin(db, user)
+        user.is_active = active
+        user.updated_at = datetime.utcnow()
+        db.commit()
+        logger.info("user_audit actor=%s action=user_%s target_id=%s target=%s", current.username, "enabled" if active else "disabled", user.id, user.username)
+        return _serialize_user(user)
+    finally:
+        db.close()
+
+
+@app.delete("/api/v1/users/{user_id}", dependencies=[Depends(require_admin)])
+def delete_user(user_id: int, current: Principal = Depends(require_admin)):
+    db = SessionLocal()
+    try:
+        user = _get_managed_user(db, user_id)
+        if current.id == user.id:
+            raise HTTPException(status_code=409, detail="You cannot delete your own account")
+        _ensure_another_active_admin(db, user)
+        target_name = user.username
+        db.delete(user)
+        db.commit()
+        logger.info("user_audit actor=%s action=user_deleted target_id=%s target=%s", current.username, user_id, target_name)
+        return {"success": True}
+    finally:
+        db.close()

@@ -10,6 +10,20 @@ class Base(DeclarativeBase):
     pass
 
 
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    username: Mapped[str] = mapped_column(String(32), unique=True, index=True)
+    # Encoded PBKDF2 record: algorithm$iterations$salt_hex$digest_hex.
+    password_hash: Mapped[str] = mapped_column(String(256))
+    role: Mapped[str] = mapped_column(String(20), default="user", index=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_login_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+
+
 class OSRelease(Base):
     __tablename__ = "os_releases"
 
@@ -83,6 +97,25 @@ SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 def init_db():
     ensure_sqlite_directory(settings.database_url)
     Base.metadata.create_all(engine)
+    # Preserve the existing environment-configured administrator as the
+    # one-time bootstrap account. Subsequent credentials live in the users table.
+    if settings.admin_password_hash and settings.admin_password_salt:
+        try:
+            salt = bytes.fromhex(settings.admin_password_salt)
+            digest = bytes.fromhex(settings.admin_password_hash)
+        except ValueError:
+            salt = digest = b""
+        if salt and digest:
+            encoded = f"pbkdf2_sha256$310000${salt.hex()}${digest.hex()}"
+            with sessionmaker(bind=engine, autoflush=False, autocommit=False).begin() as db:
+                admin = db.query(User).filter(User.username == settings.admin_username).one_or_none()
+                if admin is None:
+                    db.add(User(
+                        username=settings.admin_username,
+                        password_hash=encoded,
+                        role="admin",
+                        is_active=True,
+                    ))
     # Lightweight migration for the existing SQLite database shipped with v1.x.
     if settings.database_url.startswith("sqlite"):
         with engine.begin() as conn:

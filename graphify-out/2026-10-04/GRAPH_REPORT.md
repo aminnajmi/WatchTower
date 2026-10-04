@@ -1,12 +1,12 @@
 # Graph Report - WatchTower  (2026-10-04)
 
 ## Corpus Check
-- 45 files · ~28,372 words
+- 45 files · ~28,374 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 9 file(s) not represented in the graph (top: (none) 5, .example 1, .db-shm 1)
 
 ## Summary
-- 377 nodes · 1050 edges · 16 communities (13 shown, 3 thin omitted)
+- 377 nodes · 1051 edges · 16 communities (13 shown, 3 thin omitted)
 - Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 82 edges (avg confidence: 0.94)
 - Token cost: 0 input · 0 output
 
@@ -20,11 +20,11 @@
 - main.py
 - Release
 - app.js
-- auth.py
+- WebDashboardTests
 - Graphify Instructions
 - ProductionConfigTests
 - Dashboard Templates and Docs
-- Principal
+- auth.py
 - TelegramClientTests
 - schemas.py
 - SchedulerExecutionTests
@@ -66,12 +66,12 @@
 ## Communities (16 total, 3 thin omitted)
 
 ### Community 0 - "test_telegram.py"
-Cohesion: 0.14
-Nodes (31): Base, _configure_sqlite_connection(), OSRelease, ReleaseEvent, ReleaseHistory, check_all(), compare_releases(), parse_version() (+23 more)
+Cohesion: 0.13
+Nodes (32): Base, _configure_sqlite_connection(), OSRelease, ReleaseEvent, ReleaseHistory, check_all(), compare_releases(), parse_version() (+24 more)
 
 ### Community 1 - "main.py"
 Cohesion: 0.08
-Nodes (48): principal_for_username(), Resolve every request against current DB state so disable takes effect…, verify_access_token(), account_page(), create_web_session(), dashboard_page(), events(), events_page() (+40 more)
+Nodes (48): configure_session_factory_provider(), Allow the app's configured DB session factory to be injected in tests., verify_access_token(), account_page(), create_web_session(), dashboard_page(), events(), events_page() (+40 more)
 
 ### Community 2 - "Release"
 Cohesion: 0.18
@@ -81,9 +81,9 @@ Nodes (17): ABC, AlmaLinuxProvider, ArchLinuxProvider, Provider, Release, CentOS
 Cohesion: 0.20
 Nodes (29): api(), dateText(), escapeHtml(), fillOsFilter(), handleUserAction(), initializeAccount(), initializeEvents(), initializeLogin() (+21 more)
 
-### Community 4 - "auth.py"
-Cohesion: 0.07
-Nodes (19): authenticate_token(), configure_session_factory_provider(), generate_password_hash(), _hash_password(), Request, Allow the app's configured DB session factory to be injected in tests., _request_origin(), require_admin() (+11 more)
+### Community 4 - "WebDashboardTests"
+Cohesion: 0.14
+Nodes (3): generate_password_hash(), getpass, WebDashboardTests
 
 ### Community 5 - "Graphify Instructions"
 Cohesion: 0.14
@@ -97,9 +97,9 @@ Nodes (6): Fail startup on missing/unsafe credentials in production mode., Setti
 Cohesion: 0.20
 Nodes (11): FastAPI Release Tracking Service, OS Release Tracker README, Release Semantics, Web Dashboard, Shared Dashboard Layout, Dashboard and Operating Systems Index, Release Events Page, Login Page (+3 more)
 
-### Community 8 - "Principal"
-Cohesion: 0.09
-Nodes (31): create_access_token(), hash_user_password(), Principal, verify_user_password(), _authenticate_login(), change_own_password(), check(), create_user() (+23 more)
+### Community 8 - "auth.py"
+Cohesion: 0.06
+Nodes (46): authenticate_token(), create_access_token(), _hash_password(), hash_user_password(), Principal, principal_for_username(), Request, Resolve every request against current DB state so disable takes effect… (+38 more)
 
 ### Community 9 - "TelegramClientTests"
 Cohesion: 0.09
@@ -125,11 +125,11 @@ Nodes (16): _add_check_job(), get_scheduler(), Create and start one scheduler on
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Release` connect `Release` to `test_telegram.py`, `TelegramClientTests`, `SchedulerExecutionTests`, `auth.py`?**
+- **Why does `Release` connect `Release` to `test_telegram.py`, `TelegramClientTests`, `SchedulerExecutionTests`, `WebDashboardTests`?**
   _High betweenness centrality (0.096) - this node is a cross-community bridge._
-- **Why does `OSRelease` connect `test_telegram.py` to `main.py`, `Release`, `auth.py`, `Principal`, `TelegramClientTests`, `SchedulerExecutionTests`?**
+- **Why does `OSRelease` connect `test_telegram.py` to `main.py`, `Release`, `WebDashboardTests`, `auth.py`, `TelegramClientTests`, `SchedulerExecutionTests`?**
   _High betweenness centrality (0.057) - this node is a cross-community bridge._
-- **Why does `WebDashboardTests` connect `auth.py` to `test_telegram.py`, `Release`?**
+- **Why does `WebDashboardTests` connect `WebDashboardTests` to `test_telegram.py`, `Release`?**
   _High betweenness centrality (0.054) - this node is a cross-community bridge._
 - **Are the 14 inferred relationships involving `Release` (e.g. with `AlmaLinuxProvider` and `ArchLinuxProvider`) actually correct?**
   _`Release` has 14 INFERRED edges - model-reasoned connections that need verification._

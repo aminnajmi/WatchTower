@@ -10,7 +10,8 @@ from sqlalchemy import create_engine, select
 from sqlalchemy.orm import sessionmaker
 
 from app import main, notifications, service
-from app.auth import create_access_token
+from app import auth
+from app.auth import Principal, create_access_token
 from app.config import settings
 from app.models import Base, OSRelease, ReleaseEvent, ReleaseHistory
 from app.notifications.telegram import TelegramSendResult
@@ -272,6 +273,7 @@ class TelegramTestEndpointTests(unittest.TestCase):
         send_test = AsyncMock(return_value=TelegramSendResult(success=True, sent=True))
         with patch.object(main, "init_db"), patch.object(main, "start_scheduler"), \
              patch.object(main, "SessionLocal") as session_factory, \
+             patch.object(auth, "principal_for_username", return_value=Principal(None, settings.admin_username, "admin")), \
              patch.object(main, "send_telegram_test", new=send_test), \
              patch.object(settings, "telegram_enabled", True), TestClient(main.app) as client:
             self.assertEqual(client.post("/api/v1/notifications/test/telegram").status_code, 401)
@@ -287,6 +289,7 @@ class TelegramTestEndpointTests(unittest.TestCase):
     def test_endpoint_reports_disabled_and_does_not_send(self):
         send_test = AsyncMock()
         with patch.object(main, "init_db"), patch.object(main, "start_scheduler"), \
+             patch.object(auth, "principal_for_username", return_value=Principal(None, settings.admin_username, "admin")), \
              patch.object(main, "send_telegram_test", new=send_test), \
              patch.object(settings, "telegram_enabled", False), TestClient(main.app) as client:
             token = create_access_token(settings.admin_username)
@@ -301,6 +304,7 @@ class TelegramTestEndpointTests(unittest.TestCase):
     def test_endpoint_handles_unexpected_sender_failure_without_exposing_details(self):
         send_test = AsyncMock(side_effect=RuntimeError("secret bot token in URL"))
         with patch.object(main, "init_db"), patch.object(main, "start_scheduler"), \
+             patch.object(auth, "principal_for_username", return_value=Principal(None, settings.admin_username, "admin")), \
              patch.object(main, "send_telegram_test", new=send_test), \
              patch.object(settings, "telegram_enabled", True), TestClient(main.app) as client:
             token = create_access_token(settings.admin_username)

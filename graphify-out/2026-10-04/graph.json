@@ -30,7 +30,7 @@
       "file_type": "code",
       "norm_label": "base",
       "source_file": "app/models.py",
-      "source_location": "L9"
+      "source_location": "L10"
     },
     {
       "id": "app_models_osrelease",
@@ -43,7 +43,7 @@
       "file_type": "code",
       "norm_label": "osrelease",
       "source_file": "app/models.py",
-      "source_location": "L27"
+      "source_location": "L28"
     },
     {
       "id": "app_models_releaseevent",
@@ -56,7 +56,7 @@
       "file_type": "code",
       "norm_label": "releaseevent",
       "source_file": "app/models.py",
-      "source_location": "L58"
+      "source_location": "L59"
     },
     {
       "id": "app_models_releasehistory",
@@ -69,7 +69,7 @@
       "file_type": "code",
       "norm_label": "releasehistory",
       "source_file": "app/models.py",
-      "source_location": "L44"
+      "source_location": "L45"
     },
     {
       "id": "app_versioning_parsedversion",
@@ -403,7 +403,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "auth.py",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": "webdashboardtests",
       "source_file": "tests/test_web.py",
@@ -442,7 +442,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "principal",
       "source_file": "app/auth.py",
@@ -455,11 +455,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "user",
       "source_file": "app/models.py",
-      "source_location": "L13"
+      "source_location": "L14"
     },
     {
       "id": "tests_test_startup_applicationstartuptests",
@@ -468,7 +468,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "applicationstartuptests",
       "source_file": "tests/test_startup.py",
@@ -481,7 +481,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "telegramtestendpointtests",
       "source_file": "tests/test_telegram.py",
@@ -494,7 +494,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "usermanagementtests",
       "source_file": "tests/test_users.py",
@@ -562,7 +562,7 @@
       "file_type": "code",
       "norm_label": "_configure_sqlite_connection()",
       "source_file": "app/models.py",
-      "source_location": "L87"
+      "source_location": "L88"
     },
     {
       "id": "app_service_check_all",
@@ -697,16 +697,16 @@
       "source_location": "L21"
     },
     {
-      "id": "app_auth_principal_for_username",
-      "label": "principal_for_username()",
+      "id": "app_auth_configure_session_factory_provider",
+      "label": "configure_session_factory_provider()",
       "_callable": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "main.py",
       "file_type": "code",
-      "norm_label": "principal_for_username()",
+      "norm_label": "configure_session_factory_provider()",
       "source_file": "app/auth.py",
-      "source_location": "L36"
+      "source_location": "L22"
     },
     {
       "id": "app_auth_verify_access_token",
@@ -1969,88 +1969,16 @@
       "source_location": "L357"
     },
     {
-      "id": "app_auth_authenticate_token",
-      "label": "authenticate_token()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "authenticate_token()",
-      "source_file": "app/auth.py",
-      "source_location": "L105"
-    },
-    {
-      "id": "app_auth_configure_session_factory_provider",
-      "label": "configure_session_factory_provider()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "configure_session_factory_provider()",
-      "source_file": "app/auth.py",
-      "source_location": "L22"
-    },
-    {
       "id": "app_auth_generate_password_hash",
       "label": "generate_password_hash()",
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "auth.py",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": "generate_password_hash()",
       "source_file": "app/auth.py",
       "source_location": "L139"
-    },
-    {
-      "id": "app_auth_hash_password",
-      "label": "_hash_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "_hash_password()",
-      "source_file": "app/auth.py",
-      "source_location": "L75"
-    },
-    {
-      "id": "app_auth_request_origin",
-      "label": "_request_origin()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "_request_origin()",
-      "source_file": "app/auth.py",
-      "source_location": "L67"
-    },
-    {
-      "id": "app_auth_require_admin",
-      "label": "require_admin()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "require_admin()",
-      "source_file": "app/auth.py",
-      "source_location": "L133"
-    },
-    {
-      "id": "app_auth_verify_password",
-      "label": "verify_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "verify_password()",
-      "source_file": "app/auth.py",
-      "source_location": "L79"
     },
     {
       "id": "tests_test_web_webdashboardtests_sign_in",
@@ -2058,7 +1986,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "auth.py",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": ".sign_in()",
       "source_file": "tests/test_web.py",
@@ -2070,7 +1998,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "auth.py",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": ".teardown()",
       "source_file": "tests/test_web.py",
@@ -2082,7 +2010,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "auth.py",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": ".test_authenticated_pages_render_and_major_event_is_displayed()",
       "source_file": "tests/test_web.py",
@@ -2094,7 +2022,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "auth.py",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": ".test_check_now_api_and_logout()",
       "source_file": "tests/test_web.py",
@@ -2106,7 +2034,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "auth.py",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": ".test_html_form_fallback_posts_credentials_without_putting_them_in_url()",
       "source_file": "tests/test_web.py",
@@ -2118,7 +2046,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "auth.py",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": ".test_http_credentials_create_httponly_cookie_and_authenticated_dashboard()",
       "source_file": "tests/test_web.py",
@@ -2130,7 +2058,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "auth.py",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": ".test_https_browser_session_marks_cookie_secure()",
       "source_file": "tests/test_web.py",
@@ -2142,7 +2070,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "auth.py",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": ".test_login_page_and_existing_jwt_login_flow()",
       "source_file": "tests/test_web.py",
@@ -2154,7 +2082,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "auth.py",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": ".test_manual_check_refreshes_authoritative_timestamps_and_keeps_scheduler_next_run()",
       "source_file": "tests/test_web.py",
@@ -2166,7 +2094,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "auth.py",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": "__init__()",
       "source_file": "tests/test_web.py",
@@ -2178,7 +2106,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "auth.py",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": "latest()",
       "source_file": "tests/test_web.py",
@@ -2190,7 +2118,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "auth.py",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": ".test_provider_errors_are_rendered_on_dashboard()",
       "source_file": "tests/test_web.py",
@@ -2202,7 +2130,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "auth.py",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": ".test_settings_displays_telegram_chat_configuration_and_test_button()",
       "source_file": "tests/test_web.py",
@@ -2214,7 +2142,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "auth.py",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": ".test_static_javascript_full_and_range_responses_are_well_formed()",
       "source_file": "tests/test_web.py",
@@ -2226,7 +2154,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "auth.py",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": ".test_status_release_pagination_event_filters_and_cookie_api_auth()",
       "source_file": "tests/test_web.py",
@@ -2238,7 +2166,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": "auth.py",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": ".test_unauthenticated_pages_redirect_to_login()",
       "source_file": "tests/test_web.py",
@@ -2266,7 +2194,7 @@
       "file_type": "code",
       "norm_label": "ensure_sqlite_directory()",
       "source_file": "app/models.py",
-      "source_location": "L73"
+      "source_location": "L74"
     },
     {
       "id": "app_models_init_db",
@@ -2278,7 +2206,7 @@
       "file_type": "code",
       "norm_label": "init_db()",
       "source_file": "app/models.py",
-      "source_location": "L97"
+      "source_location": "L98"
     },
     {
       "id": "tests_test_production_config_productionconfigtests_test_production_configuration_accepts_secure_values",
@@ -2341,16 +2269,40 @@
       "source_location": "L10"
     },
     {
+      "id": "app_auth_authenticate_token",
+      "label": "authenticate_token()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": "authenticate_token()",
+      "source_file": "app/auth.py",
+      "source_location": "L105"
+    },
+    {
       "id": "app_auth_create_access_token",
       "label": "create_access_token()",
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "create_access_token()",
       "source_file": "app/auth.py",
       "source_location": "L90"
+    },
+    {
+      "id": "app_auth_hash_password",
+      "label": "_hash_password()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": "_hash_password()",
+      "source_file": "app/auth.py",
+      "source_location": "L75"
     },
     {
       "id": "app_auth_hash_user_password",
@@ -2358,11 +2310,59 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "hash_user_password()",
       "source_file": "app/auth.py",
       "source_location": "L144"
+    },
+    {
+      "id": "app_auth_principal_for_username",
+      "label": "principal_for_username()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": "principal_for_username()",
+      "source_file": "app/auth.py",
+      "source_location": "L36"
+    },
+    {
+      "id": "app_auth_request_origin",
+      "label": "_request_origin()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": "_request_origin()",
+      "source_file": "app/auth.py",
+      "source_location": "L67"
+    },
+    {
+      "id": "app_auth_require_admin",
+      "label": "require_admin()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": "require_admin()",
+      "source_file": "app/auth.py",
+      "source_location": "L133"
+    },
+    {
+      "id": "app_auth_verify_password",
+      "label": "verify_password()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": "verify_password()",
+      "source_file": "app/auth.py",
+      "source_location": "L79"
     },
     {
       "id": "app_auth_verify_user_password",
@@ -2370,7 +2370,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "verify_user_password()",
       "source_file": "app/auth.py",
@@ -2382,7 +2382,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "_authenticate_login()",
       "source_file": "app/main.py",
@@ -2394,7 +2394,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "change_own_password()",
       "source_file": "app/main.py",
@@ -2406,7 +2406,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "check()",
       "source_file": "app/main.py",
@@ -2418,7 +2418,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "create_user()",
       "source_file": "app/main.py",
@@ -2430,7 +2430,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "delete_user()",
       "source_file": "app/main.py",
@@ -2442,7 +2442,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "disable_user()",
       "source_file": "app/main.py",
@@ -2454,7 +2454,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "enable_user()",
       "source_file": "app/main.py",
@@ -2466,7 +2466,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "_ensure_another_active_admin()",
       "source_file": "app/main.py",
@@ -2478,7 +2478,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "get_account()",
       "source_file": "app/main.py",
@@ -2490,7 +2490,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "_get_managed_user()",
       "source_file": "app/main.py",
@@ -2502,7 +2502,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "get_user()",
       "source_file": "app/main.py",
@@ -2514,7 +2514,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "list_users()",
       "source_file": "app/main.py",
@@ -2526,7 +2526,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "login()",
       "source_file": "app/main.py",
@@ -2538,7 +2538,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "logout()",
       "source_file": "app/main.py",
@@ -2550,7 +2550,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "reset_user_password()",
       "source_file": "app/main.py",
@@ -2562,7 +2562,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "_serialize_user()",
       "source_file": "app/main.py",
@@ -2574,7 +2574,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "_set_user_active()",
       "source_file": "app/main.py",
@@ -2586,7 +2586,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "test_telegram_notification()",
       "source_file": "app/main.py",
@@ -2598,7 +2598,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "update_user()",
       "source_file": "app/main.py",
@@ -2610,7 +2610,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".test_real_startup_scheduler_health_docs_and_status()",
       "source_file": "tests/test_startup.py",
@@ -2622,7 +2622,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".test_endpoint_handles_unexpected_sender_failure_without_exposing_details()",
       "source_file": "tests/test_telegram.py",
@@ -2634,7 +2634,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".test_endpoint_reports_disabled_and_does_not_send()",
       "source_file": "tests/test_telegram.py",
@@ -2646,7 +2646,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".test_endpoint_requires_auth_and_sends_no_release_event()",
       "source_file": "tests/test_telegram.py",
@@ -2658,7 +2658,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".setup()",
       "source_file": "tests/test_users.py",
@@ -2670,7 +2670,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".teardown()",
       "source_file": "tests/test_users.py",
@@ -2682,7 +2682,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".test_admin_and_user_login_disabled_login_and_invalid_credentials()",
       "source_file": "tests/test_users.py",
@@ -2694,7 +2694,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".test_admin_only_routes_and_unauthenticated_rejection()",
       "source_file": "tests/test_users.py",
@@ -2706,7 +2706,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".test_bad_login_does_not_log_submitted_password()",
       "source_file": "tests/test_users.py",
@@ -2718,7 +2718,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".test_create_edit_password_reset_enable_disable_and_delete()",
       "source_file": "tests/test_users.py",
@@ -2730,7 +2730,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".test_existing_environment_admin_is_bootstrapped_without_replacing_release_data()",
       "source_file": "tests/test_users.py",
@@ -2742,7 +2742,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".test_last_admin_and_self_protection()",
       "source_file": "tests/test_users.py",
@@ -2754,7 +2754,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".test_password_change_and_validation_errors_never_echo_password()",
       "source_file": "tests/test_users.py",
@@ -3288,15 +3288,15 @@
       "source_location": ""
     },
     {
-      "id": "app_auth_rationale_37",
-      "label": "Resolve every request against current DB state so disable takes effect\u2026",
+      "id": "app_auth_rationale_23",
+      "label": "Allow the app's configured DB session factory to be injected in tests.",
       "_origin": "ast",
       "community": 1,
       "community_name": "main.py",
       "file_type": "rationale",
-      "norm_label": "resolve every request against current db state so disable takes effect...",
+      "norm_label": "allow the app's configured db session factory to be injected in tests.",
       "source_file": "app/auth.py",
-      "source_location": "L37"
+      "source_location": "L23"
     },
     {
       "id": "app_main_rationale_205",
@@ -3563,59 +3563,15 @@
       "source_location": "L1"
     },
     {
-      "id": "app_auth",
-      "label": "auth.py",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "auth.py",
-      "source_file": "app/auth.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "app_auth_py_request",
-      "label": "Request",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "request",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "app_create_admin",
       "label": "create_admin.py",
       "_origin": "ast",
       "community": 4,
-      "community_name": "auth.py",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": "create_admin.py",
       "source_file": "app/create_admin.py",
       "source_location": "L1"
-    },
-    {
-      "id": "httpauthorizationcredentials",
-      "label": "HTTPAuthorizationCredentials",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "httpauthorizationcredentials",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "app_auth_rationale_23",
-      "label": "Allow the app's configured DB session factory to be injected in tests.",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "auth.py",
-      "file_type": "rationale",
-      "norm_label": "allow the app's configured db session factory to be injected in tests.",
-      "source_file": "app/auth.py",
-      "source_location": "L23"
     },
     {
       "id": "basesettings",
@@ -3640,13 +3596,46 @@
       "source_location": "L29"
     },
     {
+      "id": "app_auth",
+      "label": "auth.py",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": "auth.py",
+      "source_file": "app/auth.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "app_auth_py_request",
+      "label": "Request",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": "request",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "delete",
       "label": "delete",
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "delete",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "httpauthorizationcredentials",
+      "label": "HTTPAuthorizationCredentials",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": "httpauthorizationcredentials",
       "source_file": "",
       "source_location": ""
     },
@@ -3655,7 +3644,7 @@
       "label": "patch",
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "patch",
       "source_file": "",
@@ -3666,18 +3655,29 @@
       "label": "post",
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "post",
       "source_file": "",
       "source_location": ""
     },
     {
+      "id": "app_auth_rationale_37",
+      "label": "Resolve every request against current DB state so disable takes effect\u2026",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "auth.py",
+      "file_type": "rationale",
+      "norm_label": "resolve every request against current db state so disable takes effect...",
+      "source_file": "app/auth.py",
+      "source_location": "L37"
+    },
+    {
       "id": "app_main_rationale_154",
       "label": "DB user credentials first; retain the configured admin as bootstrap fallback.",
       "_origin": "ast",
       "community": 8,
-      "community_name": "Principal",
+      "community_name": "auth.py",
       "file_type": "rationale",
       "norm_label": "db user credentials first; retain the configured admin as bootstrap fallback.",
       "source_file": "app/main.py",
@@ -4171,6 +4171,18 @@
       "type": "external"
     },
     {
+      "id": "hashlib",
+      "label": "hashlib",
+      "_origin": "semantic",
+      "community": 0,
+      "community_name": "test_telegram.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "hashlib",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "pathlib",
       "label": "pathlib",
       "_origin": "semantic",
@@ -4299,18 +4311,6 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "contextlib",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "fastapi_exceptions",
-      "label": "fastapi_exceptions",
-      "_origin": "semantic",
-      "community": 1,
-      "community_name": "main.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "fastapi_exceptions",
       "source_file": "",
       "type": "external"
     },
@@ -4483,10 +4483,22 @@
       "type": "external"
     },
     {
+      "id": "getpass",
+      "label": "getpass",
+      "_origin": "semantic",
+      "community": 4,
+      "community_name": "WebDashboardTests",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "getpass",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "fastapi_security",
       "label": "fastapi_security",
       "_origin": "semantic",
-      "community": 4,
+      "community": 8,
       "community_name": "auth.py",
       "external": true,
       "file_type": "concept",
@@ -4495,34 +4507,10 @@
       "type": "external"
     },
     {
-      "id": "getpass",
-      "label": "getpass",
-      "_origin": "semantic",
-      "community": 4,
-      "community_name": "auth.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "getpass",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "hashlib",
-      "label": "hashlib",
-      "_origin": "semantic",
-      "community": 4,
-      "community_name": "auth.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "hashlib",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "hmac",
       "label": "hmac",
       "_origin": "semantic",
-      "community": 4,
+      "community": 8,
       "community_name": "auth.py",
       "external": true,
       "file_type": "concept",
@@ -4534,7 +4522,7 @@
       "id": "jwt",
       "label": "jwt",
       "_origin": "semantic",
-      "community": 4,
+      "community": 8,
       "community_name": "auth.py",
       "external": true,
       "file_type": "concept",
@@ -4546,7 +4534,7 @@
       "id": "secrets",
       "label": "secrets",
       "_origin": "semantic",
-      "community": 4,
+      "community": 8,
       "community_name": "auth.py",
       "external": true,
       "file_type": "concept",
@@ -4555,22 +4543,10 @@
       "type": "external"
     },
     {
-      "id": "sqlalchemy_exc",
-      "label": "sqlalchemy_exc",
-      "_origin": "semantic",
-      "community": 4,
-      "community_name": "auth.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "sqlalchemy_exc",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "urllib_parse",
       "label": "urllib_parse",
       "_origin": "semantic",
-      "community": 4,
+      "community": 8,
       "community_name": "auth.py",
       "external": true,
       "file_type": "concept",
@@ -4599,6 +4575,28 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "httpx",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "fastapi_exceptions",
+      "label": "fastapi_exceptions",
+      "community": 1,
+      "community_name": "main.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "fastapi_exceptions",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "sqlalchemy_exc",
+      "label": "sqlalchemy_exc",
+      "community": 8,
+      "community_name": "auth.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "sqlalchemy_exc",
       "source_file": "",
       "type": "external"
     }
@@ -5405,7 +5403,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/models.py",
-      "source_location": "L113",
+      "source_location": "L114",
       "weight": 1.0
     },
     {
@@ -5417,7 +5415,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/models.py",
-      "source_location": "L98",
+      "source_location": "L99",
       "weight": 1.0
     },
     {
@@ -8117,7 +8115,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/models.py",
-      "source_location": "L86",
+      "source_location": "L87",
       "weight": 1.0
     },
     {
@@ -8718,6 +8716,18 @@
       "context": "import",
       "source_file": "app/main.py",
       "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "app_models",
+      "target": "hashlib",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "app/models.py",
+      "source_location": "L2",
       "weight": 1.0
     },
     {
@@ -10637,7 +10647,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "app/models.py",
-      "source_location": "L2",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -10649,7 +10659,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "app/models.py",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -10661,7 +10671,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "app/models.py",
-      "source_location": "L4",
+      "source_location": "L5",
       "weight": 1.0
     },
     {
@@ -10673,7 +10683,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "app/models.py",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -10685,7 +10695,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "app/models.py",
-      "source_location": "L6",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -13459,13 +13469,24 @@
     },
     {
       "source": "app_models",
+      "target": "app_models_base",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/models.py",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "app_models",
       "target": "app_models_user",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/models.py",
-      "source_location": "L13",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -13476,7 +13497,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/models.py",
-      "source_location": "L27",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
@@ -13487,7 +13508,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/models.py",
-      "source_location": "L44",
+      "source_location": "L45",
       "weight": 1.0
     },
     {
@@ -13498,7 +13519,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/models.py",
-      "source_location": "L58",
+      "source_location": "L59",
       "weight": 1.0
     },
     {
@@ -13509,7 +13530,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/models.py",
-      "source_location": "L73",
+      "source_location": "L74",
       "weight": 1.0
     },
     {
@@ -13520,18 +13541,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/models.py",
-      "source_location": "L87",
-      "weight": 1.0
-    },
-    {
-      "source": "app_models",
-      "target": "app_models_base",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "app/models.py",
-      "source_location": "L9",
+      "source_location": "L88",
       "weight": 1.0
     },
     {
@@ -13542,7 +13552,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/models.py",
-      "source_location": "L97",
+      "source_location": "L98",
       "weight": 1.0
     },
     {
@@ -14466,7 +14476,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/models.py",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -14477,7 +14487,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/models.py",
-      "source_location": "L27",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
@@ -14488,7 +14498,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/models.py",
-      "source_location": "L58",
+      "source_location": "L59",
       "weight": 1.0
     },
     {
@@ -14499,7 +14509,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/models.py",
-      "source_location": "L44",
+      "source_location": "L45",
       "weight": 1.0
     },
     {
@@ -14510,7 +14520,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/models.py",
-      "source_location": "L13",
+      "source_location": "L14",
       "weight": 1.0
     },
     {

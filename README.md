@@ -174,7 +174,10 @@ To add an OS, create a provider under `app/providers/`, implement `latest()`, an
 
 ## Authentication
 
-Swagger and the dashboard use JWT authentication. Sign in through `POST /api/v1/auth/token`; browser login stores the JWT in an HTTP-only cookie. Protected API calls accept a bearer token. The legacy `API_KEY` remains available for server-to-server integrations.
+WatchTower supports Admin and User roles. On first startup, the existing `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH`, and `ADMIN_PASSWORD_SALT` configuration bootstraps an administrator row in the existing SQLite database; later account and password changes are stored there. The migration adds a `users` table without replacing or deleting existing release data. Keep a database backup before deploying application upgrades.
+
+Administrators can manage accounts at **User Management** and change their own password under **My Account**. Users can view dashboard, OS, release, and event data, and change their own password. Settings, manual provider checks, notification tests, and account management require an active Admin role. Disabled accounts are rejected at login and their existing JWT sessions stop authorizing requests immediately.
+
+Passwords use the existing PBKDF2-HMAC-SHA256 scheme with a per-password random salt. WatchTower never returns password hashes from its user APIs. Protected APIs accept bearer JWTs; browser login stores the JWT in an HTTP-only cookie with the existing HTTPS secure-cookie behavior. Cookie-authenticated state changes retain same-origin validation. The legacy `API_KEY` remains available for server-to-server integrations.
 
 <img width="1910" height="888" alt="Screenshot 2026-10-03 at 13 06 00" src="https://github.com/user-attachments/assets/72654867-3d17-4f5f-8493-6faa44a9ed4c" />
-

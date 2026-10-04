@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}My Account · WatchTower{% endblock %}
+{% block content %}
+  <section class="page-heading"><div><span class="eyebrow">ACCOUNT</span><h1>My Account</h1><p>Review your account and update your password.</p></div></section>
+  <section class="settings-grid">
+    <article class="panel">
+      <div class="panel-heading"><div><h2>Account information</h2><p>Your WatchTower access</p></div></div>
+      <div class="settings-row"><div><strong>Username</strong></div><strong id="account-username">{{ current_user }}</strong></div>
+      <div class="settings-row"><div><strong>Role</strong></div><strong id="account-role">{{ current_role|title }}</strong></div>
+      <div class="settings-row"><div><strong>Account status</strong></div><strong id="account-status">Active</strong></div>
+      <div class="settings-row"><div><strong>Created</strong></div><strong id="account-created">—</strong></div>
+      <div class="settings-row"><div><strong>Last login</strong></div><strong id="account-last-login">—</strong></div>
+    </article>
+    <article class="panel">
+      <div class="panel-heading"><div><h2>Change password</h2><p>Use at least 12 characters.</p></div></div>
+      <form id="account-password-form" class="stack-form form-panel">
+        <label for="current-password">Current password</label><input id="current-password" type="password" autocomplete="current-password" required>
+        <label for="account-new-password">New password</label><input id="account-new-password" type="password" minlength="12" maxlength="256" autocomplete="new-password" required>
+        <label for="account-confirm-password">Confirm new password</label><input id="account-confirm-password" type="password" minlength="12" maxlength="256" autocomplete="new-password" required>
+        <p class="form-error" id="account-password-error" role="alert" hidden></p>
+        <button class="button button-primary" type="submit">Change password</button>
+      </form>
+    </article>
+  </section>
+{% endblock %}

@@ -21,11 +21,13 @@
         <a class="nav-link {% if active == 'os' %}active{% endif %}" href="/os"><span>▦</span>Operating Systems</a>
         <a class="nav-link {% if active == 'releases' %}active{% endif %}" href="/releases"><span>↗</span>Releases</a>
         <a class="nav-link {% if active == 'events' %}active{% endif %}" href="/events"><span>◉</span>Events</a>
-        <a class="nav-link {% if active == 'settings' %}active{% endif %}" href="/settings"><span>⚙</span>Settings</a>
+        {% if is_admin %}<a class="nav-link {% if active == 'users' %}active{% endif %}" href="/users"><span>♙</span>User Management</a>{% endif %}
+        <a class="nav-link {% if active == 'account' %}active{% endif %}" href="/account"><span>◉</span>My Account</a>
+        {% if is_admin %}<a class="nav-link {% if active == 'settings' %}active{% endif %}" href="/settings"><span>⚙</span>Settings</a>{% endif %}
       </nav>
       <div class="sidebar-bottom">
         <div class="sidebar-status"><span class="status-dot" aria-hidden="true"></span><span>Release monitoring</span></div>
-        <span class="muted small">Signed in as {{ current_user }}</span>
+        <span class="muted small">Signed in as {{ current_user }} · {{ current_role|title }}</span>
         <form action="/logout" method="post"><button class="nav-link logout-button" type="submit"><span>↪</span>Log out</button></form>
       </div>
     </aside>

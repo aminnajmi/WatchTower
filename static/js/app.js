@@ -475,6 +475,172 @@
     });
   }
 
+  async function loadUsers() {
+    const body = $('#users-table-body');
+    if (!body) return;
+    try {
+      const users = await api('/api/v1/users');
+      body.innerHTML = users.length ? users.map(user => `<tr>
+        <td><strong>${escapeHtml(user.username)}</strong></td>
+        <td>${escapeHtml(user.role === 'admin' ? 'Admin' : 'User')}</td>
+        <td>${renderStatus(user.is_active ? 'Active' : 'Disabled', user.is_active ? 'good' : 'unknown')}</td>
+        <td title="${escapeHtml(dateText(user.created_at))}">${escapeHtml(user.created_at ? relativeTime(user.created_at) : '—')}</td>
+        <td title="${escapeHtml(dateText(user.last_login_at))}">${escapeHtml(user.last_login_at ? relativeTime(user.last_login_at) : 'Never')}</td>
+        <td><div class="user-actions">
+          <button type="button" class="button button-quiet" data-user-action="edit" data-user-id="${Number(user.id)}">Edit</button>
+          <button type="button" class="button button-quiet" data-user-action="toggle" data-user-id="${Number(user.id)}" data-active="${user.is_active ? 'true' : 'false'}">${user.is_active ? 'Disable' : 'Enable'}</button>
+          <button type="button" class="button button-quiet" data-user-action="reset" data-user-id="${Number(user.id)}">Reset password</button>
+          <button type="button" class="button button-quiet user-delete" data-user-action="delete" data-user-id="${Number(user.id)}">Delete</button>
+        </div></td></tr>`).join('') : '<tr><td colspan="6" class="empty-state">No users are configured.</td></tr>';
+      body.querySelectorAll('[data-user-action]').forEach(button => button.addEventListener('click', () => handleUserAction(button, users)));
+    } catch (error) {
+      body.innerHTML = `<tr><td colspan="6" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
+    }
+  }
+
+  function initializeUserManagement() {
+    const dialog = $('#user-dialog');
+    const form = $('#user-form');
+    const error = $('#user-form-error');
+    if (!dialog || !form) return;
+    const passwords = $('#new-user-passwords');
+    const passwordInputs = [$('#managed-password'), $('#managed-confirm-password')];
+    const showError = (box, message) => { box.textContent = message; box.hidden = !message; };
+    const close = () => dialog.close();
+    $('#add-user').addEventListener('click', () => {
+      form.reset();
+      $('#edit-user-id').value = '';
+      $('#managed-active').checked = true;
+      $('#user-dialog-title').textContent = 'Add user';
+      $('#user-dialog-help').textContent = 'Create a WatchTower account.';
+      $('#user-form-submit').textContent = 'Create user';
+      $('#managed-username').disabled = false;
+      passwords.hidden = false;
+      passwordInputs.forEach(input => { input.required = true; input.disabled = false; });
+      showError(error, '');
+      dialog.showModal();
+    });
+    $('#user-dialog-close').addEventListener('click', close);
+    $('#user-dialog-cancel').addEventListener('click', close);
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      showError(error, '');
+      const userId = $('#edit-user-id').value;
+      const username = $('#managed-username').value.trim();
+      const role = $('#managed-role').value;
+      const is_active = $('#managed-active').checked;
+      try {
+        if (userId) {
+          await api(`/api/v1/users/${userId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, role, is_active }) });
+        } else {
+          const password = $('#managed-password').value;
+          const confirm_password = $('#managed-confirm-password').value;
+          if (password !== confirm_password) throw new Error('Password confirmation does not match.');
+          await api('/api/v1/users', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password, confirm_password, role, is_active }) });
+        }
+        close();
+        form.reset();
+        toast(userId ? 'User updated.' : 'User created.');
+        await loadUsers();
+      } catch (requestError) { showError(error, requestError.message); }
+    });
+
+    const resetDialog = $('#reset-password-dialog');
+    const resetForm = $('#reset-password-form');
+    const resetError = $('#reset-password-error');
+    const closeReset = () => resetDialog.close();
+    $('#reset-dialog-close').addEventListener('click', closeReset);
+    $('#reset-dialog-cancel').addEventListener('click', closeReset);
+    resetForm.addEventListener('submit', async event => {
+      event.preventDefault();
+      showError(resetError, '');
+      const id = $('#reset-user-id').value;
+      const new_password = $('#reset-new-password').value;
+      const confirm_password = $('#reset-confirm-password').value;
+      if (new_password !== confirm_password) { showError(resetError, 'Password confirmation does not match.'); return; }
+      try {
+        await api(`/api/v1/users/${id}/reset-password`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ new_password, confirm_password }) });
+        resetForm.reset();
+        closeReset();
+        toast('Password reset successfully.');
+      } catch (requestError) { showError(resetError, requestError.message); }
+    });
+  }
+
+  async function handleUserAction(button, users) {
+    const id = button.dataset.userId;
+    const user = users.find(item => String(item.id) === String(id));
+    if (!user) return;
+    const dialog = $('#user-dialog');
+    if (button.dataset.userAction === 'edit') {
+      const form = $('#user-form');
+      form.reset();
+      $('#edit-user-id').value = id;
+      $('#managed-username').value = user.username;
+      $('#managed-username').disabled = false;
+      $('#managed-role').value = user.role;
+      $('#managed-active').checked = user.is_active;
+      $('#new-user-passwords').hidden = true;
+      [$('#managed-password'), $('#managed-confirm-password')].forEach(input => { input.required = false; input.disabled = true; });
+      $('#user-dialog-title').textContent = `Edit ${user.username}`;
+      $('#user-dialog-help').textContent = 'Update the username, role, or account status.';
+      $('#user-form-submit').textContent = 'Save changes';
+      $('#user-form-error').hidden = true;
+      dialog.showModal();
+      return;
+    }
+    if (button.dataset.userAction === 'toggle') {
+      const enable = button.dataset.active !== 'true';
+      try {
+        await api(`/api/v1/users/${id}/${enable ? 'enable' : 'disable'}`, { method: 'POST' });
+        toast(enable ? 'User enabled.' : 'User disabled.');
+        await loadUsers();
+      } catch (error) { toast(error.message); }
+      return;
+    }
+    if (button.dataset.userAction === 'reset') {
+      $('#reset-password-form').reset();
+      $('#reset-user-id').value = id;
+      $('#reset-password-title').textContent = `Reset ${user.username}'s password`;
+      $('#reset-password-error').hidden = true;
+      $('#reset-password-dialog').showModal();
+      return;
+    }
+    if (button.dataset.userAction === 'delete' && window.confirm(`Delete the account “${user.username}”? This cannot be undone.`)) {
+      try {
+        await api(`/api/v1/users/${id}`, { method: 'DELETE' });
+        toast('User deleted.');
+        await loadUsers();
+      } catch (error) { toast(error.message); }
+    }
+  }
+
+  async function initializeAccount() {
+    try {
+      const user = await api('/api/v1/account');
+      $('#account-username').textContent = user.username;
+      $('#account-role').textContent = user.role === 'admin' ? 'Admin' : 'User';
+      $('#account-status').textContent = user.is_active ? 'Active' : 'Disabled';
+      $('#account-created').textContent = user.created_at ? dateText(user.created_at) : 'Managed by server configuration';
+      $('#account-last-login').textContent = user.last_login_at ? dateText(user.last_login_at) : 'Not recorded';
+    } catch (error) { toast(error.message); }
+    const form = $('#account-password-form');
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const box = $('#account-password-error');
+      box.hidden = true;
+      const current_password = $('#current-password').value;
+      const new_password = $('#account-new-password').value;
+      const confirm_password = $('#account-confirm-password').value;
+      if (new_password !== confirm_password) { box.textContent = 'Password confirmation does not match.'; box.hidden = false; return; }
+      try {
+        await api('/api/v1/account/change-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ current_password, new_password, confirm_password }) });
+        form.reset();
+        toast('Password changed successfully.');
+      } catch (error) { box.textContent = error.message; box.hidden = false; }
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     initializeTheme();
     initializeMobileMenu();
@@ -484,6 +650,8 @@
     if ($('#release-filters')) initializeReleases();
     if ($('#event-filters')) initializeEvents();
     if ($('#settings-providers')) initializeSettings();
+    if ($('#users-table-body')) { initializeUserManagement(); loadUsers(); }
+    if ($('#account-password-form')) initializeAccount();
   });
 
   window.addEventListener('load', () => {
