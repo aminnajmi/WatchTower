@@ -105,6 +105,27 @@ class TelegramClientTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("Telegram notification failed", "\n".join(captured.output))
         self.assertNotIn("never-log-this-token", "\n".join(captured.output))
 
+    async def test_network_exception_url_does_not_leak_bot_token(self):
+        import httpx
+        from app.notifications import telegram
+        from app.notifications import notify
+        secret = "network-error-secret-token"
+        client = FakeAsyncClient(FakeResponse())
+        client.post.side_effect = httpx.ConnectError(
+            f"connection failed: https://api.telegram.org/bot{secret}/sendMessage"
+        )
+        with patch.object(settings, "telegram_enabled", True), \
+             patch.object(settings, "telegram_bot_token", secret), \
+             patch.object(settings, "telegram_chat_id", "1701643905"), \
+             patch.object(telegram.httpx, "AsyncClient", return_value=client), \
+             patch.object(notifications, "send_discord", new=AsyncMock()), \
+             self.assertLogs("app.notifications.telegram", level=logging.WARNING) as captured:
+            result = await notify("test")
+
+        self.assertFalse(result[0])
+        self.assertNotIn(secret, "\n".join(captured.output))
+        self.assertNotIn(secret, str(result))
+
     async def test_service_only_notifies_once_for_new_major_release(self):
         with tempfile.TemporaryDirectory() as directory:
             engine = create_engine(f"sqlite:///{Path(directory) / 'telegram.db'}")

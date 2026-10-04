@@ -3,16 +3,17 @@
   "1": "main.py",
   "2": "Release",
   "3": "app.js",
-  "4": "auth.py",
+  "4": "WebDashboardTests",
   "5": "Graphify Instructions",
   "6": "ProductionConfigTests",
   "7": "Dashboard Templates and Docs",
-  "8": "Principal",
+  "8": "DeploymentHealthCheckTests",
   "9": "TelegramClientTests",
   "10": "schemas.py",
   "11": "SchedulerExecutionTests",
   "12": "Compose Configuration",
   "13": "Container Deployment",
   "14": "Python Dependencies",
-  "15": "scheduler.py"
+  "15": "scheduler.py",
+  "17": "deployment-health-check.sh"
 }

@@ -96,29 +96,21 @@ jobs:
             /opt/WatchTower/deploy.sh >/dev/null 2>&1
             result=$?
             if [ "$result" -ne 0 ]; then
-              printf 'WATCHTOWER_RESULT=failure\nWATCHTOWER_STEP=Pull, build, or restart\nWATCHTOWER_ERROR=deploy.sh exited with status %s\n' "$result"
+              if [ -f /opt/WatchTower/scripts/deployment-health-check.sh ]; then
+                sh /opt/WatchTower/scripts/deployment-health-check.sh --diagnose
+              else
+                docker compose ps 2>&1 || true
+              fi
+              printf 'WATCHTOWER_RESULT=failure\nWATCHTOWER_STEP=Pull, build, or restart\nWATCHTOWER_ERROR=deploy.sh exited with status %s\nWATCHTOWER_IMAGE=failed or unknown\nWATCHTOWER_CONTAINER=unknown\nWATCHTOWER_DOCKER_HEALTH=unknown\nWATCHTOWER_HTTP=not run\n' "$result"
               exit 0
             fi
 
-            container_id=$(docker compose ps -q watchtower 2>/dev/null)
-            if [ -z "$container_id" ]; then
-              printf 'WATCHTOWER_RESULT=failure\nWATCHTOWER_STEP=Container status\nWATCHTOWER_ERROR=Compose did not report a WatchTower container\nWATCHTOWER_IMAGE=built\nWATCHTOWER_CONTAINER=not found\nWATCHTOWER_HEALTH=not run\n'
-              exit 0
-            fi
-            container_status=$(docker inspect --format '{{.State.Status}}' "$container_id" 2>/dev/null)
-            if [ "$container_status" != "running" ]; then
-              printf 'WATCHTOWER_RESULT=failure\nWATCHTOWER_STEP=Container status\nWATCHTOWER_ERROR=WatchTower container status was %s\nWATCHTOWER_IMAGE=built\nWATCHTOWER_CONTAINER=%s\nWATCHTOWER_HEALTH=not run\n' "${container_status:-unknown}" "${container_status:-unknown}"
+            if [ ! -f /opt/WatchTower/scripts/deployment-health-check.sh ]; then
+              printf 'WATCHTOWER_RESULT=failure\nWATCHTOWER_STEP=Health-check script\nWATCHTOWER_ERROR=Deployment health-check script is missing\nWATCHTOWER_IMAGE=built\nWATCHTOWER_CONTAINER=unknown\nWATCHTOWER_DOCKER_HEALTH=unknown\nWATCHTOWER_HTTP=not run\n'
               exit 0
             fi
 
-            docker exec "$container_id" python -c "import urllib.request; r=urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=10); assert r.status == 200" >/dev/null 2>&1
-            result=$?
-            if [ "$result" -ne 0 ]; then
-              printf 'WATCHTOWER_RESULT=failure\nWATCHTOWER_STEP=HTTP health check\nWATCHTOWER_ERROR=/health did not return HTTP 200 (check exited with status %s)\nWATCHTOWER_IMAGE=built\nWATCHTOWER_CONTAINER=running\nWATCHTOWER_HEALTH=failed\n' "$result"
-              exit 0
-            fi
-
-            printf 'WATCHTOWER_RESULT=success\nWATCHTOWER_STEP=none\nWATCHTOWER_ERROR=none\nWATCHTOWER_IMAGE=built\nWATCHTOWER_CONTAINER=running\nWATCHTOWER_HEALTH=passed\n'
+            sh /opt/WatchTower/scripts/deployment-health-check.sh
             exit 0
 
       - name: Record deployment result
@@ -135,7 +127,7 @@ jobs:
           output = os.environ.get("DEPLOY_OUTPUT", "")
           values = {}
           for line in output.splitlines():
-              match = re.search(r"WATCHTOWER_(RESULT|STEP|ERROR|IMAGE|CONTAINER|HEALTH)=([^\r\n]*)", line)
+              match = re.search(r"WATCHTOWER_(RESULT|STEP|ERROR|IMAGE|CONTAINER|DOCKER_HEALTH|HTTP)=([^\r\n]*)", line)
               if match:
                   values[match.group(1)] = match.group(2).strip()
 
@@ -146,24 +138,27 @@ jobs:
                   "ERROR": "SSH action failed before it returned a deployment result; review the deployment step logs",
                   "IMAGE": "unknown",
                   "CONTAINER": "unknown",
-                  "HEALTH": "not run",
+                  "DOCKER_HEALTH": "unknown",
+                  "HTTP": "not run",
               }
           if values.get("RESULT") == "failure":
               values.setdefault("IMAGE", "unknown")
               values.setdefault("CONTAINER", "unknown")
-              values.setdefault("HEALTH", "not run")
+              values.setdefault("DOCKER_HEALTH", "unknown")
+              values.setdefault("HTTP", "not run")
           if not success and not values:
               values = {
                   "STEP": "Deployment result collection",
                   "ERROR": "No deployment result was returned by the remote script",
                   "IMAGE": "unknown",
                   "CONTAINER": "unknown",
-                  "HEALTH": "not run",
+                  "DOCKER_HEALTH": "unknown",
+                  "HTTP": "not run",
               }
 
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output_file:
               output_file.write(f"success={'true' if success else 'false'}\n")
-              for key in ("STEP", "ERROR", "IMAGE", "CONTAINER", "HEALTH"):
+              for key in ("STEP", "ERROR", "IMAGE", "CONTAINER", "DOCKER_HEALTH", "HTTP"):
                   value = values.get(key, "unknown").replace("\n", " ").replace("\r", " ")
                   output_file.write(f"{key.lower()}={value}\n")
           PY
@@ -179,7 +174,8 @@ jobs:
           ERROR_INFO: ${{ steps.result.outputs.error }}
           IMAGE_STATUS: ${{ steps.result.outputs.image }}
           CONTAINER_STATUS: ${{ steps.result.outputs.container }}
-          HEALTH_STATUS: ${{ steps.result.outputs.health }}
+          DOCKER_HEALTH_STATUS: ${{ steps.result.outputs.docker_health }}
+          HTTP_STATUS: ${{ steps.result.outputs.http }}
           BRANCH: ${{ github.ref_name }}
           COMMIT_SHA: ${{ github.sha }}
           COMMIT_AUTHOR: ${{ github.event.head_commit.author.name || github.actor }}
@@ -224,7 +220,8 @@ jobs:
                   "Docker:\n"
                   f"✓ Image built: {esc('IMAGE_STATUS')}\n"
                   f"✓ Container: {esc('CONTAINER_STATUS')}\n"
-                  f"✓ Health check: {esc('HEALTH_STATUS')}\n\n"
+                  f"✓ Docker health: {esc('DOCKER_HEALTH_STATUS')}\n"
+                  f"✓ HTTP /health: {esc('HTTP_STATUS')}\n\n"
                   f"Duration: {duration}\n\n"
                   f"Run: <a href=\"{esc('RUN_URL')}\">Open GitHub Actions run</a>"
               )
@@ -240,7 +237,8 @@ jobs:
                   f"Error: {esc('ERROR_INFO')[:700]}\n\n"
                   f"Docker image/build: {esc('IMAGE_STATUS')}\n"
                   f"Container: {esc('CONTAINER_STATUS')}\n"
-                  f"Health check: {esc('HEALTH_STATUS')}\n\n"
+                  f"Docker health: {esc('DOCKER_HEALTH_STATUS')}\n"
+                  f"HTTP /health: {esc('HTTP_STATUS')}\n\n"
                   f"Duration: {duration}\n\n"
                   f"Run: <a href=\"{esc('RUN_URL')}\">Open GitHub Actions run</a>"
               )
@@ -265,7 +263,8 @@ jobs:
           ERROR_INFO: ${{ steps.result.outputs.error }}
           IMAGE_STATUS: ${{ steps.result.outputs.image }}
           CONTAINER_STATUS: ${{ steps.result.outputs.container }}
-          HEALTH_STATUS: ${{ steps.result.outputs.health }}
+          DOCKER_HEALTH_STATUS: ${{ steps.result.outputs.docker_health }}
+          HTTP_STATUS: ${{ steps.result.outputs.http }}
           BRANCH: ${{ github.ref_name }}
           COMMIT_SHA: ${{ github.sha }}
           SERVER: ${{ secrets.SERVER_HOST }}
@@ -289,7 +288,8 @@ jobs:
               f"- **Server:** `{md(os.environ.get('SERVER', ''))}`",
               f"- **Docker image/build:** {md(os.environ.get('IMAGE_STATUS', 'unknown'))}",
               f"- **Container:** {md(os.environ.get('CONTAINER_STATUS', 'unknown'))}",
-              f"- **Health check:** {md(os.environ.get('HEALTH_STATUS', 'unknown'))}",
+              f"- **Docker health:** {md(os.environ.get('DOCKER_HEALTH_STATUS', 'unknown'))}",
+              f"- **HTTP /health:** {md(os.environ.get('HTTP_STATUS', 'unknown'))}",
           ]
           if not success:
               rows.extend([f"- **Failed step:** {md(os.environ.get('FAILED_STEP', 'unknown'))}", f"- **Error:** {md(os.environ.get('ERROR_INFO', 'unknown'))}"])

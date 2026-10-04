@@ -36,9 +36,9 @@
     "semantic_hash": ""
   },
   "app/models.py": {
-    "mtime": 1791120443.0441744,
-    "seen": 1791121535.8630688,
-    "ast_hash": "3a5082521197514266da9690b5788732",
+    "mtime": 1791121599.1825337,
+    "seen": 1791121655.373872,
+    "ast_hash": "4a1a1f8bd39eef601961895220078f47",
     "semantic_hash": ""
   },
   "app/notifications/__init__.py": {
@@ -300,15 +300,15 @@
     "semantic_hash": ""
   },
   "tests/test_telegram.py": {
-    "mtime": 1791121030.6611512,
-    "seen": 1791121535.863107,
-    "ast_hash": "bebcf2babbca6969834e4c807d96280e",
+    "mtime": 1791123881.7314816,
+    "seen": 1791124004.915702,
+    "ast_hash": "e3867ca3781c3767fc13addbe6475d2e",
     "semantic_hash": ""
   },
   "tests/test_scheduler.py": {
-    "mtime": 1790933723.0,
-    "seen": 1791016439.27085,
-    "ast_hash": "be63732750332640df0b8dd675b360b0",
+    "mtime": 1791124294.7798488,
+    "seen": 1791124358.2919161,
+    "ast_hash": "0d1a69401ab1a9eaa7580b6e53805bb5",
     "semantic_hash": ""
   },
   "tests/test_production_config.py": {
@@ -324,9 +324,9 @@
     "semantic_hash": ""
   },
   ".github/workflows/deploy.yml": {
-    "mtime": 1791044871.675935,
-    "seen": 1791045623.31636,
-    "ast_hash": "e7ce71885b36e47ac8e3eee2a50b27b5",
+    "mtime": 1791123563.1717603,
+    "seen": 1791124004.915721,
+    "ast_hash": "ad302304c844d06e3f3b002213e73bc6",
     "semantic_hash": ""
   },
   "tests/test_users.py": {
@@ -345,6 +345,18 @@
     "mtime": 1791121273.167877,
     "seen": 1791121535.863147,
     "ast_hash": "0d7e1a9b1f6c137198b192b1205a3874",
+    "semantic_hash": ""
+  },
+  "scripts/deployment-health-check.sh": {
+    "mtime": 1791124421.6908338,
+    "seen": 1791124550.6486819,
+    "ast_hash": "579830a9e69ccc80bef8244feabc3ca2",
+    "semantic_hash": ""
+  },
+  "tests/test_deployment_health.py": {
+    "mtime": 1791124462.2244694,
+    "seen": 1791124550.648688,
+    "ast_hash": "602e1fcafe2cfefbc494092ce7492080",
     "semantic_hash": ""
   }
 }

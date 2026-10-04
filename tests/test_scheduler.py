@@ -186,9 +186,12 @@ class SchedulerExecutionTests(unittest.TestCase):
         providers = {slug: FakeProvider(release) for slug, release in self.releases.items()}
         for _client, _headers, _job in self._run_with_scheduler(providers, failing_check):
             with self.assertLogs("app.scheduler", level="ERROR") as captured:
-                self._wait_until(lambda: scheduler_module.last_scheduled_run_status == "error")
+                self._wait_until(
+                    lambda: scheduler_module.last_scheduled_run_status == "error"
+                    and any(record.getMessage() == "SCHEDULER JOB FAILED" for record in captured.records)
+                )
             self.assertEqual(scheduler_module.last_scheduled_run_error, "RuntimeError")
-            self.assertIn("SCHEDULER JOB FAILED", "\n".join(captured.output))
+            self.assertTrue(any(record.getMessage() == "SCHEDULER JOB FAILED" for record in captured.records))
             self.assertGreaterEqual(failing_check.await_count, 1)
             self.assertEqual(scheduler_module.last_scheduled_run_status, "error")
             self.assertTrue(scheduler_module.get_scheduler().running)
