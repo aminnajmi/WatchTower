@@ -7,5 +7,5 @@ __pycache__/
 data/*.db
 data/*.sqlite
 data/*.sqlite3
-
+deploy.sh
 os_tracker.db

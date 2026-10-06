@@ -1,5 +1,5 @@
 {
-  "0": "OSRelease",
+  "0": "test_telegram.py",
   "1": "main.py",
   "2": "Release",
   "3": "app.js",
@@ -8,14 +8,12 @@
   "6": "ProductionConfigTests",
   "7": "Dashboard Templates and Docs",
   "8": "DeploymentHealthCheckTests",
-  "9": "NotificationCenterTests",
+  "9": "TelegramClientTests",
   "10": "schemas.py",
-  "11": "create_access_token",
+  "11": "SchedulerExecutionTests",
   "12": "Compose Configuration",
   "13": "Container Deployment",
   "14": "Python Dependencies",
   "15": "scheduler.py",
-  "16": "notifications-center.js",
-  "17": "deployment-health-check.sh",
-  "18": "notifications.js"
+  "17": "deployment-health-check.sh"
 }

@@ -16,6 +16,7 @@ class ProductionConfigTests(unittest.TestCase):
             "admin_password_hash": "ab" * 32,
             "admin_password_salt": "cd" * 16,
             "allowed_hosts": "tracker.example.com",
+            "openclaw_notification_api_key": "notification-api-key-for-production-123456",
         }
         values.update(overrides)
         return Settings(**values)
@@ -31,6 +32,11 @@ class ProductionConfigTests(unittest.TestCase):
     def test_production_configuration_requires_enabled_telegram_credentials(self):
         config = self._valid_production_settings(telegram_enabled=True)
         with self.assertRaisesRegex(RuntimeError, "TELEGRAM_BOT_TOKEN.*TELEGRAM_CHAT_ID"):
+            config.validate_production_settings()
+
+    def test_production_configuration_requires_openclaw_notification_key(self):
+        config = self._valid_production_settings(openclaw_notification_api_key="")
+        with self.assertRaisesRegex(RuntimeError, "OPENCLAW_NOTIFICATION_API_KEY"):
             config.validate_production_settings()
 
     def test_sqlite_directory_is_created_for_nested_database_path(self):

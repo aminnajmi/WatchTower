@@ -9,6 +9,7 @@ class Settings(BaseSettings):
 
     # Legacy machine-to-machine API key. Keep this for scripts/integrations.
     api_key: str = ""
+    openclaw_notification_api_key: str = ""
 
     # JWT authentication for users/Swagger.
     jwt_secret: str = ""
@@ -43,6 +44,8 @@ class Settings(BaseSettings):
                 bytes.fromhex(self.admin_password_salt)
             except ValueError:
                 missing.append("admin password hash and salt must be hexadecimal")
+        if len(self.openclaw_notification_api_key) < 32:
+            missing.append("OPENCLAW_NOTIFICATION_API_KEY must contain at least 32 characters")
         hosts = [host.strip() for host in self.allowed_hosts.split(",") if host.strip()]
         if not hosts or "*" in hosts:
             missing.append("ALLOWED_HOSTS must list the deployed hostnames")

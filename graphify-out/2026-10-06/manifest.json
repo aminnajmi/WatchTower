@@ -18,9 +18,9 @@
     "semantic_hash": ""
   },
   "app/config.py": {
-    "mtime": 1791293259.8125677,
-    "seen": 1791294532.282263,
-    "ast_hash": "90692913f96141f6c91af032c659e177",
+    "mtime": 1791007363.7712677,
+    "seen": 1791016439.2707782,
+    "ast_hash": "03ce41ffb534de7aad5cce9aeadbb630",
     "semantic_hash": ""
   },
   "app/create_admin.py": {
@@ -30,15 +30,15 @@
     "semantic_hash": "b0aee989de68983c7c93ec7d9011f45e"
   },
   "app/main.py": {
-    "mtime": 1791294070.5858245,
-    "seen": 1791294532.2822669,
-    "ast_hash": "a169349b9ba39bb4ff5cd6a1a2dedf83",
+    "mtime": 1791121227.262262,
+    "seen": 1791121535.8630679,
+    "ast_hash": "9fac135b3adf40597c54f6f422a67237",
     "semantic_hash": ""
   },
   "app/models.py": {
-    "mtime": 1791293798.0780554,
-    "seen": 1791294532.2822678,
-    "ast_hash": "aadfe953a37c1724f80213973f45e64e",
+    "mtime": 1791121599.1825337,
+    "seen": 1791121655.373872,
+    "ast_hash": "4a1a1f8bd39eef601961895220078f47",
     "semantic_hash": ""
   },
   "app/notifications/__init__.py": {
@@ -132,9 +132,9 @@
     "semantic_hash": ""
   },
   "app/schemas.py": {
-    "mtime": 1791294164.1465013,
-    "seen": 1791294532.2822962,
-    "ast_hash": "10115b84dab522f004a51143f9c37f13",
+    "mtime": 1791120547.9229016,
+    "seen": 1791121535.863095,
+    "ast_hash": "2e6dd02212217845356efaa858691c53",
     "semantic_hash": ""
   },
   "app/service.py": {
@@ -222,9 +222,9 @@
     "semantic_hash": "6a47d64fcc136324ca395065a707ef76"
   },
   "README.md": {
-    "mtime": 1791293873.0864282,
-    "seen": 1791294532.28234,
-    "ast_hash": "13a7589b88731f80d72fddd4cfba3915",
+    "mtime": 1791120647.833865,
+    "seen": 1791121535.8631308,
+    "ast_hash": "79674de9f438af831d4d95e54e18a648",
     "semantic_hash": ""
   },
   "docker-compose.yml": {
@@ -258,9 +258,9 @@
     "semantic_hash": ""
   },
   "templates/base.html": {
-    "mtime": 1791293413.8675756,
-    "seen": 1791294532.282346,
-    "ast_hash": "19b5d9377e1be6ff0941b716c0961f13",
+    "mtime": 1791120198.716515,
+    "seen": 1791121535.863137,
+    "ast_hash": "3b22f4a043bec5b816a38767cd49b167",
     "semantic_hash": ""
   },
   "templates/dashboard.html": {
@@ -294,9 +294,9 @@
     "semantic_hash": ""
   },
   "templates/settings.html": {
-    "mtime": 1791294092.802977,
-    "seen": 1791294532.282357,
-    "ast_hash": "4454e9048c4692cb1b6decdc6d8cec36",
+    "mtime": 1791011120.548548,
+    "seen": 1791016439.270912,
+    "ast_hash": "6bbd9146dc9eef03724e734135fc871f",
     "semantic_hash": ""
   },
   "tests/test_telegram.py": {
@@ -312,9 +312,9 @@
     "semantic_hash": ""
   },
   "tests/test_production_config.py": {
-    "mtime": 1791293685.079812,
-    "seen": 1791294532.282311,
-    "ast_hash": "6720367758e28caa1a908d228c539c63",
+    "mtime": 1791007795.4974222,
+    "seen": 1791016439.270848,
+    "ast_hash": "060af4843d705b0635fe0a39085d6d64",
     "semantic_hash": ""
   },
   "static/watchtower.svg": {
@@ -354,39 +354,9 @@
     "semantic_hash": ""
   },
   "tests/test_deployment_health.py": {
-    "mtime": 1791294449.1770856,
-    "seen": 1791294532.282309,
-    "ast_hash": "85b4726ca65ee73b7391dd332c3e8752",
-    "semantic_hash": ""
-  },
-  "app/notification_service.py": {
-    "mtime": 1791293939.3521779,
-    "seen": 1791294532.28227,
-    "ast_hash": "33339b12cca28962e3799a01bd7f0af1",
-    "semantic_hash": ""
-  },
-  "static/js/notifications-center.js": {
-    "mtime": 1791293652.53228,
-    "seen": 1791294532.282304,
-    "ast_hash": "7b8c03b03da8270f049deba4803f144d",
-    "semantic_hash": ""
-  },
-  "static/js/notifications.js": {
-    "mtime": 1791293845.7584727,
-    "seen": 1791294532.282306,
-    "ast_hash": "24a06bdf9655896c5143839535da36a7",
-    "semantic_hash": ""
-  },
-  "tests/test_notifications.py": {
-    "mtime": 1791294345.4558535,
-    "seen": 1791294532.2823098,
-    "ast_hash": "5664cda03fc6cfd0ec3aae64bd619661",
-    "semantic_hash": ""
-  },
-  "templates/notifications.html": {
-    "mtime": 1791294081.8715434,
-    "seen": 1791294532.2823522,
-    "ast_hash": "749a396dc07fe658718af8c8e9547e3f",
+    "mtime": 1791124670.4945974,
+    "seen": 1791124831.611161,
+    "ast_hash": "4c69b9522fa8569d70cb7242bbde15f9",
     "semantic_hash": ""
   }
 }

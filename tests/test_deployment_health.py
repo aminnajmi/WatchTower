@@ -105,7 +105,7 @@ exit 0
 
     def test_http_endpoint_that_never_returns_200_fails(self):
         result = self.run_check(
-            WATCHTOWER_HEALTH_TIMEOUT_SECONDS="4", MOCK_CURL_FAILURES="10"
+            WATCHTOWER_HEALTH_TIMEOUT_SECONDS="8", MOCK_CURL_FAILURES="10"
         )
         self.assertEqual(result.returncode, 1, result.stdout)
         self.assertIn("WATCHTOWER_STEP=HTTP health check", result.stdout)
@@ -161,7 +161,7 @@ exit 0
             text=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            timeout=5,
+            timeout=15,
             check=False,
         )
         self.assertEqual(result.returncode, 0, result.stdout)

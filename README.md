@@ -47,7 +47,9 @@ Enter the chosen administrator username and password when prompted, then copy th
 
 To enable Telegram notifications, set `TELEGRAM_ENABLED=true`, `TELEGRAM_BOT_TOKEN`, and `TELEGRAM_CHAT_ID` in `.env`, then recreate the container with `docker compose up -d`. Use the dashboard's Telegram test action to verify delivery. Keep the bot token private.
 
-The production app refuses to start if the JWT secret, admin credentials, allowed hosts, or enabled Telegram credentials are invalid. Compose defaults `DATABASE_URL` to `sqlite:////app/data/os_tracker.db`; that location is persisted in the named volume. Do not change it to a path outside `/app/data` unless you configure another persistent writable mount.
+The production app refuses to start if the JWT secret, admin credentials, allowed hosts, OpenClaw notification key, or enabled Telegram credentials are invalid. Compose defaults `DATABASE_URL` to `sqlite:////app/data/os_tracker.db`; that location is persisted in the named volume. Do not change it to a path outside `/app/data` unless you configure another persistent writable mount.
+
+Generate a dedicated OpenClaw key with `openssl rand -hex 32` and set it as `OPENCLAW_NOTIFICATION_API_KEY` in the server's `.env`. Keep this value private; it is separate from WatchTower user JWTs. The public read-only feed is available at `/notifications`. `POST /api/v1/notifications` accepts notification JSON with `Authorization: Bearer <key>`; `GET /api/v1/notifications` and `GET /api/v1/notifications/{id}` are public and read-only. In Settings, an Admin can use **Send Test Notification** to write a test item through the same notification service.
 
 ### 3. Validate and start
 
@@ -59,7 +61,22 @@ docker compose ps
 docker compose logs --tail=100 watchtower
 ```
 
-Wait for `healthy` in `docker compose ps`, then check `http://SERVER:PORT/health`, `/login`, and `/docs`. Sign in to the dashboard with the configured admin account. API clients can authenticate at `POST /api/v1/auth/token` and then use the returned bearer token.
+Wait for `healthy` in `docker compose ps`, then check `http://SERVER:PORT/health`, `/login`, `/notifications`, and `/docs`. Sign in to the dashboard with the configured admin account. API clients can authenticate at `POST /api/v1/auth/token` and then use the returned bearer token.
+
+### Notification Center API and upgrade
+
+The notification table is added to the existing configured database on application startup through SQLAlchemy `create_all`; existing user, OS, release, and event tables are retained. Back up the database using the procedure below before upgrading, set `OPENCLAW_NOTIFICATION_API_KEY` in production `.env`, then deploy normally with `docker compose build && docker compose up -d`. No volume deletion or database recreation is needed.
+
+OpenClaw creates notifications using the dedicated key:
+
+```bash
+curl -X POST http://SERVER:PORT/api/v1/notifications \
+  -H "Authorization: Bearer ${OPENCLAW_NOTIFICATION_API_KEY}" \
+  -H 'Content-Type: application/json' \
+  -d '{"source":"openclaw","title":"Daily infrastructure check","message":"The scheduled check completed.","severity":"success","task_name":"Daily infrastructure check","metadata":{"servers_checked":18,"healthy":17,"issues":1}}'
+```
+
+The notification API limits each response to 100 items. Use `limit`, `offset`, `source`, `severity`, `status`, and `since` query parameters to filter/paginate. The public page polls for updates every 12 seconds. Public review/edit/delete operations are intentionally not provided.
 
 ### Reverse proxy and forwarded headers
 

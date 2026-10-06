@@ -12,11 +12,14 @@
 <body data-page="{{ active|default('') }}" data-os-index="{{ os_index|default(false)|lower }}">
   <div class="app-shell">
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
-      <a class="brand" href="/dashboard">
+      <a class="brand" href="{{ '/notifications' if is_public else '/dashboard' }}">
         <span class="brand-mark" aria-hidden="true">WT</span>
         <span><strong>WatchTower</strong><small>Release Monitoring</small></span>
       </a>
       <nav class="nav-list">
+        {% if is_public %}
+        <a class="nav-link {% if active == 'notifications' %}active{% endif %}" href="/notifications"><span>♧</span>Notifications</a>
+        {% else %}
         <a class="nav-link {% if active == 'dashboard' %}active{% endif %}" href="/dashboard"><span>◫</span>Dashboard</a>
         <a class="nav-link {% if active == 'os' %}active{% endif %}" href="/os"><span>▦</span>Operating Systems</a>
         <a class="nav-link {% if active == 'releases' %}active{% endif %}" href="/releases"><span>↗</span>Releases</a>
@@ -24,11 +27,15 @@
         {% if is_admin %}<a class="nav-link {% if active == 'users' %}active{% endif %}" href="/users"><span>♙</span>User Management</a>{% endif %}
         <a class="nav-link {% if active == 'account' %}active{% endif %}" href="/account"><span>◉</span>My Account</a>
         {% if is_admin %}<a class="nav-link {% if active == 'settings' %}active{% endif %}" href="/settings"><span>⚙</span>Settings</a>{% endif %}
+        <a class="nav-link {% if active == 'notifications' %}active{% endif %}" href="/notifications"><span>♧</span>Notifications</a>
+        {% endif %}
       </nav>
       <div class="sidebar-bottom">
-        <div class="sidebar-status"><span class="status-dot" aria-hidden="true"></span><span>Release monitoring</span></div>
+        <div class="sidebar-status"><span class="status-dot" aria-hidden="true"></span><span>{% if is_public %}Public read-only feed{% else %}Release monitoring{% endif %}</span></div>
+        {% if not is_public %}
         <span class="muted small">Signed in as {{ current_user }} · {{ current_role|title }}</span>
         <form action="/logout" method="post"><button class="nav-link logout-button" type="submit"><span>↪</span>Log out</button></form>
+        {% else %}<span class="muted small">Read-only notification feed</span>{% endif %}
       </div>
     </aside>
 
@@ -37,7 +44,7 @@
         <button class="icon-button menu-toggle" id="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false">☰</button>
         <div class="topbar-context"><span class="eyebrow">INFRASTRUCTURE / RELEASES</span><span class="topbar-title">WatchTower</span></div>
         <div class="topbar-actions">
-          <span class="user-pill"><span class="avatar">{{ current_user[:1]|upper }}</span><span>{{ current_user }}</span></span>
+          <span class="user-pill"><span class="avatar">{{ 'N' if is_public else current_user[:1]|upper }}</span><span>{{ 'Public feed' if is_public else current_user }}</span></span>
           <button class="icon-button" id="theme-toggle" type="button" aria-label="Toggle light or dark mode" title="Toggle theme">◐</button>
         </div>
       </header>
