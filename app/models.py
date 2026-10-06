@@ -1,6 +1,6 @@
 from datetime import datetime
 from pathlib import Path
-from sqlalchemy import DateTime, Integer, String, Text, Boolean, ForeignKey, UniqueConstraint, JSON, create_engine, event
+from sqlalchemy import DateTime, Integer, String, Text, Boolean, ForeignKey, UniqueConstraint, create_engine, event
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 from .config import settings
@@ -68,28 +68,6 @@ class ReleaseEvent(Base):
     detected_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
     notification_sent: Mapped[bool] = mapped_column(Boolean, default=False)
     notification_sent_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-
-
-class Notification(Base):
-    __tablename__ = "notifications"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    source: Mapped[str] = mapped_column(String(32), index=True)
-    title: Mapped[str] = mapped_column(String(200))
-    message: Mapped[str] = mapped_column(Text)
-    status: Mapped[str] = mapped_column(String(20), index=True, default="new")
-    severity: Mapped[str] = mapped_column(String(20), index=True, default="info")
-    created_at: Mapped[datetime] = mapped_column(DateTime, index=True, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    task_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
-    task_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
-    report_id: Mapped[str | None] = mapped_column(String(128), nullable=True)
-    metadata_json: Mapped[dict] = mapped_column("metadata", JSON, default=dict)
-    completed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    reviewed_by: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    external_url: Mapped[str | None] = mapped_column(Text, nullable=True)
-    requires_review: Mapped[bool] = mapped_column(Boolean, default=False)
 
 
 def ensure_sqlite_directory(database_url: str) -> None:

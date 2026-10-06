@@ -1,16 +1,13 @@
 from datetime import datetime, timezone
 import hashlib
-import hmac
 import logging
 from pathlib import Path
-from typing import Literal
 
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, Form, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -32,10 +29,8 @@ from .auth import (
     verify_password,
 )
 from .config import settings
-from .models import init_db, SessionLocal, OSRelease, ReleaseHistory, ReleaseEvent, User, Notification
-from .schemas import UserCreate, UserUpdate, PasswordReset, PasswordChange, NotificationCreate
-from .notification_service import create_notification
-from .notification_middleware import NotificationBodyLimitMiddleware
+from .models import init_db, SessionLocal, OSRelease, ReleaseHistory, ReleaseEvent, User
+from .schemas import UserCreate, UserUpdate, PasswordReset, PasswordChange
 from .notifications.telegram import send_test as send_telegram_test
 from .providers import PROVIDERS
 from . import service
@@ -58,7 +53,6 @@ async def lifespan(_app: FastAPI):
 
 
 app = FastAPI(title="WatchTower", version="2.0.0", lifespan=lifespan)
-app.add_middleware(NotificationBodyLimitMiddleware, max_bytes=65536)
 logger = logging.getLogger(__name__)
 # Compatibility seam for tests/integrations that inject a scheduler instance.
 # Normal operation always reads the lifecycle-owned scheduler from its module.
@@ -71,13 +65,7 @@ templates = Jinja2Templates(directory=str(PROJECT_ROOT / "templates"))
 templates.env.globals["asset_version"] = hashlib.sha256(
     (PROJECT_ROOT / "static/js/app.js").read_bytes()
 ).hexdigest()[:12]
-templates.env.globals["notification_asset_version"] = hashlib.sha256(
-    (PROJECT_ROOT / "static/js/notifications-center.js").read_bytes()
-    + (PROJECT_ROOT / "static/js/notifications.js").read_bytes()
-    + (PROJECT_ROOT / "static/css/notifications.css").read_bytes()
-).hexdigest()[:12]
 app.mount("/static", StaticFiles(directory=str(PROJECT_ROOT / "static")), name="static")
-openclaw_bearer = HTTPBearer(auto_error=False, scheme_name="OpenClawNotificationAPIKey")
 
 
 @app.exception_handler(RequestValidationError)
@@ -205,21 +193,6 @@ def _render_page(request: Request, template: str, active: str, **context):
     )
 
 
-def _render_public_page(request: Request, template: str, active: str, **context):
-    return templates.TemplateResponse(
-        request=request,
-        name=template,
-        context={
-            "active": active,
-            "current_user": "Public",
-            "current_role": "Read-only",
-            "is_admin": False,
-            "is_public": True,
-            **context,
-        },
-    )
-
-
 @app.get("/login", response_class=HTMLResponse, include_in_schema=False)
 def login_page(request: Request):
     if _web_user(request):
@@ -336,11 +309,6 @@ def account_page(request: Request):
     return _render_page(request, "account.html", "account")
 
 
-@app.get("/notifications", response_class=HTMLResponse, include_in_schema=False)
-def notifications_page(request: Request):
-    return _render_public_page(request, "notifications.html", "notifications")
-
-
 def serialize_os(row: OSRelease):
     checked_at = _utc_timestamp(row.checked_at)
     return {
@@ -357,117 +325,6 @@ def serialize_os(row: OSRelease):
         "first_seen_at": row.first_seen_at,
         "updated_at": row.updated_at,
     }
-
-
-def serialize_notification(row: Notification):
-    return {
-        "id": row.id,
-        "source": row.source,
-        "title": row.title,
-        "message": row.message,
-        "status": row.status,
-        "severity": row.severity,
-        "created_at": _utc_timestamp(row.created_at),
-        "updated_at": _utc_timestamp(row.updated_at),
-        "task_id": row.task_id,
-        "task_name": row.task_name,
-        "report_id": row.report_id,
-        "metadata": row.metadata_json or {},
-        "completed_at": _utc_timestamp(row.completed_at),
-        "reviewed_at": _utc_timestamp(row.reviewed_at),
-        "external_url": row.external_url,
-        "requires_review": bool(row.requires_review),
-    }
-
-
-def _authenticate_notification_ingestion(
-    credentials: HTTPAuthorizationCredentials | None = Depends(openclaw_bearer),
-) -> None:
-    expected = settings.openclaw_notification_api_key
-    if len(expected) < 32:
-        raise HTTPException(status_code=503, detail="Notification ingestion is not configured")
-    if credentials is None or not hmac.compare_digest(credentials.credentials, expected):
-        raise HTTPException(status_code=401, detail="Notification API authentication required")
-
-
-@app.post(
-    "/api/v1/notifications",
-    status_code=201,
-    dependencies=[Depends(_authenticate_notification_ingestion)],
-)
-def ingest_notification(payload: NotificationCreate):
-    notification = create_notification(payload)
-    return {
-        "id": notification.id,
-        "status": notification.status,
-        "created_at": _utc_timestamp(notification.created_at),
-    }
-
-
-@app.get("/api/v1/notifications")
-def list_notifications(
-    limit: int = Query(default=50, ge=1, le=100),
-    offset: int = Query(default=0, ge=0),
-    source: Literal["openclaw", "human_agent", "watchtower", "system"] | None = None,
-    severity: Literal["info", "success", "warning", "error", "critical"] | None = None,
-    status: Literal["new", "read", "reviewed", "resolved"] | None = None,
-    since: datetime | None = None,
-):
-    db = SessionLocal()
-    try:
-        stmt = select(Notification)
-        count_stmt = select(func.count(Notification.id))
-        filters = []
-        if source:
-            filters.append(Notification.source == source)
-        if severity:
-            filters.append(Notification.severity == severity)
-        if status:
-            filters.append(Notification.status == status)
-        if since:
-            since_utc = since if since.tzinfo else since.replace(tzinfo=timezone.utc)
-            filters.append(Notification.created_at >= since_utc.astimezone(timezone.utc).replace(tzinfo=None))
-        if filters:
-            stmt = stmt.where(*filters)
-            count_stmt = count_stmt.where(*filters)
-        total = db.scalar(count_stmt) or 0
-        rows = db.scalars(
-            stmt.order_by(Notification.created_at.desc(), Notification.id.desc()).offset(offset).limit(limit)
-        ).all()
-        return {
-            "items": [serialize_notification(row) for row in rows],
-            "total": total,
-            "limit": limit,
-            "offset": offset,
-        }
-    finally:
-        db.close()
-
-
-@app.get("/api/v1/notifications/{notification_id}")
-def get_notification(notification_id: int):
-    db = SessionLocal()
-    try:
-        row = db.get(Notification, notification_id)
-        if row is None:
-            raise HTTPException(status_code=404, detail="Notification not found")
-        return serialize_notification(row)
-    finally:
-        db.close()
-
-
-@app.post("/api/v1/notifications/test", status_code=201, dependencies=[Depends(require_admin)])
-def create_test_notification():
-    payload = NotificationCreate(
-        source="watchtower",
-        title="Test Notification",
-        message="This is a test notification from the WatchTower Management Panel.",
-        status="new",
-        severity="info",
-        metadata={"test": True, "source": "management_panel"},
-    )
-    notification = create_notification(payload)
-    return serialize_notification(notification)
 
 
 def _utc_timestamp(value: datetime | None):
