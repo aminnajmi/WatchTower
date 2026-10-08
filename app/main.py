@@ -1,18 +1,20 @@
 from datetime import datetime, timezone
 import hashlib
+import hmac
 import logging
+import json
 from pathlib import Path
 
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, Form, HTTPException, Query, Request
+from fastapi import Depends, FastAPI, Form, HTTPException, Query, Request, Header
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import BaseModel
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.exc import IntegrityError, OperationalError
 
 from .auth import (
@@ -29,9 +31,13 @@ from .auth import (
     verify_password,
 )
 from .config import settings
-from .models import init_db, SessionLocal, OSRelease, ReleaseHistory, ReleaseEvent, User
-from .schemas import UserCreate, UserUpdate, PasswordReset, PasswordChange
+from .models import init_db, SessionLocal, OSRelease, ReleaseHistory, ReleaseEvent, User, Notification
+from .schemas import UserCreate, UserUpdate, PasswordReset, PasswordChange, NotificationCreate
 from .notifications.telegram import send_test as send_telegram_test
+from .notifications.service import (
+    ALLOWED_SEVERITIES, ALLOWED_SOURCES, ALLOWED_STATUSES,
+    create_notification, metadata_for,
+)
 from .providers import PROVIDERS
 from . import service
 from . import scheduler as scheduler_module
@@ -136,7 +142,7 @@ async def login(username: str = Form(...), password: str = Form(...)):
 
 @app.get("/", include_in_schema=False)
 def home(request: Request):
-    return RedirectResponse("/dashboard" if _web_user(request) else "/login", status_code=303)
+    return RedirectResponse("/dashboard" if (_web_principal(request) and _web_principal(request).role == "admin") else ("/notification-center" if _web_user(request) else "/login"), status_code=303)
 
 
 def _web_user(request: Request) -> str | None:
@@ -193,10 +199,20 @@ def _render_page(request: Request, template: str, active: str, **context):
     )
 
 
+def _require_admin_page(request: Request):
+    principal = _web_principal(request)
+    if not principal:
+        return None, RedirectResponse("/login", status_code=303)
+    if principal.role != "admin":
+        return None, RedirectResponse("/notification-center", status_code=303)
+    return principal, None
+
+
 @app.get("/login", response_class=HTMLResponse, include_in_schema=False)
 def login_page(request: Request):
-    if _web_user(request):
-        return RedirectResponse("/dashboard", status_code=303)
+    principal = _web_principal(request)
+    if principal:
+        return RedirectResponse("/dashboard" if principal.role == "admin" else "/notification-center", status_code=303)
     return templates.TemplateResponse(request=request, name="login.html", context={})
 
 
@@ -253,6 +269,9 @@ def logout():
 
 @app.get("/dashboard", response_class=HTMLResponse, include_in_schema=False)
 def dashboard_page(request: Request):
+    _, response = _require_admin_page(request)
+    if response:
+        return response
     major_events = events(event_type="new_major_release", os=None)[:5]
     check_result = service.last_check_result or {}
     return _render_page(
@@ -266,21 +285,33 @@ def dashboard_page(request: Request):
 
 @app.get("/os", response_class=HTMLResponse, include_in_schema=False)
 def operating_systems_page(request: Request):
+    _, response = _require_admin_page(request)
+    if response:
+        return response
     return _render_page(request, "dashboard.html", "os", os_index=True)
 
 
 @app.get("/os/{slug}", response_class=HTMLResponse, include_in_schema=False)
 def os_detail_page(slug: str, request: Request):
+    _, response = _require_admin_page(request)
+    if response:
+        return response
     return _render_page(request, "os_detail.html", "os", slug=slug)
 
 
 @app.get("/releases", response_class=HTMLResponse, include_in_schema=False)
 def releases_page(request: Request):
+    _, response = _require_admin_page(request)
+    if response:
+        return response
     return _render_page(request, "releases.html", "releases")
 
 
 @app.get("/events", response_class=HTMLResponse, include_in_schema=False)
 def events_page(request: Request):
+    _, response = _require_admin_page(request)
+    if response:
+        return response
     return _render_page(request, "events.html", "events")
 
 
@@ -307,6 +338,16 @@ def users_page(request: Request):
 @app.get("/account", response_class=HTMLResponse, include_in_schema=False)
 def account_page(request: Request):
     return _render_page(request, "account.html", "account")
+
+
+@app.get("/notification-center", response_class=HTMLResponse, include_in_schema=False)
+def notification_center_page(request: Request):
+    return _render_page(request, "notifications.html", "notifications")
+
+
+@app.get("/notifications", response_class=HTMLResponse, include_in_schema=False)
+def notifications_legacy_page(request: Request):
+    return RedirectResponse("/notification-center", status_code=303)
 
 
 def serialize_os(row: OSRelease):
@@ -336,7 +377,7 @@ def _utc_timestamp(value: datetime | None):
     return value.astimezone(timezone.utc)
 
 
-@app.get("/api/v1/os", dependencies=[Depends(authenticate_token)])
+@app.get("/api/v1/os", dependencies=[Depends(require_admin)])
 def list_os():
     db = SessionLocal()
     try:
@@ -346,7 +387,7 @@ def list_os():
         db.close()
 
 
-@app.get("/api/v1/os/{slug}", dependencies=[Depends(authenticate_token)])
+@app.get("/api/v1/os/{slug}", dependencies=[Depends(require_admin)])
 def get_os(slug: str):
     db = SessionLocal()
     try:
@@ -358,7 +399,7 @@ def get_os(slug: str):
         db.close()
 
 
-@app.get("/api/v1/releases", dependencies=[Depends(authenticate_token)])
+@app.get("/api/v1/releases", dependencies=[Depends(require_admin)])
 def releases(
     os: str | None = Query(default=None),
     release_type: str | None = Query(default=None, alias="type"),
@@ -402,12 +443,12 @@ def releases(
         db.close()
 
 
-@app.get("/api/v1/releases/{slug}", dependencies=[Depends(authenticate_token)])
+@app.get("/api/v1/releases/{slug}", dependencies=[Depends(require_admin)])
 def releases_for_os(slug: str):
     return releases(os=slug, release_type=None, date=None, limit=None, offset=0)
 
 
-@app.get("/api/v1/events", dependencies=[Depends(authenticate_token)])
+@app.get("/api/v1/events", dependencies=[Depends(require_admin)])
 def events(
     event_type: str | None = Query(default=None),
     os: str | None = Query(default=None),
@@ -468,12 +509,255 @@ async def test_telegram_notification():
     return {"success": True, "message": "Telegram test message sent"}
 
 
-@app.get("/api/v1/providers", dependencies=[Depends(authenticate_token)])
+def _serialize_notification(notification: Notification) -> dict:
+    return {
+        "id": notification.id,
+        "source": notification.source,
+        "recipient": notification.recipient,
+        "title": notification.title,
+        "message": notification.message,
+        "status": notification.status,
+        "severity": notification.severity,
+        "requires_approval": notification.requires_approval,
+        "approval_status": notification.approval_status,
+        "approved_by": notification.approved_by,
+        "approved_at": _utc_timestamp(notification.approved_at),
+        "denial_reason": notification.denial_reason,
+        "task_id": notification.task_id,
+        "task_name": notification.task_name,
+        "report_id": notification.report_id,
+        "metadata": metadata_for(notification),
+        "completed_at": _utc_timestamp(notification.completed_at),
+        "external_url": notification.external_url,
+        "created_at": _utc_timestamp(notification.created_at),
+        "updated_at": _utc_timestamp(notification.updated_at),
+    }
+
+
+def _validate_notification_payload(payload: NotificationCreate) -> None:
+    if payload.source not in ALLOWED_SOURCES:
+        raise HTTPException(status_code=422, detail="Invalid notification source")
+    if not payload.recipient.strip() or len(payload.recipient.strip()) > 64:
+        raise HTTPException(status_code=422, detail="Invalid notification recipient")
+    if payload.status not in ALLOWED_STATUSES:
+        raise HTTPException(status_code=422, detail="Invalid notification status")
+    if payload.severity not in ALLOWED_SEVERITIES:
+        raise HTTPException(status_code=422, detail="Invalid notification severity")
+    if payload.approval_status is not None and payload.approval_status not in {"not_required", "pending"}:
+        raise HTTPException(status_code=422, detail="OpenClaw may only create pending approval requests")
+    if payload.requires_approval and payload.approval_status == "not_required":
+        raise HTTPException(status_code=422, detail="Approval requests must use pending approval status")
+    if len(json.dumps(payload.metadata, ensure_ascii=False)) > 10000:
+        raise HTTPException(status_code=413, detail="Notification metadata is too large")
+
+
+def _openclaw_authorized(authorization: str | None) -> bool:
+    configured = settings.openclaw_notification_api_key.strip()
+    if not configured or not authorization:
+        return False
+    scheme, _, token = authorization.partition(" ")
+    return scheme.lower() == "bearer" and bool(token) and hmac.compare_digest(token.strip(), configured)
+
+
+@app.post("/api/v1/notifications", status_code=201)
+def create_openclaw_notification(payload: NotificationCreate, authorization: str | None = Header(default=None)):
+    if not _openclaw_authorized(authorization):
+        raise HTTPException(status_code=401, detail="Valid OpenClaw notification credentials required", headers={"WWW-Authenticate": "Bearer"})
+    _validate_notification_payload(payload)
+    if payload.source != "openclaw":
+        raise HTTPException(status_code=403, detail="OpenClaw endpoint accepts only openclaw notifications")
+    try:
+        notification = create_notification(**payload.model_dump())
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+    return _serialize_notification(notification)
+
+
+@app.get("/api/v1/notifications")
+def list_notifications(
+    principal: Principal = Depends(authenticate_token),
+    source: str | None = Query(default=None),
+    severity: str | None = Query(default=None),
+    status: str | None = Query(default=None),
+    approval_status: str | None = Query(default=None),
+    limit: int = Query(default=50, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    since: datetime | None = Query(default=None),
+):
+    db = SessionLocal()
+    try:
+        stmt = select(Notification)
+        count_stmt = select(func.count(Notification.id))
+        filters = []
+        if principal.role != "admin":
+            filters.append(Notification.recipient.in_([principal.username, "all_human_agents"]))
+        if source:
+            source = source.strip().lower()
+            if source not in ALLOWED_SOURCES:
+                raise HTTPException(status_code=422, detail="Invalid notification source")
+            filters.append(Notification.source == source)
+        if severity:
+            severity = severity.strip().lower()
+            if severity not in ALLOWED_SEVERITIES:
+                raise HTTPException(status_code=422, detail="Invalid notification severity")
+            filters.append(Notification.severity == severity)
+        if status:
+            status = status.strip().lower()
+            if status not in ALLOWED_STATUSES:
+                raise HTTPException(status_code=422, detail="Invalid notification status")
+            filters.append(Notification.status == status)
+        if approval_status:
+            approval_status = approval_status.strip().lower()
+            if approval_status not in {"not_required", "pending", "approved", "denied"}:
+                raise HTTPException(status_code=422, detail="Invalid approval status")
+            filters.append(Notification.approval_status == approval_status)
+        if since:
+            filters.append(Notification.created_at > since.replace(tzinfo=None) if since.tzinfo else Notification.created_at > since)
+        if filters:
+            stmt = stmt.where(*filters)
+            count_stmt = count_stmt.where(*filters)
+        total = db.scalar(count_stmt) or 0
+        rows = db.scalars(stmt.order_by(Notification.created_at.desc(), Notification.id.desc()).offset(offset).limit(limit)).all()
+        return {"items": [_serialize_notification(row) for row in rows], "total": total, "limit": limit, "offset": offset}
+    finally:
+        db.close()
+
+
+@app.get("/api/v1/notifications/{notification_id}")
+def get_notification(
+    notification_id: int,
+    request: Request,
+    authorization: str | None = Header(default=None),
+):
+    principal = None
+    try:
+        principal = _web_principal(request)
+    except Exception:
+        principal = None
+    openclaw_authorized = _openclaw_authorized(authorization)
+    if not principal and not openclaw_authorized:
+        raise HTTPException(status_code=401, detail="Authentication required", headers={"WWW-Authenticate": "Bearer"})
+    db = SessionLocal()
+    try:
+        notification = db.get(Notification, notification_id)
+        if notification is None:
+            raise HTTPException(status_code=404, detail="Notification not found")
+        if principal and principal.role != "admin" and notification.recipient not in {principal.username, "all_human_agents"}:
+            raise HTTPException(status_code=404, detail="Notification not found")
+        return _serialize_notification(notification)
+    finally:
+        db.close()
+
+
+@app.post("/api/v1/notifications/test", status_code=201, dependencies=[Depends(require_admin)])
+def test_notification(current: Principal = Depends(require_admin)):
+    notification = create_notification(
+        source="watchtower",
+        recipient="all_human_agents",
+        title="Test Notification",
+        message="This is a test notification from the WatchTower Notification Center.",
+        status="new",
+        severity="info",
+        requires_approval=False,
+        metadata={"test": True, "source": "notification_center"},
+    )
+    logger.info("notification_test actor=%s notification_id=%s", current.username, notification.id)
+    return _serialize_notification(notification)
+
+
+@app.post("/api/v1/notifications/{notification_id}/approve")
+def approve_notification(notification_id: int, current: Principal = Depends(authenticate_token)):
+    db = SessionLocal()
+    try:
+        now = datetime.utcnow()
+        result = db.execute(
+            update(Notification)
+            .where(
+                Notification.id == notification_id,
+                Notification.requires_approval.is_(True),
+                Notification.approval_status == "pending",
+                *([] if current.role == "admin" else [Notification.recipient.in_([current.username, "all_human_agents"])])
+            )
+            .values(
+                approval_status="approved",
+                status="resolved",
+                approved_by=current.username,
+                approved_at=now,
+                denial_reason=None,
+                updated_at=now,
+            )
+        )
+        if result.rowcount != 1:
+            notification = db.get(Notification, notification_id)
+            if notification is None:
+                raise HTTPException(status_code=404, detail="Notification not found")
+            if current.role != "admin" and notification.recipient not in {current.username, "all_human_agents"}:
+                raise HTTPException(status_code=404, detail="Notification not found")
+            if not notification.requires_approval:
+                raise HTTPException(status_code=409, detail="This notification does not require approval")
+            raise HTTPException(status_code=409, detail=f"Notification is already {notification.approval_status}")
+        db.commit()
+        notification = db.get(Notification, notification_id)
+        logger.info("notification_decision actor=%s notification_id=%s decision=approved task_id=%s", current.username, notification.id, notification.task_id)
+        return _serialize_notification(notification)
+    finally:
+        db.close()
+
+class NotificationDenyRequest(BaseModel):
+    reason: str | None = None
+
+
+@app.post("/api/v1/notifications/{notification_id}/deny")
+def deny_notification(
+    notification_id: int,
+    payload: NotificationDenyRequest | None = None,
+    current: Principal = Depends(authenticate_token),
+):
+    reason = (payload.reason.strip() if payload and payload.reason else None)
+    if reason and len(reason) > 1000:
+        raise HTTPException(status_code=422, detail="Denial reason is too long")
+    db = SessionLocal()
+    try:
+        now = datetime.utcnow()
+        result = db.execute(
+            update(Notification)
+            .where(
+                Notification.id == notification_id,
+                Notification.requires_approval.is_(True),
+                Notification.approval_status == "pending",
+                *([] if current.role == "admin" else [Notification.recipient.in_([current.username, "all_human_agents"])])
+            )
+            .values(
+                approval_status="denied",
+                status="resolved",
+                approved_by=current.username,
+                approved_at=now,
+                denial_reason=reason,
+                updated_at=now,
+            )
+        )
+        if result.rowcount != 1:
+            notification = db.get(Notification, notification_id)
+            if notification is None:
+                raise HTTPException(status_code=404, detail="Notification not found")
+            if current.role != "admin" and notification.recipient not in {current.username, "all_human_agents"}:
+                raise HTTPException(status_code=404, detail="Notification not found")
+            if not notification.requires_approval:
+                raise HTTPException(status_code=409, detail="This notification does not require approval")
+            raise HTTPException(status_code=409, detail=f"Notification is already {notification.approval_status}")
+        db.commit()
+        notification = db.get(Notification, notification_id)
+        logger.info("notification_decision actor=%s notification_id=%s decision=denied task_id=%s", current.username, notification.id, notification.task_id)
+        return _serialize_notification(notification)
+    finally:
+        db.close()
+
+@app.get("/api/v1/providers", dependencies=[Depends(require_admin)])
 def providers():
     return {"providers": list(PROVIDERS.keys())}
 
 
-@app.get("/api/v1/status", dependencies=[Depends(authenticate_token)])
+@app.get("/api/v1/status", dependencies=[Depends(require_admin)])
 def status():
     db = SessionLocal()
     try:

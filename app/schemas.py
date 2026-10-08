@@ -120,3 +120,35 @@ class CheckResult(BaseModel):
     major_releases: int
     results: list[ReleaseInfo]
     errors: list[dict]
+
+class NotificationCreate(BaseModel):
+    source: str = Field(default="openclaw", min_length=1, max_length=30)
+    recipient: str = Field(default="all_human_agents", min_length=1, max_length=64)
+    title: str = Field(min_length=1, max_length=200)
+    message: str = Field(min_length=1, max_length=20000)
+    status: str = Field(default="new", min_length=1, max_length=20)
+    severity: str = Field(default="info", min_length=1, max_length=20)
+    requires_approval: bool = False
+    approval_status: str | None = None
+    task_id: str | None = Field(default=None, max_length=100)
+    task_name: str | None = Field(default=None, max_length=200)
+    report_id: str | None = Field(default=None, max_length=100)
+    metadata: dict = Field(default_factory=dict)
+    completed_at: datetime | None = None
+    external_url: str | None = Field(default=None, max_length=2000)
+
+    @field_validator("source", "recipient", "status", "severity")
+    @classmethod
+    def normalized_choice(cls, value: str) -> str:
+        return value.strip().lower()
+
+    @field_validator("external_url")
+    @classmethod
+    def safe_url(cls, value: str | None) -> str | None:
+        if value is None or not value.strip():
+            return None
+        from urllib.parse import urlparse
+        parsed = urlparse(value.strip())
+        if parsed.scheme.lower() not in {"http", "https"} or not parsed.netloc:
+            raise ValueError("external_url must be an HTTP or HTTPS URL")
+        return value.strip()

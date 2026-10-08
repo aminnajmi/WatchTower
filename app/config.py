@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     telegram_bot_token: str = ""
     telegram_chat_id: str = ""
     track_point_releases: bool = True
+    openclaw_notification_api_key: str = ""
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

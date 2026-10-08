@@ -55,6 +55,31 @@ class ReleaseHistory(Base):
     detected_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
 
 
+class Notification(Base):
+    __tablename__ = "notifications"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    source: Mapped[str] = mapped_column(String(30), index=True)
+    recipient: Mapped[str] = mapped_column(String(64), default="all_human_agents", index=True)
+    title: Mapped[str] = mapped_column(String(200))
+    message: Mapped[str] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(String(20), default="new", index=True)
+    severity: Mapped[str] = mapped_column(String(20), default="info", index=True)
+    requires_approval: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    approval_status: Mapped[str] = mapped_column(String(20), default="not_required", index=True)
+    approved_by: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    approved_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    denial_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
+    task_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    task_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    report_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    metadata_json: Mapped[str] = mapped_column(Text, default="{}")
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    external_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
 class ReleaseEvent(Base):
     __tablename__ = "release_events"
 
@@ -131,4 +156,22 @@ def init_db():
             conn.exec_driver_sql(
                 "UPDATE os_releases SET first_seen_at = COALESCE(first_seen_at, checked_at), "
                 "updated_at = COALESCE(updated_at, checked_at), major_version = COALESCE(NULLIF(major_version, ''), 'unknown')"
+            )
+            notification_columns = {row[1] for row in conn.exec_driver_sql("PRAGMA table_info(notifications)").fetchall()}
+            notification_migrations = {
+                "requires_approval": "ALTER TABLE notifications ADD COLUMN requires_approval BOOLEAN DEFAULT 0",
+                "approval_status": "ALTER TABLE notifications ADD COLUMN approval_status VARCHAR(20) DEFAULT 'not_required'",
+                "approved_by": "ALTER TABLE notifications ADD COLUMN approved_by VARCHAR(32)",
+                "approved_at": "ALTER TABLE notifications ADD COLUMN approved_at DATETIME",
+                "denial_reason": "ALTER TABLE notifications ADD COLUMN denial_reason TEXT",
+                "recipient": "ALTER TABLE notifications ADD COLUMN recipient VARCHAR(64) DEFAULT 'all_human_agents'",
+            }
+            for name, sql in notification_migrations.items():
+                if name not in notification_columns:
+                    conn.exec_driver_sql(sql)
+            conn.exec_driver_sql("UPDATE notifications SET recipient = COALESCE(NULLIF(recipient, ''), 'all_human_agents')")
+            conn.exec_driver_sql(
+                "UPDATE notifications SET approval_status = CASE "
+                "WHEN requires_approval = 1 AND (approval_status IS NULL OR approval_status = 'not_required') THEN 'pending' "
+                "ELSE COALESCE(approval_status, 'not_required') END"
             )
