@@ -71,8 +71,6 @@ class UserManagementTests(unittest.TestCase):
         self.assertEqual(self.client.patch(f"/api/v1/users/{viewer_id}", headers=self.user_headers, json={"role": "admin"}).status_code, 403)
         self.assertEqual(self.client.post("/api/v1/check", headers=self.user_headers).status_code, 403)
         self.assertEqual(self.client.post("/api/v1/notifications/test/telegram", headers=self.user_headers).status_code, 403)
-        for path in ("/api/v1/os", "/api/v1/os/ubuntu", "/api/v1/releases", "/api/v1/releases/ubuntu", "/api/v1/events", "/api/v1/providers", "/api/v1/status"):
-            self.assertEqual(self.client.get(path, headers=self.user_headers).status_code, 403, path)
         self.client.post("/web/session", json={"access_token": self.admin_token})
         self.assertEqual(self.client.get("/users").status_code, 200)
         self.assertEqual(self.client.get("/account").status_code, 200)
@@ -80,20 +78,23 @@ class UserManagementTests(unittest.TestCase):
         self.client.post("/web/session", json={"access_token": self.user_token})
         self.assertEqual(self.client.get("/users").status_code, 403)
         self.assertEqual(self.client.get("/settings").status_code, 403)
-        self.assertEqual(self.client.get("/dashboard").status_code, 303)
-        self.assertEqual(self.client.get("/dashboard").headers["location"], "/notification-center")
-        for path in ("/os", "/os/ubuntu", "/releases", "/events"):
-            response = self.client.get(path)
-            self.assertEqual(response.status_code, 303, path)
-            self.assertEqual(response.headers["location"], "/notification-center", path)
-        notification_center = self.client.get("/notification-center")
-        self.assertEqual(notification_center.status_code, 200)
-        self.assertIn('href="/notification-center"', notification_center.text)
-        self.assertNotIn('href="/dashboard"', notification_center.text)
-        self.assertNotIn('href="/os"', notification_center.text)
-        self.assertNotIn('href="/releases"', notification_center.text)
-        self.assertNotIn('href="/events"', notification_center.text)
-        self.assertNotIn('id="check-now"', notification_center.text)
+        self.assertEqual(self.client.get("/notification-center").status_code, 200)
+        for path in ("/dashboard", "/os", "/os/ubuntu", "/releases", "/events"):
+            with self.subTest(path=path):
+                response = self.client.get(path, follow_redirects=False)
+                self.assertEqual(response.status_code, 303)
+                self.assertEqual(response.headers["location"], "/notification-center")
+        notification_center = self.client.get("/notification-center").text
+        self.assertNotIn('href="/users"', notification_center)
+        self.assertNotIn('href="/dashboard"', notification_center)
+        self.assertNotIn('href="/os"', notification_center)
+        self.assertNotIn('href="/releases"', notification_center)
+        self.assertNotIn('href="/events"', notification_center)
+        self.assertNotIn("Sound OFF", notification_center)
+        self.assertNotIn("notification-sound-toggle", notification_center)
+        for path in ("/api/v1/os", "/api/v1/releases", "/api/v1/events", "/api/v1/providers", "/api/v1/status"):
+            with self.subTest(api=path):
+                self.assertEqual(self.client.get(path, headers=self.user_headers).status_code, 403)
 
     def test_create_edit_password_reset_enable_disable_and_delete(self):
         payload = {

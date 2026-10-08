@@ -9,10 +9,10 @@
   <link rel="stylesheet" href="/static/css/app.css">
   {% block head %}{% endblock %}
 </head>
-<body data-page="{{ active|default('') }}" data-os-index="{{ os_index|default(false)|lower }}" data-role="{{ current_role|default('') }}">
+<body data-page="{{ active|default('') }}" data-os-index="{{ os_index|default(false)|lower }}">
   <div class="app-shell">
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
-      <a class="brand" href="/dashboard">
+      <a class="brand" href="{{ '/dashboard' if is_admin else '/notification-center' }}">
         <span class="brand-mark" aria-hidden="true">WT</span>
         <span><strong>WatchTower</strong><small>Release Monitoring</small></span>
       </a>
@@ -29,7 +29,7 @@
         {% if is_admin %}<a class="nav-link {% if active == 'settings' %}active{% endif %}" href="/settings"><span>⚙</span>Settings</a>{% endif %}
       </nav>
       <div class="sidebar-bottom">
-        <div class="sidebar-status"><span class="status-dot" aria-hidden="true"></span><span>Release monitoring</span></div>
+        <div class="sidebar-status"><span class="status-dot" aria-hidden="true"></span><span>{{ 'Release monitoring' if is_admin else 'Notification Center' }}</span></div>
         <span class="muted small">Signed in as {{ current_user }} · {{ current_role|title }}</span>
         <form action="/logout" method="post"><button class="nav-link logout-button" type="submit"><span>↪</span>Log out</button></form>
       </div>
@@ -38,7 +38,7 @@
     <div class="main-column">
       <header class="topbar">
         <button class="icon-button menu-toggle" id="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false">☰</button>
-        <div class="topbar-context"><span class="eyebrow">{% if is_admin %}INFRASTRUCTURE / RELEASES{% else %}OPERATIONS / NOTIFICATIONS{% endif %}</span><span class="topbar-title">WatchTower</span></div>
+        <div class="topbar-context"><span class="eyebrow">INFRASTRUCTURE / RELEASES</span><span class="topbar-title">WatchTower</span></div>
         <div class="topbar-actions">
           <span class="user-pill"><span class="avatar">{{ current_user[:1]|upper }}</span><span>{{ current_user }}</span></span>
           <button class="icon-button" id="theme-toggle" type="button" aria-label="Toggle light or dark mode" title="Toggle theme">◐</button>

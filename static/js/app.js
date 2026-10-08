@@ -661,51 +661,6 @@
     </article>`;
   }
 
-  function initializeNotificationSound() {
-    const button = $('#notification-sound-toggle');
-    if (!button) return { enabled: false, play: () => {} };
-    let enabled = true;
-    try { enabled = window.localStorage.getItem('watchtower-notification-sound') !== 'off'; } catch (_) {}
-    let audioContext = null;
-
-    const updateButton = () => {
-      button.textContent = enabled ? '🔊 Sound on' : '🔇 Sound off';
-      button.setAttribute('aria-pressed', String(enabled));
-    };
-    const ensureContext = async () => {
-      if (!enabled) return null;
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return null;
-      if (!audioContext) audioContext = new AudioCtx();
-      if (audioContext.state === 'suspended') await audioContext.resume();
-      return audioContext;
-    };
-    const play = async () => {
-      const ctx = await ensureContext();
-      if (!ctx) return;
-      const now = ctx.currentTime;
-      const oscillator = ctx.createOscillator();
-      const gain = ctx.createGain();
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(880, now);
-      oscillator.frequency.exponentialRampToValueAtTime(660, now + 0.12);
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.exponentialRampToValueAtTime(0.12, now + 0.01);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
-      oscillator.connect(gain).connect(ctx.destination);
-      oscillator.start(now);
-      oscillator.stop(now + 0.23);
-    };
-    button.addEventListener('click', async () => {
-      enabled = !enabled;
-      try { window.localStorage.setItem('watchtower-notification-sound', enabled ? 'on' : 'off'); } catch (_) {}
-      updateButton();
-      if (enabled) await play();
-    });
-    updateButton();
-    return { enabled: () => enabled, play };
-  }
-
   async function initializeNotificationCenter() {
     const feed = $('#notification-feed');
     if (!feed) return;
@@ -716,13 +671,61 @@
     const refreshButton = $('#notification-refresh');
     const refreshStatus = $('#notification-refresh-status');
     const pagination = $('#notification-pagination');
-    const sound = initializeNotificationSound();
-    const isAdmin = document.body.dataset.role === 'admin';
     let offset = 0;
     const limit = 25;
     let pollTimer;
-    let knownIds = new Set();
-    let firstLoad = true;
+    let knownNotificationIds = null;
+    let notificationAudioContext = null;
+
+    function prepareNotificationSound() {
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return null;
+        if (!notificationAudioContext) notificationAudioContext = new AudioContextClass();
+        if (notificationAudioContext.state === 'suspended') {
+          notificationAudioContext.resume().catch(() => {});
+        }
+        return notificationAudioContext;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function playNotificationAlert() {
+      const ctx = prepareNotificationSound();
+      if (!ctx) return;
+      const emit = () => {
+        try {
+          const now = ctx.currentTime;
+          const master = ctx.createGain();
+          master.gain.setValueAtTime(0.0001, now);
+          master.gain.exponentialRampToValueAtTime(0.98, now + 0.015);
+          master.gain.exponentialRampToValueAtTime(0.0001, now + 1.85);
+          master.connect(ctx.destination);
+
+          // Loud, attention-grabbing triple double-beep alert.
+          [0, 0.30, 0.60].forEach((start, index) => {
+            const first = ctx.createOscillator();
+            const second = ctx.createOscillator();
+            first.type = 'square';
+            second.type = 'square';
+            first.frequency.setValueAtTime(index % 2 ? 920 : 1040, now + start);
+            second.frequency.setValueAtTime(index % 2 ? 690 : 780, now + start + 0.12);
+            first.connect(master);
+            second.connect(master);
+            first.start(now + start);
+            first.stop(now + start + 0.105);
+            second.start(now + start + 0.12);
+            second.stop(now + start + 0.225);
+          });
+          if (navigator.vibrate) navigator.vibrate([220, 90, 220, 90, 360]);
+        } catch (_) {
+          // The notification remains visible if browser audio is unavailable.
+        }
+      };
+      if (ctx.state === 'running') emit();
+      else ctx.resume().then(emit).catch(() => {});
+    }
 
     async function decideNotification(id, decision) {
       const action = decision === 'approved' ? 'approve' : 'deny';
@@ -734,37 +737,41 @@
       }
       try {
         await api(`/api/v1/notifications/${id}/${action}`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' }, ...(body ? { body } : {}),
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          ...(body ? { body } : {}),
         });
         toast(decision === 'approved' ? 'Task approved.' : 'Task denied.');
         await loadNotifications({ silent: true });
-      } catch (error) { toast(`Unable to update notification: ${error.message}`); }
-    }
-
-    function attachActions() {
-      $$('.notification-approve', feed).forEach(button => button.addEventListener('click', () => decideNotification(button.dataset.notificationId, 'approved')));
-      $$('.notification-deny', feed).forEach(button => button.addEventListener('click', () => decideNotification(button.dataset.notificationId, 'denied')));
+      } catch (error) {
+        toast(`Unable to update notification: ${error.message}`);
+      }
     }
 
     async function loadNotifications({ silent = false } = {}) {
       const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
-      if (isAdmin && source?.value) params.set('source', source.value);
-      if (isAdmin && severity?.value) params.set('severity', severity.value);
-      if (isAdmin && status?.value) params.set('status', status.value);
-      if (isAdmin && approval?.value) params.set('approval_status', approval.value);
+      if (source?.value) params.set('source', source.value);
+      if (severity?.value) params.set('severity', severity.value);
+      if (status?.value) params.set('status', status.value);
+      if (approval?.value) params.set('approval_status', approval.value);
       if (!silent) feed.innerHTML = '<div class="notification-empty">Loading notifications…</div>';
       try {
         const result = await api(`/api/v1/notifications?${params.toString()}`);
         const items = result.items || [];
-        const incoming = !firstLoad && items.filter(item => !knownIds.has(item.id));
-        if (incoming.length) {
-          await sound.play().catch(() => {});
-          if (incoming.some(item => item.requires_approval)) toast(`🔔 ${incoming.length} new notification${incoming.length === 1 ? '' : 's'}`);
+        const currentIds = new Set(items.map(item => Number(item.id)));
+        if (knownNotificationIds === null) {
+          knownNotificationIds = currentIds;
+        } else if (items.length) {
+          const newItems = items.filter(item => !knownNotificationIds.has(Number(item.id)));
+          if (newItems.length) {
+            playNotificationAlert();
+            if (refreshStatus) refreshStatus.textContent = `🔊 ${newItems.length} new notification${newItems.length === 1 ? '' : 's'}`;
+          }
+          knownNotificationIds = new Set([...knownNotificationIds, ...currentIds]);
         }
-        knownIds = new Set(items.map(item => item.id));
-        firstLoad = false;
-        feed.innerHTML = items.length ? items.map(renderNotification).join('') : '<div class="notification-empty">No notifications match your current view.</div>';
-        attachActions();
+        feed.innerHTML = items.length ? items.map(renderNotification).join('') : '<div class="notification-empty">No notifications match the selected filters.</div>';
+        $$('.notification-approve', feed).forEach(button => button.addEventListener('click', () => decideNotification(button.dataset.notificationId, 'approved')));
+        $$('.notification-deny', feed).forEach(button => button.addEventListener('click', () => decideNotification(button.dataset.notificationId, 'denied')));
         const total = Number(result.total) || 0;
         const first = total ? offset + 1 : 0;
         const last = Math.min(offset + items.length, total);
@@ -777,12 +784,19 @@
       }
     }
 
-    const filterChanged = () => { offset = 0; knownIds = new Set(); firstLoad = true; loadNotifications(); };
+    const filterChanged = () => { offset = 0; loadNotifications(); };
     source?.addEventListener('change', filterChanged);
     severity?.addEventListener('change', filterChanged);
     status?.addEventListener('change', filterChanged);
     approval?.addEventListener('change', filterChanged);
     refreshButton?.addEventListener('click', () => loadNotifications());
+    // Prepare audio silently. Browsers may suspend it until the user has
+    // interacted with the site; interaction only unlocks the mandatory alert
+    // channel and there is intentionally no mute/disable control.
+    prepareNotificationSound();
+    ['pointerdown', 'keydown', 'touchstart'].forEach(eventName => {
+      document.addEventListener(eventName, prepareNotificationSound, { passive: true });
+    });
     await loadNotifications();
     pollTimer = window.setInterval(() => loadNotifications({ silent: true }), 5000);
     window.addEventListener('beforeunload', () => window.clearInterval(pollTimer), { once: true });

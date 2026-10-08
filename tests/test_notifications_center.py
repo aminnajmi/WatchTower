@@ -57,6 +57,17 @@ class NotificationCenterTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["items"], [])
 
+    def test_notification_center_has_mandatory_loud_alerts_without_mute_control(self):
+        self.client.cookies.set(SESSION_COOKIE_NAME, create_access_token("viewer"))
+        page = self.client.get("/notification-center")
+        self.assertEqual(page.status_code, 200)
+        self.assertIn("Loud alerts enabled", page.text)
+        self.assertNotIn("Sound OFF", page.text)
+        self.assertNotIn("notification-sound-toggle", page.text)
+        script = Path("static/js/app.js").read_text()
+        self.assertIn("playNotificationAlert()", script)
+        self.assertNotIn("notificationSoundEnabled", script)
+
     def test_openclaw_ingestion_requires_api_key(self):
         payload = {"source": "openclaw", "title": "Task", "message": "Done", "severity": "success"}
         self.assertEqual(self.client.post("/api/v1/notifications", json=payload).status_code, 401)

@@ -1,18 +1,17 @@
 {% extends "base.html" %}
 {% block title %}Notification Center · WatchTower{% endblock %}
 {% block content %}
-  <section class="page-heading">
+  <section class="page-heading notification-heading">
     <div>
       <span class="eyebrow">OPENCLAW / HUMAN AGENT</span>
       <h1>Notification Center</h1>
-      {% if is_admin %}<p>Review all WatchTower notifications and manage OpenClaw approval requests.</p>{% else %}<p>Notifications and approval requests assigned to you.</p>{% endif %}
+      <p>Review operational notifications and approve or deny OpenClaw actions that require human authorization.</p>
     </div>
     <div class="notification-header-actions">
-      <button class="button button-quiet notification-sound-button" id="notification-sound-toggle" type="button" aria-pressed="true">🔊 Sound on</button>
-      <span class="notification-refresh" id="notification-refresh-status">Updating automatically</span>
+      <span class="notification-sound-indicator">🔊 Loud alerts enabled</span>
+      <span class="notification-refresh" id="notification-refresh-status">Waiting for notifications</span>
     </div>
   </section>
-  {% if is_admin %}
   <section class="filter-panel notification-filters">
     <div class="filter-row">
       <label>Source<select id="notification-source"><option value="">All sources</option><option value="openclaw">OpenClaw</option><option value="human_agent">Human Agent</option><option value="watchtower">WatchTower</option><option value="system">System</option></select></label>
@@ -22,11 +21,6 @@
       <button class="button button-quiet" id="notification-refresh" type="button">Refresh</button>
     </div>
   </section>
-  <section class="panel notification-test-panel">
-    <div class="panel-heading"><div><h2>Test Notification</h2><p>Send a test notification to all Human Agents.</p></div><button class="button button-primary" id="send-notification-test" type="button"><span>🔔</span><span>Send test notification</span></button></div>
-    <p class="notification-test-status" id="notification-test-status" aria-live="polite"></p>
-  </section>
-  {% endif %}
   <section class="notification-feed" id="notification-feed" aria-live="polite">
     <div class="notification-empty">Loading notifications…</div>
   </section>

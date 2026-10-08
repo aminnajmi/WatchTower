@@ -142,7 +142,10 @@ async def login(username: str = Form(...), password: str = Form(...)):
 
 @app.get("/", include_in_schema=False)
 def home(request: Request):
-    return RedirectResponse("/dashboard" if (_web_principal(request) and _web_principal(request).role == "admin") else ("/notification-center" if _web_user(request) else "/login"), status_code=303)
+    principal = _web_principal(request)
+    if not principal:
+        return RedirectResponse("/login", status_code=303)
+    return RedirectResponse("/dashboard" if principal.role == "admin" else "/notification-center", status_code=303)
 
 
 def _web_user(request: Request) -> str | None:
@@ -199,15 +202,6 @@ def _render_page(request: Request, template: str, active: str, **context):
     )
 
 
-def _require_admin_page(request: Request):
-    principal = _web_principal(request)
-    if not principal:
-        return None, RedirectResponse("/login", status_code=303)
-    if principal.role != "admin":
-        return None, RedirectResponse("/notification-center", status_code=303)
-    return principal, None
-
-
 @app.get("/login", response_class=HTMLResponse, include_in_schema=False)
 def login_page(request: Request):
     principal = _web_principal(request)
@@ -229,7 +223,7 @@ async def login_form(request: Request, username: str = Form(...), password: str 
             status_code=401,
         )
     logger.info("Authentication accepted stage=html_form status=303")
-    response = RedirectResponse("/dashboard", status_code=303)
+    response = RedirectResponse("/dashboard" if principal.role == "admin" else "/notification-center", status_code=303)
     _set_session_cookie(response, create_access_token(username), request)
     return response
 
@@ -267,14 +261,20 @@ def logout():
     return response
 
 
+def _render_admin_page(request: Request, template: str, active: str, **context):
+    principal = _web_principal(request)
+    if not principal:
+        return RedirectResponse("/login", status_code=303)
+    if principal.role != "admin":
+        return RedirectResponse("/notification-center", status_code=303)
+    return _render_page(request, template, active, **context)
+
+
 @app.get("/dashboard", response_class=HTMLResponse, include_in_schema=False)
 def dashboard_page(request: Request):
-    _, response = _require_admin_page(request)
-    if response:
-        return response
     major_events = events(event_type="new_major_release", os=None)[:5]
     check_result = service.last_check_result or {}
-    return _render_page(
+    return _render_admin_page(
         request,
         "dashboard.html",
         "dashboard",
@@ -285,34 +285,22 @@ def dashboard_page(request: Request):
 
 @app.get("/os", response_class=HTMLResponse, include_in_schema=False)
 def operating_systems_page(request: Request):
-    _, response = _require_admin_page(request)
-    if response:
-        return response
-    return _render_page(request, "dashboard.html", "os", os_index=True)
+    return _render_admin_page(request, "dashboard.html", "os", os_index=True)
 
 
 @app.get("/os/{slug}", response_class=HTMLResponse, include_in_schema=False)
 def os_detail_page(slug: str, request: Request):
-    _, response = _require_admin_page(request)
-    if response:
-        return response
-    return _render_page(request, "os_detail.html", "os", slug=slug)
+    return _render_admin_page(request, "os_detail.html", "os", slug=slug)
 
 
 @app.get("/releases", response_class=HTMLResponse, include_in_schema=False)
 def releases_page(request: Request):
-    _, response = _require_admin_page(request)
-    if response:
-        return response
-    return _render_page(request, "releases.html", "releases")
+    return _render_admin_page(request, "releases.html", "releases")
 
 
 @app.get("/events", response_class=HTMLResponse, include_in_schema=False)
 def events_page(request: Request):
-    _, response = _require_admin_page(request)
-    if response:
-        return response
-    return _render_page(request, "events.html", "events")
+    return _render_admin_page(request, "events.html", "events")
 
 
 @app.get("/settings", response_class=HTMLResponse, include_in_schema=False)
@@ -513,7 +501,6 @@ def _serialize_notification(notification: Notification) -> dict:
     return {
         "id": notification.id,
         "source": notification.source,
-        "recipient": notification.recipient,
         "title": notification.title,
         "message": notification.message,
         "status": notification.status,
@@ -537,8 +524,6 @@ def _serialize_notification(notification: Notification) -> dict:
 def _validate_notification_payload(payload: NotificationCreate) -> None:
     if payload.source not in ALLOWED_SOURCES:
         raise HTTPException(status_code=422, detail="Invalid notification source")
-    if not payload.recipient.strip() or len(payload.recipient.strip()) > 64:
-        raise HTTPException(status_code=422, detail="Invalid notification recipient")
     if payload.status not in ALLOWED_STATUSES:
         raise HTTPException(status_code=422, detail="Invalid notification status")
     if payload.severity not in ALLOWED_SEVERITIES:
@@ -589,8 +574,6 @@ def list_notifications(
         stmt = select(Notification)
         count_stmt = select(func.count(Notification.id))
         filters = []
-        if principal.role != "admin":
-            filters.append(Notification.recipient.in_([principal.username, "all_human_agents"]))
         if source:
             source = source.strip().lower()
             if source not in ALLOWED_SOURCES:
@@ -629,20 +612,17 @@ def get_notification(
     request: Request,
     authorization: str | None = Header(default=None),
 ):
-    principal = None
+    human_authorized = False
     try:
-        principal = _web_principal(request)
+        human_authorized = bool(_web_principal(request))
     except Exception:
-        principal = None
-    openclaw_authorized = _openclaw_authorized(authorization)
-    if not principal and not openclaw_authorized:
+        human_authorized = False
+    if not human_authorized and not _openclaw_authorized(authorization):
         raise HTTPException(status_code=401, detail="Authentication required", headers={"WWW-Authenticate": "Bearer"})
     db = SessionLocal()
     try:
         notification = db.get(Notification, notification_id)
         if notification is None:
-            raise HTTPException(status_code=404, detail="Notification not found")
-        if principal and principal.role != "admin" and notification.recipient not in {principal.username, "all_human_agents"}:
             raise HTTPException(status_code=404, detail="Notification not found")
         return _serialize_notification(notification)
     finally:
@@ -653,13 +633,12 @@ def get_notification(
 def test_notification(current: Principal = Depends(require_admin)):
     notification = create_notification(
         source="watchtower",
-        recipient="all_human_agents",
         title="Test Notification",
-        message="This is a test notification from the WatchTower Notification Center.",
+        message="This is a test notification from the WatchTower Management Panel.",
         status="new",
         severity="info",
         requires_approval=False,
-        metadata={"test": True, "source": "notification_center"},
+        metadata={"test": True, "source": "management_panel"},
     )
     logger.info("notification_test actor=%s notification_id=%s", current.username, notification.id)
     return _serialize_notification(notification)
@@ -672,12 +651,7 @@ def approve_notification(notification_id: int, current: Principal = Depends(auth
         now = datetime.utcnow()
         result = db.execute(
             update(Notification)
-            .where(
-                Notification.id == notification_id,
-                Notification.requires_approval.is_(True),
-                Notification.approval_status == "pending",
-                *([] if current.role == "admin" else [Notification.recipient.in_([current.username, "all_human_agents"])])
-            )
+            .where(Notification.id == notification_id, Notification.requires_approval.is_(True), Notification.approval_status == "pending")
             .values(
                 approval_status="approved",
                 status="resolved",
@@ -690,8 +664,6 @@ def approve_notification(notification_id: int, current: Principal = Depends(auth
         if result.rowcount != 1:
             notification = db.get(Notification, notification_id)
             if notification is None:
-                raise HTTPException(status_code=404, detail="Notification not found")
-            if current.role != "admin" and notification.recipient not in {current.username, "all_human_agents"}:
                 raise HTTPException(status_code=404, detail="Notification not found")
             if not notification.requires_approval:
                 raise HTTPException(status_code=409, detail="This notification does not require approval")
@@ -721,12 +693,7 @@ def deny_notification(
         now = datetime.utcnow()
         result = db.execute(
             update(Notification)
-            .where(
-                Notification.id == notification_id,
-                Notification.requires_approval.is_(True),
-                Notification.approval_status == "pending",
-                *([] if current.role == "admin" else [Notification.recipient.in_([current.username, "all_human_agents"])])
-            )
+            .where(Notification.id == notification_id, Notification.requires_approval.is_(True), Notification.approval_status == "pending")
             .values(
                 approval_status="denied",
                 status="resolved",
@@ -739,8 +706,6 @@ def deny_notification(
         if result.rowcount != 1:
             notification = db.get(Notification, notification_id)
             if notification is None:
-                raise HTTPException(status_code=404, detail="Notification not found")
-            if current.role != "admin" and notification.recipient not in {current.username, "all_human_agents"}:
                 raise HTTPException(status_code=404, detail="Notification not found")
             if not notification.requires_approval:
                 raise HTTPException(status_code=409, detail="This notification does not require approval")
