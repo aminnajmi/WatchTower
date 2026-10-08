@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Tidio · WatchTower{% endblock %}
+{% block content %}
+<section class="page-heading">
+  <div><span class="eyebrow">INTEGRATION</span><h1>Tidio</h1><p>Connect a Tidio account through the web dashboard and monitor unassigned chats.</p></div>
+  <span id="tidio-status-badge" class="status-badge">Not connected</span>
+</section>
+
+<section class="settings-grid">
+  <article class="panel">
+    <div class="panel-heading"><div><h2>Tidio Connection</h2><p>WatchTower uses a browser session to sign in to Tidio. Credentials are stored encrypted and are never displayed again.</p></div></div>
+    <form id="tidio-connect-form" class="form-panel">
+      <label for="tidio-username">Tidio email / username</label>
+      <input id="tidio-username" type="email" autocomplete="username" maxlength="320" placeholder="you@example.com" required>
+      <label for="tidio-password">Tidio password</label>
+      <input id="tidio-password" type="password" autocomplete="current-password" maxlength="256" placeholder="••••••••" required>
+      <div class="dialog-actions">
+        <button class="button button-primary" id="tidio-connect-button" type="submit">Connect to Tidio</button>
+        <button class="button button-quiet" id="tidio-disconnect-button" type="button" hidden>Disconnect</button>
+      </div>
+      <p class="form-error" id="tidio-connect-error" role="alert" hidden></p>
+    </form>
+  </article>
+
+  <article class="panel">
+    <div class="panel-heading"><div><h2>Monitoring</h2><p>The WatchTower server checks the Tidio session every 3 seconds.</p></div></div>
+    <div class="settings-row"><div><strong>Connection</strong><span>Current browser session</span></div><span id="tidio-connection-state" class="status-badge">—</span></div>
+    <div class="settings-row"><div><strong>Unassigned chats</strong><span>Detected in the Tidio inbox</span></div><strong id="tidio-unassigned-count">—</strong></div>
+    <div class="settings-row"><div><strong>Last check</strong><span>Most recent successful check</span></div><strong id="tidio-last-check">—</strong></div>
+    <div class="settings-row"><div><strong>Polling interval</strong><span>Server-side monitoring</span></div><strong>3 seconds</strong></div>
+    <div class="settings-row"><div><strong>Last error</strong><span>Authentication/session errors</span></div><strong id="tidio-last-error">—</strong></div>
+  </article>
+</section>
+
+<section class="panel settings-wide tidio-note-panel">
+  <div class="panel-heading"><div><h2>Automatic reconnect</h2><p>If the Tidio browser session expires, WatchTower automatically signs in again using the saved encrypted credentials. Manual action is only required if Tidio rejects the credentials or requires an additional verification step.</p></div></div>
+</section>
+{% endblock %}

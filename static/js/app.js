@@ -475,6 +475,89 @@
     });
   }
 
+  async function initializeTidio() {
+    const form = $('#tidio-connect-form');
+    if (!form) return;
+    const username = $('#tidio-username');
+    const password = $('#tidio-password');
+    const connectButton = $('#tidio-connect-button');
+    const disconnectButton = $('#tidio-disconnect-button');
+    const errorBox = $('#tidio-connect-error');
+    const statusBadge = $('#tidio-status-badge');
+    const connectionState = $('#tidio-connection-state');
+    const count = $('#tidio-unassigned-count');
+    const lastCheck = $('#tidio-last-check');
+    const lastError = $('#tidio-last-error');
+    let timer = null;
+
+    const statusLabel = status => ({
+      connected: 'Connected', connecting: 'Connecting…', reconnecting: 'Reconnecting…',
+      authentication_failed: 'Authentication failed', session_expired: 'Session expired',
+      disconnected: 'Disconnected', not_configured: 'Not configured', credentials_unavailable: 'Credentials unavailable'
+    }[status] || status || 'Unknown');
+
+    const statusKind = status => status === 'connected' ? 'good' : (['authentication_failed', 'session_expired'].includes(status) ? 'bad' : 'unknown');
+
+    function renderStatus(data) {
+      const label = statusLabel(data.status);
+      $('#tidio-status-badge').outerHTML = `<span id="tidio-status-badge" class="status-badge">${escapeHtml(label)}</span>`;
+      $('#tidio-connection-state').outerHTML = `<span id="tidio-connection-state" class="status-badge">${escapeHtml(label)}</span>`;
+      if (data.configured && username.value !== data.username) username.value = data.username || '';
+      count.textContent = data.connected ? String(Number(data.unassigned_chats) || 0) : '—';
+      lastCheck.textContent = data.last_checked_at ? dateText(data.last_checked_at) : '—';
+      lastError.textContent = data.last_error || '—';
+      disconnectButton.hidden = !data.configured || data.status === 'disconnected';
+      connectButton.textContent = 'Connect to Tidio';
+      password.required = true;
+    }
+
+    async function refresh() {
+      try { renderStatus(await api('/api/v1/tidio')); }
+      catch (error) { if (errorBox) { errorBox.textContent = error.message; errorBox.hidden = false; } }
+    }
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      errorBox.hidden = true;
+      connectButton.disabled = true;
+      connectButton.textContent = 'Connecting…';
+      try {
+        const result = await api('/api/v1/tidio/connect', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: username.value.trim(), password: password.value })
+        });
+        password.value = '';
+        renderStatus(result);
+        toast('Tidio connected successfully.');
+      } catch (error) {
+        errorBox.textContent = error.message;
+        errorBox.hidden = false;
+        toast(`Tidio connection failed: ${error.message}`);
+        await refresh();
+      } finally {
+        connectButton.disabled = false;
+      }
+    });
+
+    disconnectButton.addEventListener('click', async () => {
+      disconnectButton.disabled = true;
+      try {
+        renderStatus(await api('/api/v1/tidio/disconnect', { method: 'POST' }));
+        password.value = '';
+        toast('Tidio disconnected.');
+      } catch (error) {
+        errorBox.textContent = error.message;
+        errorBox.hidden = false;
+      } finally {
+        disconnectButton.disabled = false;
+      }
+    });
+
+    await refresh();
+    timer = window.setInterval(refresh, 3000);
+    window.addEventListener('beforeunload', () => window.clearInterval(timer), { once: true });
+  }
+
   async function loadUsers() {
     const body = $('#users-table-body');
     if (!body) return;
@@ -860,6 +943,7 @@
     if ($('#event-filters')) initializeEvents();
     if ($('#settings-providers')) initializeSettings();
     if ($('#users-table-body')) { initializeUserManagement(); loadUsers(); }
+    if ($('#tidio-connect-form')) initializeTidio();
     if ($('#account-password-form')) initializeAccount();
     if ($('#notification-feed')) initializeNotificationCenter();
     if ($('#send-notification-test')) initializeNotificationTest();
