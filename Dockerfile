@@ -7,9 +7,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt \
-    && python -m playwright install --with-deps chromium \
-    && rm -rf /root/.cache/pip
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
 COPY static ./static

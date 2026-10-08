@@ -21,22 +21,7 @@ class Settings(BaseSettings):
     telegram_enabled: bool = False
     telegram_bot_token: str = ""
     telegram_chat_id: str = ""
-    # Separate Telegram destination for Tidio unassigned/missed-chat alerts.
-    tidio_enabled: bool = False
-    tidio_telegram_enabled: bool = False
-    tidio_telegram_chat_id: str = ""
-    tidio_client_id: str = ""
-    tidio_client_secret: str = ""
-    # Browser fallback for accounts without Developer/OpenAPI access.
-    tidio_web_email: str = ""
-    tidio_web_password: str = ""
-    tidio_web_headless: bool = True
-    tidio_web_timeout_seconds: int = 20
-    tidio_web_unassigned_label: str = "Unassigned"
-    tidio_poll_interval_seconds: int = 10
-    tidio_lookback_minutes: int = 60
     track_point_releases: bool = True
-    openclaw_notification_api_key: str = ""
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
@@ -66,15 +51,6 @@ class Settings(BaseSettings):
                 missing.append("TELEGRAM_BOT_TOKEN is required when Telegram is enabled")
             if not self.telegram_chat_id:
                 missing.append("TELEGRAM_CHAT_ID is required when Telegram is enabled")
-        if self.tidio_telegram_enabled:
-            if not self.telegram_bot_token:
-                missing.append("TELEGRAM_BOT_TOKEN is required when TIDIO_TELEGRAM_ENABLED is true")
-            if not self.tidio_telegram_chat_id:
-                missing.append("TIDIO_TELEGRAM_CHAT_ID is required when TIDIO_TELEGRAM_ENABLED is true")
-        # Tidio can be authenticated once from the administrator Settings page.
-        # Therefore TIDIO_ENABLED does not require API credentials or a password
-        # in the environment. If API credentials are configured they are used;
-        # otherwise the persisted browser session is used.
 
         if missing:
             raise RuntimeError("Invalid production configuration: " + "; ".join(missing))

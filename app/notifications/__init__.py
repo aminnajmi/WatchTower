@@ -30,7 +30,3 @@ async def notify(message: str) -> tuple[bool, str | None]:
         errors.append(f"Telegram notification failed ({type(exc).__name__})")
 
     return success, "; ".join(errors) if errors else None
-
-from .service import create_notification, metadata_for
-
-__all__ = ["notify", "send_discord", "send_telegram", "create_notification", "metadata_for"]

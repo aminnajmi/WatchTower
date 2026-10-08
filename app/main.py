@@ -1,20 +1,18 @@
 from datetime import datetime, timezone
 import hashlib
-import hmac
 import logging
-import json
 from pathlib import Path
 
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, Form, HTTPException, Query, Request, Header
+from fastapi import Depends, FastAPI, Form, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import BaseModel
-from sqlalchemy import func, select, update
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError, OperationalError
 
 from .auth import (
@@ -31,25 +29,13 @@ from .auth import (
     verify_password,
 )
 from .config import settings
-from .models import init_db, SessionLocal, OSRelease, ReleaseHistory, ReleaseEvent, User, Notification
-from .schemas import UserCreate, UserUpdate, PasswordReset, PasswordChange, NotificationCreate
+from .models import init_db, SessionLocal, OSRelease, ReleaseHistory, ReleaseEvent, User
+from .schemas import UserCreate, UserUpdate, PasswordReset, PasswordChange
 from .notifications.telegram import send_test as send_telegram_test
-from .notifications.tidio_telegram import send_test as send_tidio_telegram_test
-from .notifications.service import (
-    ALLOWED_SEVERITIES, ALLOWED_SOURCES, ALLOWED_STATUSES,
-    create_notification, metadata_for,
-)
 from .providers import PROVIDERS
 from . import service
 from . import scheduler as scheduler_module
 from .service import check_all
-from .integrations.tidio_browser import (
-    TidioBrowserError,
-    check_connection as check_tidio_connection,
-    clear_session as clear_tidio_session,
-    login_with_credentials as login_tidio_with_credentials,
-    _has_saved_session as tidio_has_saved_session,
-)
 from .scheduler import JOB_ID, SCHEDULE_LABEL, start_scheduler, stop_scheduler
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -116,11 +102,6 @@ async def security_headers(request: Request, call_next):
     return response
 
 
-class TidioLoginRequest(BaseModel):
-    email: str
-    password: str
-
-
 class WebSessionRequest(BaseModel):
     access_token: str
 
@@ -155,10 +136,7 @@ async def login(username: str = Form(...), password: str = Form(...)):
 
 @app.get("/", include_in_schema=False)
 def home(request: Request):
-    principal = _web_principal(request)
-    if not principal:
-        return RedirectResponse("/login", status_code=303)
-    return RedirectResponse("/dashboard" if principal.role == "admin" else "/notification-center", status_code=303)
+    return RedirectResponse("/dashboard" if _web_user(request) else "/login", status_code=303)
 
 
 def _web_user(request: Request) -> str | None:
@@ -217,9 +195,8 @@ def _render_page(request: Request, template: str, active: str, **context):
 
 @app.get("/login", response_class=HTMLResponse, include_in_schema=False)
 def login_page(request: Request):
-    principal = _web_principal(request)
-    if principal:
-        return RedirectResponse("/dashboard" if principal.role == "admin" else "/notification-center", status_code=303)
+    if _web_user(request):
+        return RedirectResponse("/dashboard", status_code=303)
     return templates.TemplateResponse(request=request, name="login.html", context={})
 
 
@@ -236,7 +213,7 @@ async def login_form(request: Request, username: str = Form(...), password: str 
             status_code=401,
         )
     logger.info("Authentication accepted stage=html_form status=303")
-    response = RedirectResponse("/dashboard" if principal.role == "admin" else "/notification-center", status_code=303)
+    response = RedirectResponse("/dashboard", status_code=303)
     _set_session_cookie(response, create_access_token(username), request)
     return response
 
@@ -274,20 +251,11 @@ def logout():
     return response
 
 
-def _render_admin_page(request: Request, template: str, active: str, **context):
-    principal = _web_principal(request)
-    if not principal:
-        return RedirectResponse("/login", status_code=303)
-    if principal.role != "admin":
-        return RedirectResponse("/notification-center", status_code=303)
-    return _render_page(request, template, active, **context)
-
-
 @app.get("/dashboard", response_class=HTMLResponse, include_in_schema=False)
 def dashboard_page(request: Request):
     major_events = events(event_type="new_major_release", os=None)[:5]
     check_result = service.last_check_result or {}
-    return _render_admin_page(
+    return _render_page(
         request,
         "dashboard.html",
         "dashboard",
@@ -298,22 +266,22 @@ def dashboard_page(request: Request):
 
 @app.get("/os", response_class=HTMLResponse, include_in_schema=False)
 def operating_systems_page(request: Request):
-    return _render_admin_page(request, "dashboard.html", "os", os_index=True)
+    return _render_page(request, "dashboard.html", "os", os_index=True)
 
 
 @app.get("/os/{slug}", response_class=HTMLResponse, include_in_schema=False)
 def os_detail_page(slug: str, request: Request):
-    return _render_admin_page(request, "os_detail.html", "os", slug=slug)
+    return _render_page(request, "os_detail.html", "os", slug=slug)
 
 
 @app.get("/releases", response_class=HTMLResponse, include_in_schema=False)
 def releases_page(request: Request):
-    return _render_admin_page(request, "releases.html", "releases")
+    return _render_page(request, "releases.html", "releases")
 
 
 @app.get("/events", response_class=HTMLResponse, include_in_schema=False)
 def events_page(request: Request):
-    return _render_admin_page(request, "events.html", "events")
+    return _render_page(request, "events.html", "events")
 
 
 @app.get("/settings", response_class=HTMLResponse, include_in_schema=False)
@@ -339,16 +307,6 @@ def users_page(request: Request):
 @app.get("/account", response_class=HTMLResponse, include_in_schema=False)
 def account_page(request: Request):
     return _render_page(request, "account.html", "account")
-
-
-@app.get("/notification-center", response_class=HTMLResponse, include_in_schema=False)
-def notification_center_page(request: Request):
-    return _render_page(request, "notifications.html", "notifications")
-
-
-@app.get("/notifications", response_class=HTMLResponse, include_in_schema=False)
-def notifications_legacy_page(request: Request):
-    return RedirectResponse("/notification-center", status_code=303)
 
 
 def serialize_os(row: OSRelease):
@@ -378,7 +336,7 @@ def _utc_timestamp(value: datetime | None):
     return value.astimezone(timezone.utc)
 
 
-@app.get("/api/v1/os", dependencies=[Depends(require_admin)])
+@app.get("/api/v1/os", dependencies=[Depends(authenticate_token)])
 def list_os():
     db = SessionLocal()
     try:
@@ -388,7 +346,7 @@ def list_os():
         db.close()
 
 
-@app.get("/api/v1/os/{slug}", dependencies=[Depends(require_admin)])
+@app.get("/api/v1/os/{slug}", dependencies=[Depends(authenticate_token)])
 def get_os(slug: str):
     db = SessionLocal()
     try:
@@ -400,7 +358,7 @@ def get_os(slug: str):
         db.close()
 
 
-@app.get("/api/v1/releases", dependencies=[Depends(require_admin)])
+@app.get("/api/v1/releases", dependencies=[Depends(authenticate_token)])
 def releases(
     os: str | None = Query(default=None),
     release_type: str | None = Query(default=None, alias="type"),
@@ -444,12 +402,12 @@ def releases(
         db.close()
 
 
-@app.get("/api/v1/releases/{slug}", dependencies=[Depends(require_admin)])
+@app.get("/api/v1/releases/{slug}", dependencies=[Depends(authenticate_token)])
 def releases_for_os(slug: str):
     return releases(os=slug, release_type=None, date=None, limit=None, offset=0)
 
 
-@app.get("/api/v1/events", dependencies=[Depends(require_admin)])
+@app.get("/api/v1/events", dependencies=[Depends(authenticate_token)])
 def events(
     event_type: str | None = Query(default=None),
     os: str | None = Query(default=None),
@@ -510,297 +468,12 @@ async def test_telegram_notification():
     return {"success": True, "message": "Telegram test message sent"}
 
 
-def _serialize_notification(notification: Notification) -> dict:
-    return {
-        "id": notification.id,
-        "source": notification.source,
-        "title": notification.title,
-        "message": notification.message,
-        "status": notification.status,
-        "severity": notification.severity,
-        "requires_approval": notification.requires_approval,
-        "approval_status": notification.approval_status,
-        "approved_by": notification.approved_by,
-        "approved_at": _utc_timestamp(notification.approved_at),
-        "denial_reason": notification.denial_reason,
-        "task_id": notification.task_id,
-        "task_name": notification.task_name,
-        "report_id": notification.report_id,
-        "metadata": metadata_for(notification),
-        "completed_at": _utc_timestamp(notification.completed_at),
-        "external_url": notification.external_url,
-        "created_at": _utc_timestamp(notification.created_at),
-        "updated_at": _utc_timestamp(notification.updated_at),
-    }
-
-
-def _validate_notification_payload(payload: NotificationCreate) -> None:
-    if payload.source not in ALLOWED_SOURCES:
-        raise HTTPException(status_code=422, detail="Invalid notification source")
-    if payload.status not in ALLOWED_STATUSES:
-        raise HTTPException(status_code=422, detail="Invalid notification status")
-    if payload.severity not in ALLOWED_SEVERITIES:
-        raise HTTPException(status_code=422, detail="Invalid notification severity")
-    if payload.approval_status is not None and payload.approval_status not in {"not_required", "pending"}:
-        raise HTTPException(status_code=422, detail="OpenClaw may only create pending approval requests")
-    if payload.requires_approval and payload.approval_status == "not_required":
-        raise HTTPException(status_code=422, detail="Approval requests must use pending approval status")
-    if len(json.dumps(payload.metadata, ensure_ascii=False)) > 10000:
-        raise HTTPException(status_code=413, detail="Notification metadata is too large")
-
-
-def _openclaw_authorized(authorization: str | None) -> bool:
-    configured = settings.openclaw_notification_api_key.strip()
-    if not configured or not authorization:
-        return False
-    scheme, _, token = authorization.partition(" ")
-    return scheme.lower() == "bearer" and bool(token) and hmac.compare_digest(token.strip(), configured)
-
-
-
-
-@app.post("/api/v1/notifications/test/tidio-telegram", dependencies=[Depends(require_admin)])
-async def test_tidio_telegram_notification():
-    result = await send_tidio_telegram_test()
-    if not result.success:
-        raise HTTPException(status_code=503, detail=result.error or "Tidio Telegram test failed")
-    return {"ok": True, "sent": result.sent, "message": "Tidio Telegram test message sent."}
-@app.post("/api/v1/notifications", status_code=201)
-def create_openclaw_notification(payload: NotificationCreate, authorization: str | None = Header(default=None)):
-    if not _openclaw_authorized(authorization):
-        raise HTTPException(status_code=401, detail="Valid OpenClaw notification credentials required", headers={"WWW-Authenticate": "Bearer"})
-    _validate_notification_payload(payload)
-    if payload.source != "openclaw":
-        raise HTTPException(status_code=403, detail="OpenClaw endpoint accepts only openclaw notifications")
-    try:
-        notification = create_notification(**payload.model_dump())
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc))
-    return _serialize_notification(notification)
-
-
-@app.get("/api/v1/notifications")
-def list_notifications(
-    principal: Principal = Depends(authenticate_token),
-    source: str | None = Query(default=None),
-    severity: str | None = Query(default=None),
-    status: str | None = Query(default=None),
-    approval_status: str | None = Query(default=None),
-    limit: int = Query(default=50, ge=1, le=100),
-    offset: int = Query(default=0, ge=0),
-    since: datetime | None = Query(default=None),
-):
-    db = SessionLocal()
-    try:
-        stmt = select(Notification)
-        count_stmt = select(func.count(Notification.id))
-        filters = []
-        if source:
-            source = source.strip().lower()
-            if source not in ALLOWED_SOURCES:
-                raise HTTPException(status_code=422, detail="Invalid notification source")
-            filters.append(Notification.source == source)
-        if severity:
-            severity = severity.strip().lower()
-            if severity not in ALLOWED_SEVERITIES:
-                raise HTTPException(status_code=422, detail="Invalid notification severity")
-            filters.append(Notification.severity == severity)
-        if status:
-            status = status.strip().lower()
-            if status not in ALLOWED_STATUSES:
-                raise HTTPException(status_code=422, detail="Invalid notification status")
-            filters.append(Notification.status == status)
-        if approval_status:
-            approval_status = approval_status.strip().lower()
-            if approval_status not in {"not_required", "pending", "approved", "denied"}:
-                raise HTTPException(status_code=422, detail="Invalid approval status")
-            filters.append(Notification.approval_status == approval_status)
-        if since:
-            filters.append(Notification.created_at > since.replace(tzinfo=None) if since.tzinfo else Notification.created_at > since)
-        if filters:
-            stmt = stmt.where(*filters)
-            count_stmt = count_stmt.where(*filters)
-        total = db.scalar(count_stmt) or 0
-        rows = db.scalars(stmt.order_by(Notification.created_at.desc(), Notification.id.desc()).offset(offset).limit(limit)).all()
-        return {"items": [_serialize_notification(row) for row in rows], "total": total, "limit": limit, "offset": offset}
-    finally:
-        db.close()
-
-
-@app.get("/api/v1/notifications/{notification_id}")
-def get_notification(
-    notification_id: int,
-    request: Request,
-    authorization: str | None = Header(default=None),
-):
-    human_authorized = False
-    try:
-        human_authorized = bool(_web_principal(request))
-    except Exception:
-        human_authorized = False
-    if not human_authorized and not _openclaw_authorized(authorization):
-        raise HTTPException(status_code=401, detail="Authentication required", headers={"WWW-Authenticate": "Bearer"})
-    db = SessionLocal()
-    try:
-        notification = db.get(Notification, notification_id)
-        if notification is None:
-            raise HTTPException(status_code=404, detail="Notification not found")
-        return _serialize_notification(notification)
-    finally:
-        db.close()
-
-
-@app.post("/api/v1/notifications/test", status_code=201, dependencies=[Depends(require_admin)])
-def test_notification(current: Principal = Depends(require_admin)):
-    notification = create_notification(
-        source="watchtower",
-        title="Test Notification",
-        message="This is a test notification from the WatchTower Management Panel.",
-        status="new",
-        severity="info",
-        requires_approval=False,
-        metadata={"test": True, "source": "management_panel"},
-    )
-    logger.info("notification_test actor=%s notification_id=%s", current.username, notification.id)
-    return _serialize_notification(notification)
-
-
-@app.post("/api/v1/notifications/{notification_id}/approve")
-def approve_notification(notification_id: int, current: Principal = Depends(authenticate_token)):
-    db = SessionLocal()
-    try:
-        now = datetime.utcnow()
-        result = db.execute(
-            update(Notification)
-            .where(Notification.id == notification_id, Notification.requires_approval.is_(True), Notification.approval_status == "pending")
-            .values(
-                approval_status="approved",
-                status="resolved",
-                approved_by=current.username,
-                approved_at=now,
-                denial_reason=None,
-                updated_at=now,
-            )
-        )
-        if result.rowcount != 1:
-            notification = db.get(Notification, notification_id)
-            if notification is None:
-                raise HTTPException(status_code=404, detail="Notification not found")
-            if not notification.requires_approval:
-                raise HTTPException(status_code=409, detail="This notification does not require approval")
-            raise HTTPException(status_code=409, detail=f"Notification is already {notification.approval_status}")
-        db.commit()
-        notification = db.get(Notification, notification_id)
-        logger.info("notification_decision actor=%s notification_id=%s decision=approved task_id=%s", current.username, notification.id, notification.task_id)
-        return _serialize_notification(notification)
-    finally:
-        db.close()
-
-class NotificationDenyRequest(BaseModel):
-    reason: str | None = None
-
-
-@app.post("/api/v1/notifications/{notification_id}/deny")
-def deny_notification(
-    notification_id: int,
-    payload: NotificationDenyRequest | None = None,
-    current: Principal = Depends(authenticate_token),
-):
-    reason = (payload.reason.strip() if payload and payload.reason else None)
-    if reason and len(reason) > 1000:
-        raise HTTPException(status_code=422, detail="Denial reason is too long")
-    db = SessionLocal()
-    try:
-        now = datetime.utcnow()
-        result = db.execute(
-            update(Notification)
-            .where(Notification.id == notification_id, Notification.requires_approval.is_(True), Notification.approval_status == "pending")
-            .values(
-                approval_status="denied",
-                status="resolved",
-                approved_by=current.username,
-                approved_at=now,
-                denial_reason=reason,
-                updated_at=now,
-            )
-        )
-        if result.rowcount != 1:
-            notification = db.get(Notification, notification_id)
-            if notification is None:
-                raise HTTPException(status_code=404, detail="Notification not found")
-            if not notification.requires_approval:
-                raise HTTPException(status_code=409, detail="This notification does not require approval")
-            raise HTTPException(status_code=409, detail=f"Notification is already {notification.approval_status}")
-        db.commit()
-        notification = db.get(Notification, notification_id)
-        logger.info("notification_decision actor=%s notification_id=%s decision=denied task_id=%s", current.username, notification.id, notification.task_id)
-        return _serialize_notification(notification)
-    finally:
-        db.close()
-
-@app.get("/api/v1/providers", dependencies=[Depends(require_admin)])
+@app.get("/api/v1/providers", dependencies=[Depends(authenticate_token)])
 def providers():
     return {"providers": list(PROVIDERS.keys())}
 
 
-@app.get("/api/v1/tidio/status", dependencies=[Depends(require_admin)])
-async def tidio_status():
-    saved = tidio_has_saved_session()
-    if not settings.tidio_enabled:
-        return {
-            "enabled": False,
-            "connected": False,
-            "session_saved": saved,
-            "message": "Tidio monitoring is disabled",
-        }
-    if not saved:
-        return {
-            "enabled": True,
-            "connected": False,
-            "session_saved": False,
-            "message": "Browser session not found. Login to Tidio from Settings first.",
-        }
-    try:
-        result = await check_tidio_connection()
-        return {
-            "enabled": True,
-            "connected": True,
-            "session_saved": True,
-            "url": result.get("url"),
-            "message": "Tidio browser session is active",
-        }
-    except TidioBrowserError as exc:
-        return {
-            "enabled": True,
-            "connected": False,
-            "session_saved": saved,
-            "message": str(exc),
-        }
-
-
-@app.post("/api/v1/tidio/login", dependencies=[Depends(require_admin)])
-async def tidio_login(payload: TidioLoginRequest):
-    try:
-        result = await login_tidio_with_credentials(payload.email, payload.password)
-    except TidioBrowserError as exc:
-        logger.warning("Tidio manual login failed (%s)", type(exc).__name__)
-        return JSONResponse({"success": False, "error": str(exc)}, status_code=400)
-    logger.info("Tidio manual login succeeded")
-    return {
-        "success": True,
-        "message": "Tidio login succeeded and the browser session was saved.",
-        "url": result.get("url"),
-    }
-
-
-@app.post("/api/v1/tidio/logout", dependencies=[Depends(require_admin)])
-async def tidio_logout():
-    await clear_tidio_session()
-    logger.info("Tidio browser session cleared")
-    return {"success": True, "message": "Tidio browser session cleared"}
-
-
-@app.get("/api/v1/status", dependencies=[Depends(require_admin)])
+@app.get("/api/v1/status", dependencies=[Depends(authenticate_token)])
 def status():
     db = SessionLocal()
     try:
@@ -821,7 +494,6 @@ def status():
     try:
         active_scheduler = scheduler or scheduler_module.get_scheduler()
         job = active_scheduler.get_job(JOB_ID) if active_scheduler is not None else None
-        tidio_job = active_scheduler.get_job(scheduler_module.TIDIO_JOB_ID) if active_scheduler is not None else None
         apscheduler_running = bool(active_scheduler is not None and active_scheduler.running)
         if not apscheduler_running:
             job_state = "stopped"
@@ -835,7 +507,6 @@ def status():
         next_check = job.next_run_time if job_state == "scheduled" else None
     except Exception:
         job = None
-        tidio_job = None
         apscheduler_running = False
         scheduler_running = False
         job_state = "unavailable"
@@ -874,30 +545,12 @@ def status():
                 and (finished is None or service.last_check_started_at > finished)
             ),
         },
-        "tidio_scheduler": {
-            "enabled": bool(settings.tidio_enabled and settings.tidio_telegram_enabled),
-            "job_id": scheduler_module.TIDIO_JOB_ID,
-            "job_exists": tidio_job is not None,
-            "next_run": tidio_job.next_run_time if tidio_job is not None else None,
-            "interval_seconds": 10,
-        },
         "notifications": {
             "discord_enabled": bool(settings.discord_webhook_url),
             "telegram_enabled": bool(
                 settings.telegram_enabled and settings.telegram_bot_token and settings.telegram_chat_id
             ),
             "telegram_chat_configured": bool(settings.telegram_chat_id),
-            "tidio_telegram_enabled": bool(
-                settings.tidio_telegram_enabled and settings.telegram_bot_token and settings.tidio_telegram_chat_id
-            ),
-            "tidio_telegram_chat_configured": bool(settings.tidio_telegram_chat_id),
-            "tidio_enabled": bool(settings.tidio_enabled),
-            "tidio_source": (
-                "api" if settings.tidio_client_id and settings.tidio_client_secret
-                else "browser-session" if tidio_has_saved_session()
-                else "browser-login-required" if settings.tidio_enabled
-                else "unconfigured"
-            ),
         },
     }
 

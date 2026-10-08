@@ -9,15 +9,12 @@ from apscheduler.schedulers.base import STATE_PAUSED
 from apscheduler.triggers.cron import CronTrigger
 
 from .service import check_all
-from .tidio_service import check_unassigned_chats
-from .config import settings
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 logger.propagate = True
 
 JOB_ID = "os-release-check"
-TIDIO_JOB_ID = "tidio-unassigned-check"
 SCHEDULE_LABEL = "09:00,23:00 UTC"
 UTC = timezone.utc
 
@@ -70,24 +67,6 @@ async def scheduled_check():
     return result
 
 
-async def scheduled_tidio_check():
-    """Poll Tidio independently from the OS-release schedule."""
-    try:
-        result = await check_unassigned_chats()
-        logger.info(
-            "TIDIO JOB COMPLETED checked=%s notified=%s skipped=%s errors=%s",
-            result.get("checked", 0),
-            result.get("notified", 0),
-            result.get("skipped", 0),
-            len(result.get("errors", [])),
-        )
-        return result
-    except Exception:
-        # Never let a Tidio outage interfere with the OS-release scheduler.
-        logger.exception("TIDIO JOB FAILED")
-        return {"checked": 0, "notified": 0, "skipped": 0, "errors": [{"error": "Tidio job failed"}]}
-
-
 def _record_job_event(event):
     """Record real APScheduler lifecycle events for the tracked job."""
     global last_scheduled_run_finished_at, last_scheduled_run_error, last_scheduled_run_status
@@ -126,21 +105,6 @@ def _add_check_job(active_scheduler: AsyncIOScheduler):
     )
 
 
-def _add_tidio_job(active_scheduler: AsyncIOScheduler):
-    if not settings.tidio_enabled or not settings.tidio_telegram_enabled:
-        return None
-    return active_scheduler.add_job(
-        scheduled_tidio_check,
-        "interval",
-        seconds=10,
-        id=TIDIO_JOB_ID,
-        replace_existing=True,
-        coalesce=True,
-        misfire_grace_time=30,
-        max_instances=1,
-    )
-
-
 def start_scheduler():
     """Create and start one scheduler on FastAPI's currently running loop."""
     global scheduler
@@ -155,9 +119,6 @@ def start_scheduler():
             job = scheduler.get_job(JOB_ID)
             logger.info("OS release check job resumed")
 
-        if settings.tidio_enabled and settings.tidio_telegram_enabled and scheduler.get_job(TIDIO_JOB_ID) is None:
-            _add_tidio_job(scheduler)
-            logger.info("Tidio unassigned-chat job registered")
         logger.info("Scheduler already running")
         logger.info("Schedule: %s", SCHEDULE_LABEL)
         logger.info("Timezone: UTC")
@@ -176,14 +137,10 @@ def start_scheduler():
     )
 
     job = _add_check_job(scheduler)
-    tidio_job = _add_tidio_job(scheduler)
     scheduler.start()
 
     logger.info("Scheduler started")
     logger.info("OS release check job registered")
-    if tidio_job is not None:
-        logger.info("Tidio unassigned-chat job registered")
-        logger.info("Tidio poll interval: 10s")
     logger.info("Schedule: %s", SCHEDULE_LABEL)
     logger.info("Timezone: UTC")
     logger.info("Job ID: %s", JOB_ID)
