@@ -1,8 +1,8 @@
 """Browser-based Tidio inbox integration.
 
-This is the fallback for Tidio accounts that cannot access Developer/OpenAPI.
-It uses the same web interface a human operator uses, keeps a persistent
-browser session in the WatchTower data volume, and reads the Unassigned queue.
+The administrator authenticates once from WatchTower Settings. Playwright then
+persists the authenticated browser storage state in the application data
+volume and reuses it for the 10-second Unassigned monitor.
 """
 
 from __future__ import annotations
@@ -13,7 +13,6 @@ import logging
 import re
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
 
 from ..config import settings
 
@@ -23,16 +22,9 @@ TIDIO_LOGIN_URL = "https://www.tidio.com/panel/login"
 TIDIO_INBOX_URL = "https://www.tidio.com/panel/conversations"
 _CONVERSATION_RE = re.compile(r"/panel/conversations/([^/?#]+)")
 
-
-class TidioBrowserError(RuntimeError):
-    pass
-
-
 _browser_lock = asyncio.Lock()
-_playwright = None
-_browser = None
-_context = None
-_page = None
+_manual_email = ""
+_manual_password = ""
 
 
 def _state_path() -> Path:
@@ -45,104 +37,164 @@ def _state_path() -> Path:
     return Path("./data/tidio_browser_state.json")
 
 
-def _credentials_ready() -> bool:
-    return bool(settings.tidio_web_email and settings.tidio_web_password)
-
-
-async def _close_browser() -> None:
-    global _playwright, _browser, _context, _page
+def _has_saved_session() -> bool:
+    path = _state_path()
     try:
-        if _context is not None:
-            await _context.close()
-    except Exception:
-        pass
+        return path.is_file() and path.stat().st_size > 20
+    except OSError:
+        return False
+
+
+def _credentials_for_login() -> tuple[str, str]:
+    # Credentials supplied by the admin login endpoint live only in memory for
+    # the duration of the login attempt. Environment credentials are retained
+    # only as a backwards-compatible fallback.
+    if _manual_email and _manual_password:
+        return _manual_email, _manual_password
+    return settings.tidio_web_email, settings.tidio_web_password
+
+
+async def _login_if_needed(page: Any) -> None:
+    await page.goto(TIDIO_INBOX_URL, wait_until="domcontentloaded")
+    if "/panel/login" not in page.url:
+        return
+
+    await page.wait_for_timeout(1200)
+    if "/panel/login" not in page.url:
+        return
+
+    await page.goto(TIDIO_LOGIN_URL, wait_until="domcontentloaded")
+    email_value, password_value = _credentials_for_login()
+    if not email_value or not password_value:
+        raise TidioBrowserError(
+            "Tidio is not authenticated. Use Settings → Tidio Connection → Login to Tidio first."
+        )
+
     try:
-        if _browser is not None:
-            await _browser.close()
-    except Exception:
-        pass
-    try:
-        if _playwright is not None:
-            await _playwright.stop()
-    except Exception:
-        pass
-    _playwright = _browser = _context = _page = None
+        email = page.get_by_label("Your work email", exact=True)
+        password = page.get_by_label("Password", exact=True)
+        await email.fill(email_value)
+        await password.fill(password_value)
+        await page.get_by_role("button", name=re.compile(r"log in", re.I)).click()
+        await page.wait_for_timeout(1800)
+    except Exception as exc:
+        raise TidioBrowserError(
+            f"Tidio login form could not be completed ({type(exc).__name__})"
+        ) from exc
+
+    if "/panel/login" in page.url:
+        text = (await page.locator("body").inner_text())[:5000].lower()
+        if "recaptcha" in text or "captcha" in text:
+            raise TidioBrowserError(
+                "Tidio login requires CAPTCHA or an interactive browser login"
+            )
+        if "verification" in text or "two-factor" in text or "2fa" in text:
+            raise TidioBrowserError(
+                "Tidio login requires interactive verification/2FA"
+            )
+        raise TidioBrowserError(
+            "Tidio login failed; check the credentials or Tidio login method"
+        )
 
 
-async def _start_browser() -> Any:
-    global _playwright, _browser, _context, _page
-    if _page is not None and not _page.is_closed():
-        return _page
+def _browser_args() -> list[str]:
+    return ["--disable-dev-shm-usage", "--no-sandbox"]
 
+
+async def _with_browser(callback):
+    """Run one operation with a fresh Playwright browser/context/page."""
     try:
         from playwright.async_api import async_playwright
     except ImportError as exc:
         raise TidioBrowserError("Playwright is not installed") from exc
 
-    _playwright = await async_playwright().start()
-    _browser = await _playwright.chromium.launch(
-        headless=settings.tidio_web_headless,
-        args=["--disable-dev-shm-usage", "--no-sandbox"],
-    )
+    async with async_playwright() as playwright:
+        browser = await playwright.chromium.launch(
+            headless=settings.tidio_web_headless,
+            args=_browser_args(),
+        )
+        try:
+            state = _state_path()
+            context = await browser.new_context(
+                storage_state=str(state) if state.exists() else None,
+            )
+            try:
+                page = await context.new_page()
+                page.set_default_timeout(settings.tidio_web_timeout_seconds * 1000)
+                return await callback(page, context)
+            finally:
+                await context.close()
+        finally:
+            await browser.close()
 
-    state = _state_path()
-    state_arg = str(state) if state.exists() else None
-    _context = await _browser.new_context(storage_state=state_arg)
-    _page = await _context.new_page()
-    _page.set_default_timeout(settings.tidio_web_timeout_seconds * 1000)
-    return _page
 
-
-async def _save_state() -> None:
-    if _context is None:
-        return
+async def _save_state(context: Any) -> None:
     path = _state_path()
     path.parent.mkdir(parents=True, exist_ok=True)
-    await _context.storage_state(path=str(path))
+    await context.storage_state(path=str(path))
 
 
-def _looks_logged_out(url: str) -> bool:
-    return "/panel/login" in url
+async def login_with_credentials(email: str, password: str) -> dict[str, Any]:
+    global _manual_email, _manual_password
+    if not email.strip() or not password:
+        raise TidioBrowserError("Email and password are required")
+
+    async with _browser_lock:
+        _manual_email = email.strip()
+        _manual_password = password
+        try:
+            async def login(page, context):
+                await _login_if_needed(page)
+                await _save_state(context)
+                return {"url": page.url}
+
+            result = await _with_browser(login)
+            logger.info("Tidio browser session saved")
+            return result
+        except TidioBrowserError:
+            raise
+        except Exception as exc:
+            raise TidioBrowserError(
+                f"Tidio browser login failed ({type(exc).__name__})"
+            ) from exc
+        finally:
+            _manual_email = ""
+            _manual_password = ""
 
 
-async def _login_if_needed(page: Any) -> None:
-    await page.goto(TIDIO_INBOX_URL, wait_until="domcontentloaded")
-    if not _looks_logged_out(page.url):
-        return
+async def check_connection() -> dict[str, Any]:
+    if not _has_saved_session():
+        raise TidioBrowserError("Browser session not found. Login to Tidio from Settings first.")
 
-    # A persisted session may still be valid but Tidio can render the login
-    # page briefly before restoring it. Give the app a short chance to settle.
-    await page.wait_for_timeout(1200)
-    if not _looks_logged_out(page.url):
-        return
+    async with _browser_lock:
+        try:
+            async def check(page, _context):
+                await page.goto(TIDIO_INBOX_URL, wait_until="domcontentloaded")
+                await page.wait_for_timeout(800)
+                if "/panel/login" in page.url:
+                    raise TidioBrowserError("Saved Tidio browser session has expired. Login again.")
+                return {"url": page.url}
 
-    await page.goto(TIDIO_LOGIN_URL, wait_until="domcontentloaded")
+            return await _with_browser(check)
+        except TidioBrowserError:
+            raise
+        except Exception as exc:
+            raise TidioBrowserError(
+                f"Tidio browser connection check failed ({type(exc).__name__})"
+            ) from exc
 
-    if not _credentials_ready():
-        raise TidioBrowserError("TIDIO_WEB_EMAIL and TIDIO_WEB_PASSWORD are required")
 
-    try:
-        email = page.get_by_label("Your work email", exact=True)
-        password = page.get_by_label("Password", exact=True)
-        await email.fill(settings.tidio_web_email)
-        await password.fill(settings.tidio_web_password)
-        await page.get_by_role("button", name=re.compile(r"log in", re.I)).click()
-        await page.wait_for_timeout(1500)
-    except Exception as exc:
-        raise TidioBrowserError(f"Tidio login form could not be completed ({type(exc).__name__})") from exc
-
-    if _looks_logged_out(page.url):
-        text = (await page.locator("body").inner_text())[:4000].lower()
-        if "recaptcha" in text or "captcha" in text:
-            raise TidioBrowserError("Tidio login requires CAPTCHA or an interactive browser login")
-        raise TidioBrowserError("Tidio login failed; check the web credentials or account login method")
-
-    await _save_state()
+async def clear_session() -> None:
+    async with _browser_lock:
+        path = _state_path()
+        try:
+            path.unlink(missing_ok=True)
+        except OSError as exc:
+            raise TidioBrowserError("Could not clear the saved Tidio browser session") from exc
+        logger.info("Tidio browser session cleared")
 
 
 async def _open_unassigned(page: Any) -> None:
-    # Prefer the visible navigation item. This avoids hard-coding Tidio's
-    # internal inbox route, which can change between panel versions.
     label = settings.tidio_web_unassigned_label
     candidates = page.get_by_text(label, exact=True)
     count = await candidates.count()
@@ -156,7 +208,6 @@ async def _open_unassigned(page: Any) -> None:
         except Exception:
             continue
 
-    # Fallback to the currently documented conversation route.
     await page.goto(TIDIO_INBOX_URL, wait_until="domcontentloaded")
     await page.wait_for_timeout(700)
     candidates = page.get_by_text(label, exact=True)
@@ -209,29 +260,34 @@ async def _extract_unassigned(page: Any) -> list[dict]:
 
 
 async def get_unassigned_threads() -> list[dict]:
-    """Read the live Unassigned queue from the authenticated Tidio panel."""
     if not settings.tidio_enabled:
         return []
-    if not _credentials_ready():
-        raise TidioBrowserError("TIDIO_WEB_EMAIL and TIDIO_WEB_PASSWORD are required")
 
     async with _browser_lock:
+        if not _has_saved_session():
+            raise TidioBrowserError(
+                "Browser session not found. Use Settings → Tidio Connection → Login to Tidio first."
+            )
         try:
-            page = await _start_browser()
-            await _login_if_needed(page)
-            await _open_unassigned(page)
-            threads = await _extract_unassigned(page)
+            async def snapshot(page, _context):
+                await _login_if_needed(page)
+                await _open_unassigned(page)
+                return await _extract_unassigned(page)
+
+            threads = await _with_browser(snapshot)
             logger.info("Tidio browser snapshot: %s unassigned conversations", len(threads))
             return threads
         except TidioBrowserError:
-            await _close_browser()
             raise
         except Exception as exc:
-            # Capture a diagnostic without exposing credentials.
             try:
-                if _page is not None:
-                    await _page.screenshot(path=str(_state_path().with_name("tidio_browser_error.png")))
+                path = _state_path().with_name("tidio_browser_error.png")
+                # A screenshot is useful for diagnostics and does not contain
+                # the submitted password.
+                # The page is closed by _with_browser after the callback, so
+                # generic exceptions are intentionally not re-captured here.
             except Exception:
                 pass
-            await _close_browser()
-            raise TidioBrowserError(f"Tidio browser check failed ({type(exc).__name__})") from exc
+            raise TidioBrowserError(
+                f"Tidio browser check failed ({type(exc).__name__})"
+            ) from exc

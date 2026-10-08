@@ -43,6 +43,13 @@ from .providers import PROVIDERS
 from . import service
 from . import scheduler as scheduler_module
 from .service import check_all
+from .integrations.tidio_browser import (
+    TidioBrowserError,
+    check_connection as check_tidio_connection,
+    clear_session as clear_tidio_session,
+    login_with_credentials as login_tidio_with_credentials,
+    _has_saved_session as tidio_has_saved_session,
+)
 from .scheduler import JOB_ID, SCHEDULE_LABEL, start_scheduler, stop_scheduler
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -107,6 +114,11 @@ async def security_headers(request: Request, call_next):
     response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
     response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
     return response
+
+
+class TidioLoginRequest(BaseModel):
+    email: str
+    password: str
 
 
 class WebSessionRequest(BaseModel):
@@ -731,6 +743,63 @@ def providers():
     return {"providers": list(PROVIDERS.keys())}
 
 
+@app.get("/api/v1/tidio/status", dependencies=[Depends(require_admin)])
+async def tidio_status():
+    saved = tidio_has_saved_session()
+    if not settings.tidio_enabled:
+        return {
+            "enabled": False,
+            "connected": False,
+            "session_saved": saved,
+            "message": "Tidio monitoring is disabled",
+        }
+    if not saved:
+        return {
+            "enabled": True,
+            "connected": False,
+            "session_saved": False,
+            "message": "Browser session not found. Login to Tidio from Settings first.",
+        }
+    try:
+        result = await check_tidio_connection()
+        return {
+            "enabled": True,
+            "connected": True,
+            "session_saved": True,
+            "url": result.get("url"),
+            "message": "Tidio browser session is active",
+        }
+    except TidioBrowserError as exc:
+        return {
+            "enabled": True,
+            "connected": False,
+            "session_saved": saved,
+            "message": str(exc),
+        }
+
+
+@app.post("/api/v1/tidio/login", dependencies=[Depends(require_admin)])
+async def tidio_login(payload: TidioLoginRequest):
+    try:
+        result = await login_tidio_with_credentials(payload.email, payload.password)
+    except TidioBrowserError as exc:
+        logger.warning("Tidio manual login failed (%s)", type(exc).__name__)
+        return JSONResponse({"success": False, "error": str(exc)}, status_code=400)
+    logger.info("Tidio manual login succeeded")
+    return {
+        "success": True,
+        "message": "Tidio login succeeded and the browser session was saved.",
+        "url": result.get("url"),
+    }
+
+
+@app.post("/api/v1/tidio/logout", dependencies=[Depends(require_admin)])
+async def tidio_logout():
+    await clear_tidio_session()
+    logger.info("Tidio browser session cleared")
+    return {"success": True, "message": "Tidio browser session cleared"}
+
+
 @app.get("/api/v1/status", dependencies=[Depends(require_admin)])
 def status():
     db = SessionLocal()
@@ -825,7 +894,8 @@ def status():
             "tidio_enabled": bool(settings.tidio_enabled),
             "tidio_source": (
                 "api" if settings.tidio_client_id and settings.tidio_client_secret
-                else "browser" if settings.tidio_web_email and settings.tidio_web_password
+                else "browser-session" if tidio_has_saved_session()
+                else "browser-login-required" if settings.tidio_enabled
                 else "unconfigured"
             ),
         },

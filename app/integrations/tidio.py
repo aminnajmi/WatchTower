@@ -29,11 +29,11 @@ async def get_unassigned_threads() -> list[dict]:
     """
     if not settings.tidio_enabled:
         return []
-    # Browser mode is used when the account cannot access Developer/OpenAPI.
-    if settings.tidio_web_email and settings.tidio_web_password and not (settings.tidio_client_id and settings.tidio_client_secret):
+    # Browser mode is used when Developer/OpenAPI credentials are not configured.
+    # Authentication is established from the admin Settings page and persisted
+    # in the application data volume.
+    if not (settings.tidio_client_id and settings.tidio_client_secret):
         return await get_browser_unassigned_threads()
-    if not settings.tidio_client_id or not settings.tidio_client_secret:
-        raise TidioConfigurationError("Configure TIDIO_CLIENT_ID/TIDIO_CLIENT_SECRET or TIDIO_WEB_EMAIL/TIDIO_WEB_PASSWORD")
 
     lookback = max(1, settings.tidio_lookback_minutes)
     since = (datetime.now(timezone.utc) - timedelta(minutes=lookback)).isoformat().replace("+00:00", "Z")

@@ -71,11 +71,10 @@ class Settings(BaseSettings):
                 missing.append("TELEGRAM_BOT_TOKEN is required when TIDIO_TELEGRAM_ENABLED is true")
             if not self.tidio_telegram_chat_id:
                 missing.append("TIDIO_TELEGRAM_CHAT_ID is required when TIDIO_TELEGRAM_ENABLED is true")
-        if self.tidio_enabled:
-            api_ready = bool(self.tidio_client_id and self.tidio_client_secret)
-            browser_ready = bool(self.tidio_web_email and self.tidio_web_password)
-            if not api_ready and not browser_ready:
-                missing.append("TIDIO_CLIENT_ID/TIDIO_CLIENT_SECRET or TIDIO_WEB_EMAIL/TIDIO_WEB_PASSWORD are required when TIDIO_ENABLED is true")
+        # Tidio can be authenticated once from the administrator Settings page.
+        # Therefore TIDIO_ENABLED does not require API credentials or a password
+        # in the environment. If API credentials are configured they are used;
+        # otherwise the persisted browser session is used.
 
         if missing:
             raise RuntimeError("Invalid production configuration: " + "; ".join(missing))
