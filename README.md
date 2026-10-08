@@ -181,3 +181,15 @@ Administrators can manage accounts at **User Management** and change their own p
 Passwords use the existing PBKDF2-HMAC-SHA256 scheme with a per-password random salt. WatchTower never returns password hashes from its user APIs. Protected APIs accept bearer JWTs; browser login stores the JWT in an HTTP-only cookie with the existing HTTPS secure-cookie behavior. Cookie-authenticated state changes retain same-origin validation. The legacy `API_KEY` remains available for server-to-server integrations.
 
 <img width="1910" height="888" alt="Screenshot 2026-10-03 at 13 06 00" src="https://github.com/user-attachments/assets/72654867-3d17-4f5f-8493-6faa44a9ed4c" />
+
+## Tidio browser session login
+
+For Tidio accounts without Developer/OpenAPI access, WatchTower can authenticate the Tidio browser session from the administrator Settings page. No Tidio password is required in `.env`.
+
+1. Set `TIDIO_ENABLED=true` and configure the separate Tidio Telegram destination.
+2. Open **Settings → Tidio Connection** in WatchTower.
+3. Enter the Tidio email/password for the login attempt and click **Login to Tidio**.
+4. WatchTower saves the authenticated browser session in `/app/data/tidio_browser_state.json`.
+5. The 10-second Tidio monitor reuses that session. Use **Clear Session** to force re-authentication.
+
+The login password is held only in memory during the login request and is not written to the database, `.env`, logs, or the persisted browser state.

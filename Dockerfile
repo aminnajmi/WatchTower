@@ -2,16 +2,13 @@ FROM python:3.13-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+    PIP_NO_CACHE_DIR=1
 
 WORKDIR /app
 
 COPY requirements.txt .
-
 RUN pip install --no-cache-dir -r requirements.txt \
     && python -m playwright install --with-deps chromium \
-    && chmod -R 755 /ms-playwright \
     && rm -rf /root/.cache/pip
 
 COPY app ./app
@@ -30,16 +27,10 @@ RUN test -s /app/static/js/app.js \
 # by this account on the host. Override at build time when required.
 ARG APP_UID=10001
 ARG APP_GID=10001
-
 RUN groupadd --gid "${APP_GID}" watchtower \
-    && useradd --uid "${APP_UID}" \
-        --gid watchtower \
-        --create-home \
-        --home-dir /home/watchtower \
-        --shell /usr/sbin/nologin \
-        watchtower \
+    && useradd --uid "${APP_UID}" --gid watchtower --no-create-home --shell /usr/sbin/nologin watchtower \
     && mkdir -p /app/data \
-    && chown -R watchtower:watchtower /app /home/watchtower
+    && chown -R watchtower:watchtower /app
 
 USER watchtower:watchtower
 

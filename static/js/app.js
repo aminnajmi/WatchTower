@@ -443,7 +443,82 @@
     loadEvents();
   }
 
+  async function initializeTidioConnection() {
+    const badge = $('#tidio-connection-badge');
+    const state = $('#tidio-session-state');
+    const statusText = $('#tidio-connection-status');
+    const loginButton = $('#tidio-login-button');
+    const logoutButton = $('#tidio-logout-button');
+    const emailInput = $('#tidio-login-email');
+    const passwordInput = $('#tidio-login-password');
+    const loginStatus = $('#tidio-login-status');
+    if (!badge || !loginButton) return;
+
+    const render = result => {
+      const connected = Boolean(result.connected);
+      badge.textContent = connected ? 'Connected' : (result.enabled ? 'Login required' : 'Disabled');
+      badge.className = `status-badge ${connected ? 'status-good' : 'status-unknown'}`;
+      statusText.textContent = result.message || (connected ? 'Tidio browser session is active.' : 'Tidio session is not connected.');
+      state.textContent = result.session_saved ? (connected ? 'Active' : 'Saved') : 'Not saved';
+      state.className = `status-badge ${connected ? 'status-good' : result.session_saved ? 'status-major' : 'status-unknown'}`;
+    };
+
+    const refresh = async () => {
+      try { render(await api('/api/v1/tidio/status')); }
+      catch (error) { statusText.textContent = error.message; }
+    };
+
+    loginButton.addEventListener('click', async () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      if (!email || !password) { loginStatus.textContent = 'Enter the Tidio email and password for this login attempt.'; return; }
+      loginButton.disabled = true;
+      logoutButton.disabled = true;
+      loginButton.textContent = 'Logging in…';
+      loginStatus.textContent = 'WatchTower is opening Tidio and establishing the browser session…';
+      try {
+        const result = await api('/api/v1/tidio/login', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({email, password})
+        });
+        loginStatus.textContent = result.message || 'Tidio login succeeded.';
+        passwordInput.value = '';
+        toast('Tidio session connected.');
+        await refresh();
+      } catch (error) {
+        loginStatus.textContent = `Tidio login failed: ${error.message}`;
+        toast(`Tidio login failed: ${error.message}`);
+        passwordInput.value = '';
+      } finally {
+        loginButton.disabled = false;
+        logoutButton.disabled = false;
+        loginButton.textContent = 'Login to Tidio';
+      }
+    });
+
+    logoutButton.addEventListener('click', async () => {
+      logoutButton.disabled = true;
+      loginButton.disabled = true;
+      loginStatus.textContent = 'Clearing the saved Tidio browser session…';
+      try {
+        const result = await api('/api/v1/tidio/logout', {method: 'POST'});
+        loginStatus.textContent = result.message || 'Tidio browser session cleared.';
+        toast('Tidio session cleared.');
+        await refresh();
+      } catch (error) {
+        loginStatus.textContent = `Could not clear Tidio session: ${error.message}`;
+      } finally {
+        logoutButton.disabled = false;
+        loginButton.disabled = false;
+      }
+    });
+
+    await refresh();
+  }
+
   async function initializeSettings() {
+    initializeTidioConnection();
     try {
       const [status, providers] = await Promise.all([api('/api/v1/status'), api('/api/v1/providers')]);
       $('#settings-interval').textContent = status.scheduler.schedule || '—';
