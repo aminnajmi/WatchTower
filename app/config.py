@@ -21,7 +21,22 @@ class Settings(BaseSettings):
     telegram_enabled: bool = False
     telegram_bot_token: str = ""
     telegram_chat_id: str = ""
+    # Separate Telegram destination for Tidio unassigned/missed-chat alerts.
+    tidio_enabled: bool = False
+    tidio_telegram_enabled: bool = False
+    tidio_telegram_chat_id: str = ""
+    tidio_client_id: str = ""
+    tidio_client_secret: str = ""
+    # Browser fallback for accounts without Developer/OpenAPI access.
+    tidio_web_email: str = ""
+    tidio_web_password: str = ""
+    tidio_web_headless: bool = True
+    tidio_web_timeout_seconds: int = 20
+    tidio_web_unassigned_label: str = "Unassigned"
+    tidio_poll_interval_seconds: int = 10
+    tidio_lookback_minutes: int = 60
     track_point_releases: bool = True
+    openclaw_notification_api_key: str = ""
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
@@ -51,6 +66,16 @@ class Settings(BaseSettings):
                 missing.append("TELEGRAM_BOT_TOKEN is required when Telegram is enabled")
             if not self.telegram_chat_id:
                 missing.append("TELEGRAM_CHAT_ID is required when Telegram is enabled")
+        if self.tidio_telegram_enabled:
+            if not self.telegram_bot_token:
+                missing.append("TELEGRAM_BOT_TOKEN is required when TIDIO_TELEGRAM_ENABLED is true")
+            if not self.tidio_telegram_chat_id:
+                missing.append("TIDIO_TELEGRAM_CHAT_ID is required when TIDIO_TELEGRAM_ENABLED is true")
+        if self.tidio_enabled:
+            api_ready = bool(self.tidio_client_id and self.tidio_client_secret)
+            browser_ready = bool(self.tidio_web_email and self.tidio_web_password)
+            if not api_ready and not browser_ready:
+                missing.append("TIDIO_CLIENT_ID/TIDIO_CLIENT_SECRET or TIDIO_WEB_EMAIL/TIDIO_WEB_PASSWORD are required when TIDIO_ENABLED is true")
 
         if missing:
             raise RuntimeError("Invalid production configuration: " + "; ".join(missing))

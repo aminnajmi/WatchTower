@@ -452,6 +452,8 @@
       $('#settings-discord').outerHTML = renderStatus(status.notifications.discord_enabled ? 'Enabled' : 'Disabled', status.notifications.discord_enabled ? 'good' : 'unknown');
       $('#settings-telegram').outerHTML = renderStatus(status.notifications.telegram_enabled ? 'Enabled' : 'Disabled', status.notifications.telegram_enabled ? 'good' : 'unknown');
       $('#settings-telegram-chat').outerHTML = renderStatus(status.notifications.telegram_chat_configured ? 'Configured' : 'Not configured', status.notifications.telegram_chat_configured ? 'good' : 'unknown');
+      $('#settings-tidio-telegram').outerHTML = renderStatus(status.notifications.tidio_telegram_enabled ? 'Enabled' : 'Disabled', status.notifications.tidio_telegram_enabled ? 'good' : 'unknown');
+      $('#settings-tidio').outerHTML = renderStatus(status.notifications.tidio_enabled ? 'Enabled' : 'Disabled', status.notifications.tidio_enabled ? 'good' : 'unknown');
       $('#settings-providers').innerHTML = providers.providers.map(slug => `<div class="provider-item"><strong>${escapeHtml(providerNames[slug] || slug)}</strong>${renderStatus('Enabled', 'good')}</div>`).join('');
     } catch (error) { $('#settings-providers').textContent = error.message; }
 
@@ -471,6 +473,25 @@
       } finally {
         button.disabled = false;
         button.textContent = 'Test Telegram Notifications';
+      }
+    });
+
+    const tidioButton = $('#tidio-telegram-test-button');
+    const tidioStatus = $('#tidio-telegram-test-status');
+    if (tidioButton && tidioStatus) tidioButton.addEventListener('click', async () => {
+      tidioButton.disabled = true;
+      tidioButton.textContent = 'Sending test…';
+      tidioStatus.textContent = 'Sending test message…';
+      try {
+        const result = await api('/api/v1/notifications/test/tidio-telegram', { method: 'POST' });
+        tidioStatus.textContent = result.message || 'Tidio Telegram test message sent.';
+        toast('Tidio Telegram test sent successfully.');
+      } catch (error) {
+        tidioStatus.textContent = `Tidio Telegram test failed: ${error.message}`;
+        toast(`Tidio Telegram test failed: ${error.message}`);
+      } finally {
+        tidioButton.disabled = false;
+        tidioButton.textContent = 'Test Tidio Telegram';
       }
     });
   }
@@ -615,6 +636,215 @@
     }
   }
 
+  const notificationIcons = { openclaw: '🤖', human_agent: '👤', watchtower: '🗼', system: '⚙' };
+
+  function notificationSourceLabel(source) {
+    return { openclaw: 'OpenClaw', human_agent: 'Human Agent', watchtower: 'WatchTower', system: 'System' }[source] || typeLabel(source);
+  }
+
+  function notificationSeverityLabel(severity) {
+    return (severity || 'info').charAt(0).toUpperCase() + (severity || 'info').slice(1);
+  }
+
+  function notificationApprovalLabel(status) {
+    return ({ pending: 'Pending approval', approved: 'Approved', denied: 'Denied', not_required: 'No approval required' }[status] || 'Unknown');
+  }
+
+  function renderNotification(notification) {
+    const metadata = notification.metadata && typeof notification.metadata === 'object' ? notification.metadata : {};
+    const chips = [];
+    if (notification.task_name) chips.push(`<span class="notification-chip">Task: ${escapeHtml(notification.task_name)}</span>`);
+    if (notification.task_id) chips.push(`<span class="notification-chip">Task ID: ${escapeHtml(notification.task_id)}</span>`);
+    chips.push(`<span class="notification-chip">${escapeHtml(notificationSeverityLabel(notification.severity))}</span>`);
+    chips.push(`<span class="notification-chip">${escapeHtml(notification.status || 'new')}</span>`);
+    if (notification.requires_approval) chips.push(`<span class="notification-chip notification-approval-${escapeHtml(notification.approval_status || 'pending')}">${escapeHtml(notificationApprovalLabel(notification.approval_status))}</span>`);
+    if (metadata.test === true) chips.push('<span class="notification-chip">Test</span>');
+
+    const approvalActions = notification.requires_approval && notification.approval_status === 'pending'
+      ? `<div class="notification-approval-actions">
+          <button class="button button-primary notification-approve" type="button" data-notification-id="${notification.id}">✓ Approve</button>
+          <button class="button button-danger notification-deny" type="button" data-notification-id="${notification.id}">✕ Deny</button>
+        </div>`
+      : notification.requires_approval
+        ? `<div class="notification-decision"><strong>${escapeHtml(notificationApprovalLabel(notification.approval_status))}</strong>${notification.approved_by ? ` by ${escapeHtml(notification.approved_by)}` : ''}${notification.denial_reason ? ` — ${escapeHtml(notification.denial_reason)}` : ''}</div>`
+        : '';
+
+    return `<article class="notification-card severity-${escapeHtml(notification.severity || 'info')} ${notification.requires_approval && notification.approval_status === 'pending' ? 'requires-approval' : ''}">
+      <div class="notification-card-header">
+        <div><div class="notification-source"><span class="notification-icon" aria-hidden="true">${notificationIcons[notification.source] || '•'}</span>${escapeHtml(notificationSourceLabel(notification.source))}</div>
+        <h2>${metadata.test === true ? '🧪 ' : ''}${escapeHtml(notification.title)}</h2></div>
+        <span class="muted small" title="${escapeHtml(dateText(notification.created_at))}">${escapeHtml(relativeTime(notification.created_at))}</span>
+      </div>
+      <p class="notification-message">${escapeHtml(notification.message)}</p>
+      ${chips.length ? `<div class="notification-meta">${chips.join('')}</div>` : ''}
+      ${approvalActions}
+      <div class="notification-card-footer"><span>${escapeHtml(dateText(notification.created_at))}</span>${notification.external_url ? `<a href="${escapeHtml(notification.external_url)}" target="_blank" rel="noopener noreferrer">View report ↗</a>` : ''}</div>
+    </article>`;
+  }
+
+  async function initializeNotificationCenter() {
+    const feed = $('#notification-feed');
+    if (!feed) return;
+    const source = $('#notification-source');
+    const severity = $('#notification-severity');
+    const status = $('#notification-status');
+    const approval = $('#notification-approval');
+    const refreshButton = $('#notification-refresh');
+    const refreshStatus = $('#notification-refresh-status');
+    const pagination = $('#notification-pagination');
+    let offset = 0;
+    const limit = 25;
+    let pollTimer;
+    let knownNotificationIds = null;
+    let notificationAudioContext = null;
+
+    function prepareNotificationSound() {
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return null;
+        if (!notificationAudioContext) notificationAudioContext = new AudioContextClass();
+        if (notificationAudioContext.state === 'suspended') {
+          notificationAudioContext.resume().catch(() => {});
+        }
+        return notificationAudioContext;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function playNotificationAlert() {
+      const ctx = prepareNotificationSound();
+      if (!ctx) return;
+      const emit = () => {
+        try {
+          const now = ctx.currentTime;
+          const master = ctx.createGain();
+          master.gain.setValueAtTime(0.0001, now);
+          master.gain.exponentialRampToValueAtTime(0.98, now + 0.015);
+          master.gain.exponentialRampToValueAtTime(0.0001, now + 1.85);
+          master.connect(ctx.destination);
+
+          // Loud, attention-grabbing triple double-beep alert.
+          [0, 0.30, 0.60].forEach((start, index) => {
+            const first = ctx.createOscillator();
+            const second = ctx.createOscillator();
+            first.type = 'square';
+            second.type = 'square';
+            first.frequency.setValueAtTime(index % 2 ? 920 : 1040, now + start);
+            second.frequency.setValueAtTime(index % 2 ? 690 : 780, now + start + 0.12);
+            first.connect(master);
+            second.connect(master);
+            first.start(now + start);
+            first.stop(now + start + 0.105);
+            second.start(now + start + 0.12);
+            second.stop(now + start + 0.225);
+          });
+          if (navigator.vibrate) navigator.vibrate([220, 90, 220, 90, 360]);
+        } catch (_) {
+          // The notification remains visible if browser audio is unavailable.
+        }
+      };
+      if (ctx.state === 'running') emit();
+      else ctx.resume().then(emit).catch(() => {});
+    }
+
+    async function decideNotification(id, decision) {
+      const action = decision === 'approved' ? 'approve' : 'deny';
+      let body;
+      if (decision === 'denied') {
+        const reason = window.prompt('Optional reason for denying this task:');
+        if (reason === null) return;
+        body = JSON.stringify({ reason });
+      }
+      try {
+        await api(`/api/v1/notifications/${id}/${action}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          ...(body ? { body } : {}),
+        });
+        toast(decision === 'approved' ? 'Task approved.' : 'Task denied.');
+        await loadNotifications({ silent: true });
+      } catch (error) {
+        toast(`Unable to update notification: ${error.message}`);
+      }
+    }
+
+    async function loadNotifications({ silent = false } = {}) {
+      const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
+      if (source?.value) params.set('source', source.value);
+      if (severity?.value) params.set('severity', severity.value);
+      if (status?.value) params.set('status', status.value);
+      if (approval?.value) params.set('approval_status', approval.value);
+      if (!silent) feed.innerHTML = '<div class="notification-empty">Loading notifications…</div>';
+      try {
+        const result = await api(`/api/v1/notifications?${params.toString()}`);
+        const items = result.items || [];
+        const currentIds = new Set(items.map(item => Number(item.id)));
+        if (knownNotificationIds === null) {
+          knownNotificationIds = currentIds;
+        } else if (items.length) {
+          const newItems = items.filter(item => !knownNotificationIds.has(Number(item.id)));
+          if (newItems.length) {
+            playNotificationAlert();
+            if (refreshStatus) refreshStatus.textContent = `🔊 ${newItems.length} new notification${newItems.length === 1 ? '' : 's'}`;
+          }
+          knownNotificationIds = new Set([...knownNotificationIds, ...currentIds]);
+        }
+        feed.innerHTML = items.length ? items.map(renderNotification).join('') : '<div class="notification-empty">No notifications match the selected filters.</div>';
+        $$('.notification-approve', feed).forEach(button => button.addEventListener('click', () => decideNotification(button.dataset.notificationId, 'approved')));
+        $$('.notification-deny', feed).forEach(button => button.addEventListener('click', () => decideNotification(button.dataset.notificationId, 'denied')));
+        const total = Number(result.total) || 0;
+        const first = total ? offset + 1 : 0;
+        const last = Math.min(offset + items.length, total);
+        pagination.innerHTML = `<span>${first}–${last} of ${total}</span><div><button class="button button-quiet" id="notification-prev" type="button" ${offset <= 0 ? 'disabled' : ''}>Previous</button><button class="button button-quiet" id="notification-next" type="button" ${offset + items.length >= total ? 'disabled' : ''}>Next</button></div>`;
+        $('#notification-prev')?.addEventListener('click', () => { offset = Math.max(0, offset - limit); loadNotifications(); });
+        $('#notification-next')?.addEventListener('click', () => { offset += limit; loadNotifications(); });
+        if (refreshStatus) refreshStatus.textContent = `Updated ${relativeTime(new Date())}`;
+      } catch (error) {
+        feed.innerHTML = `<div class="notification-empty">Unable to load notifications: ${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    const filterChanged = () => { offset = 0; loadNotifications(); };
+    source?.addEventListener('change', filterChanged);
+    severity?.addEventListener('change', filterChanged);
+    status?.addEventListener('change', filterChanged);
+    approval?.addEventListener('change', filterChanged);
+    refreshButton?.addEventListener('click', () => loadNotifications());
+    // Prepare audio silently. Browsers may suspend it until the user has
+    // interacted with the site; interaction only unlocks the mandatory alert
+    // channel and there is intentionally no mute/disable control.
+    prepareNotificationSound();
+    ['pointerdown', 'keydown', 'touchstart'].forEach(eventName => {
+      document.addEventListener(eventName, prepareNotificationSound, { passive: true });
+    });
+    await loadNotifications();
+    pollTimer = window.setInterval(() => loadNotifications({ silent: true }), 5000);
+    window.addEventListener('beforeunload', () => window.clearInterval(pollTimer), { once: true });
+  }
+
+  function initializeNotificationTest() {
+    const button = $('#send-notification-test');
+    const status = $('#notification-test-status');
+    if (!button) return;
+    button.addEventListener('click', async () => {
+      button.disabled = true;
+      button.querySelectorAll('span').forEach((span, index) => { if (index === 1) span.textContent = 'Sending…'; });
+      if (status) status.textContent = 'Creating a test notification…';
+      try {
+        const result = await api('/api/v1/notifications/test', { method: 'POST' });
+        if (status) status.textContent = `Notification #${result.id} was added to the Notification Center.`;
+        toast('Test notification added to Notification Center.');
+      } catch (error) {
+        if (status) status.textContent = `Test notification failed: ${error.message}`;
+        toast(`Test notification failed: ${error.message}`);
+      } finally {
+        button.disabled = false;
+        button.querySelectorAll('span').forEach((span, index) => { if (index === 1) span.textContent = 'Send test to Notification Center'; });
+      }
+    });
+  }
+
   async function initializeAccount() {
     try {
       const user = await api('/api/v1/account');
@@ -652,6 +882,8 @@
     if ($('#settings-providers')) initializeSettings();
     if ($('#users-table-body')) { initializeUserManagement(); loadUsers(); }
     if ($('#account-password-form')) initializeAccount();
+    if ($('#notification-feed')) initializeNotificationCenter();
+    if ($('#send-notification-test')) initializeNotificationTest();
   });
 
   window.addEventListener('load', () => {
