@@ -27,10 +27,16 @@ RUN test -s /app/static/js/app.js \
 # by this account on the host. Override at build time when required.
 ARG APP_UID=10001
 ARG APP_GID=10001
+
 RUN groupadd --gid "${APP_GID}" watchtower \
-    && useradd --uid "${APP_UID}" --gid watchtower --no-create-home --shell /usr/sbin/nologin watchtower \
+    && useradd --uid "${APP_UID}" \
+        --gid watchtower \
+        --create-home \
+        --home-dir /home/watchtower \
+        --shell /usr/sbin/nologin \
+        watchtower \
     && mkdir -p /app/data \
-    && chown -R watchtower:watchtower /app
+    && chown -R watchtower:watchtower /app /home/watchtower
 
 USER watchtower:watchtower
 
