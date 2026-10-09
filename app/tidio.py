@@ -297,10 +297,14 @@ class TidioMonitor:
                     cls._safe_browser_url(response.url),
                     response.status,
                 )
-            if response.request.resource_type != "script" or response.status < 400:
+            if response.request.resource_type != "script":
                 return
             host = urlsplit(response.url).hostname or "unknown"
-            logger.warning("Tidio script response failed host=%s status=%s", host, response.status)
+            is_recaptcha_dependency = any(domain in host for domain in ("google.com", "gstatic.com", "recaptcha.net"))
+            if response.status >= 400:
+                logger.warning("Tidio script response failed host=%s status=%s", host, response.status)
+            elif is_recaptcha_dependency:
+                logger.info("Tidio reCAPTCHA dependency response host=%s status=%s", host, response.status)
 
         page.on("console", log_console_error)
         page.on("requestfailed", log_failed_request)

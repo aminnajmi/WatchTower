@@ -122,6 +122,8 @@ def test_tidio_browser_startup_failure_is_logged_and_cleaned_up(monkeypatch, cap
 
 
 def test_tidio_browser_diagnostics_log_failures_without_query_secrets(caplog):
+    caplog.set_level("INFO", logger="app.tidio")
+
     class Page:
         handlers = {}
 
@@ -151,6 +153,9 @@ def test_tidio_browser_diagnostics_log_failures_without_query_secrets(caplog):
     })())
     assert "ERR_NAME_NOT_RESOLVED" in caplog.text
     assert "host=www.google.com status=403" in caplog.text
+    Response.status = 200
+    page.handlers["response"](Response())
+    assert "Tidio reCAPTCHA dependency response host=www.google.com status=200" in caplog.text
     assert "private-value" not in caplog.text
 
 
