@@ -18,9 +18,9 @@
     "semantic_hash": "57cd44589e46455cd7decce79222e1fe"
   },
   "app/config.py": {
-    "mtime": 1791528011.3404374,
-    "seen": 1791528021.23278,
-    "ast_hash": "363fde743204f0cccb3ce29b052b9e12",
+    "mtime": 1791558688.342335,
+    "seen": 1791559171.982136,
+    "ast_hash": "bcbba2c65fea37d74dc26a914b6b7c48",
     "semantic_hash": ""
   },
   "app/create_admin.py": {
@@ -30,16 +30,16 @@
     "semantic_hash": "b0aee989de68983c7c93ec7d9011f45e"
   },
   "app/main.py": {
-    "mtime": 1791529665.534769,
-    "seen": 1791529715.818292,
-    "ast_hash": "875ddadfc2d1a554bd0b4e7920ceb911",
+    "mtime": 1791559032.8604343,
+    "seen": 1791559171.9821398,
+    "ast_hash": "14ca5ef0437b7879fdf826e0f1f03dc7",
     "semantic_hash": ""
   },
   "app/models.py": {
-    "mtime": 1791489452.0,
-    "seen": 1791527475.0368168,
-    "ast_hash": "1b0ca2536bb9f6e12499124d2cf1b26e",
-    "semantic_hash": "1b0ca2536bb9f6e12499124d2cf1b26e"
+    "mtime": 1791558983.1447875,
+    "seen": 1791559171.982142,
+    "ast_hash": "69f6baecd041417892a91dcaacf11c9a",
+    "semantic_hash": ""
   },
   "app/notifications/__init__.py": {
     "mtime": 1791402418.0,
@@ -54,10 +54,10 @@
     "semantic_hash": "219d6274b024c19715f67932777a314f"
   },
   "app/notifications/telegram.py": {
-    "mtime": 1791011131.0,
-    "seen": 1791527475.0368378,
+    "mtime": 1791559176.7060459,
+    "seen": 1791559203.312636,
     "ast_hash": "e867689798dac51406cb0cfc9fb53b15",
-    "semantic_hash": "e867689798dac51406cb0cfc9fb53b15"
+    "semantic_hash": ""
   },
   "app/providers/__init__.py": {
     "mtime": 1790872996.0,
@@ -222,9 +222,9 @@
     "semantic_hash": "6a47d64fcc136324ca395065a707ef76"
   },
   "README.md": {
-    "mtime": 1791527685.1561134,
-    "seen": 1791527986.5669508,
-    "ast_hash": "97cf3c30b948e0b0226caae8e806cce7",
+    "mtime": 1791559125.6684067,
+    "seen": 1791559171.98222,
+    "ast_hash": "fb968d9ce8633cf56709b3313b1431f1",
     "semantic_hash": ""
   },
   "docker-compose.yml": {
@@ -240,9 +240,9 @@
     "semantic_hash": "faef5f8ce152306aca8963322ddc6f9e"
   },
   "static/js/app.js": {
-    "mtime": 1791529675.67518,
-    "seen": 1791529715.818332,
-    "ast_hash": "71e85b7e3d3875ce642429a798096407",
+    "mtime": 1791558952.2920678,
+    "seen": 1791559171.982181,
+    "ast_hash": "87f59ac9a9004d5a15286168e2cae30d",
     "semantic_hash": ""
   },
   "tests/test_startup.py": {
@@ -294,10 +294,10 @@
     "semantic_hash": "ae5230229f3fcbdf8a4c62216b7d0302"
   },
   "templates/settings.html": {
-    "mtime": 1791295081.0,
-    "seen": 1791527475.036937,
-    "ast_hash": "6bbd9146dc9eef03724e734135fc871f",
-    "semantic_hash": "6bbd9146dc9eef03724e734135fc871f"
+    "mtime": 1791559197.6316645,
+    "seen": 1791559203.312727,
+    "ast_hash": "511d19744230a62d10f727889f134bf7",
+    "semantic_hash": ""
   },
   "tests/test_telegram.py": {
     "mtime": 1791123881.0,
@@ -312,10 +312,10 @@
     "semantic_hash": "0d1a69401ab1a9eaa7580b6e53805bb5"
   },
   "tests/test_production_config.py": {
-    "mtime": 1791295079.0,
-    "seen": 1791527475.036885,
-    "ast_hash": "060af4843d705b0635fe0a39085d6d64",
-    "semantic_hash": "060af4843d705b0635fe0a39085d6d64"
+    "mtime": 1791558770.6484978,
+    "seen": 1791559171.9821901,
+    "ast_hash": "0e1072a450e74159a92f8545aab98609",
+    "semantic_hash": ""
   },
   "static/watchtower.svg": {
     "mtime": 1790948618.0,
@@ -372,8 +372,8 @@
     "semantic_hash": "c298c68524c9f94198b0653879de6ceb"
   },
   "app/tidio.py": {
-    "mtime": 1791531347.5973673,
-    "seen": 1791531364.92372,
+    "mtime": 1791558952.105899,
+    "seen": 1791559171.9821749,
     "ast_hash": "9851d9e75cc46c435b3a04405847be42",
     "semantic_hash": ""
   },
@@ -384,15 +384,45 @@
     "semantic_hash": "5cd0d7c44051592f62a3ea7fa5d0fb6b"
   },
   "tests/test_tidio.py": {
-    "mtime": 1791531357.7233078,
-    "seen": 1791531364.923739,
+    "mtime": 1791558952.2475197,
+    "seen": 1791559171.9821959,
     "ast_hash": "681ffa548e8f98ad5fc68f5981999686",
     "semantic_hash": ""
   },
   "templates/tidio.html": {
-    "mtime": 1791529704.1788893,
-    "seen": 1791529715.818388,
-    "ast_hash": "49f3096fdfb18b924d02421bfc2b748c",
+    "mtime": 1791558952.2804437,
+    "seen": 1791559171.982239,
+    "ast_hash": "11d1c1452e0e2acb0a453e9ff72691a3",
+    "semantic_hash": ""
+  },
+  "app/notifications/tidio_telegram.py": {
+    "mtime": 1791559091.665298,
+    "seen": 1791559171.9821508,
+    "ast_hash": "5295d94dbd959bcdec50d57e3e65a4f0",
+    "semantic_hash": ""
+  },
+  "app/tidio_service.py": {
+    "mtime": 1791559164.1831021,
+    "seen": 1791559171.982176,
+    "ast_hash": "dead5423ac1c046afb42c246565c6896",
+    "semantic_hash": ""
+  },
+  "static/test_notifications_center.py": {
+    "mtime": 1791406145.0,
+    "seen": 1791559171.9821818,
+    "ast_hash": "5cd0d7c44051592f62a3ea7fa5d0fb6b",
+    "semantic_hash": ""
+  },
+  "static/test_tidio_notifications.py": {
+    "mtime": 1791452984.0,
+    "seen": 1791559171.982184,
+    "ast_hash": "d4b5d1a0618b2323c867e5cf8f01973a",
+    "semantic_hash": ""
+  },
+  "tests/test_tidio_notifications.py": {
+    "mtime": 1791559149.1899555,
+    "seen": 1791559171.982197,
+    "ast_hash": "9e4f25dde96db76783e45f89bdcb6cae",
     "semantic_hash": ""
   }
 }

@@ -1,7 +1,7 @@
 # Graph Report - WatchTower  (2026-10-09)
 
 ## Corpus Check
-- 51 files · ~37,594 words
+- 51 files · ~37,630 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 9 file(s) not represented in the graph (top: (none) 5, .example 1, .db-shm 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `d8a19f01`
+- Built from commit: `4954eb62`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

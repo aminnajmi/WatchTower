@@ -452,6 +452,11 @@
       $('#settings-discord').outerHTML = renderStatus(status.notifications.discord_enabled ? 'Enabled' : 'Disabled', status.notifications.discord_enabled ? 'good' : 'unknown');
       $('#settings-telegram').outerHTML = renderStatus(status.notifications.telegram_enabled ? 'Enabled' : 'Disabled', status.notifications.telegram_enabled ? 'good' : 'unknown');
       $('#settings-telegram-chat').outerHTML = renderStatus(status.notifications.telegram_chat_configured ? 'Configured' : 'Not configured', status.notifications.telegram_chat_configured ? 'good' : 'unknown');
+      $('#settings-tidio-enabled').outerHTML = renderStatus(status.notifications.tidio_enabled ? 'Enabled' : 'Disabled', status.notifications.tidio_enabled ? 'good' : 'unknown');
+      $('#settings-tidio-credentials').outerHTML = renderStatus(status.notifications.tidio_credentials_configured ? 'Configured' : 'Not configured', status.notifications.tidio_credentials_configured ? 'good' : 'unknown');
+      $('#settings-tidio-interval').textContent = `${status.notifications.tidio_poll_interval_seconds} seconds`;
+      $('#settings-tidio-lookback').textContent = `${status.notifications.tidio_lookback_minutes} minutes`;
+      $('#settings-tidio-telegram').outerHTML = renderStatus(status.notifications.tidio_telegram_enabled ? 'Enabled' : 'Disabled', status.notifications.tidio_telegram_enabled ? 'good' : 'unknown');
       $('#settings-providers').innerHTML = providers.providers.map(slug => `<div class="provider-item"><strong>${escapeHtml(providerNames[slug] || slug)}</strong>${renderStatus('Enabled', 'good')}</div>`).join('');
     } catch (error) { $('#settings-providers').textContent = error.message; }
 
@@ -471,6 +476,25 @@
       } finally {
         button.disabled = false;
         button.textContent = 'Test Telegram Notifications';
+      }
+    });
+
+    const tidioButton = $('#tidio-telegram-test-button');
+    const tidioStatusText = $('#tidio-telegram-test-status');
+    if (tidioButton && tidioStatusText) tidioButton.addEventListener('click', async () => {
+      tidioButton.disabled = true;
+      tidioButton.textContent = 'Sending test…';
+      tidioStatusText.textContent = 'Sending test message to Support-Sales…';
+      try {
+        const result = await api('/api/v1/notifications/test/tidio-telegram', { method: 'POST' });
+        tidioStatusText.textContent = result.message || 'Support-Sales Telegram test message sent.';
+        toast('Support-Sales Telegram test sent successfully.');
+      } catch (error) {
+        tidioStatusText.textContent = `Support-Sales test failed: ${error.message}`;
+        toast(`Support-Sales test failed: ${error.message}`);
+      } finally {
+        tidioButton.disabled = false;
+        tidioButton.textContent = 'Test Support-Sales Telegram';
       }
     });
   }

@@ -94,6 +94,20 @@ class TidioConnection(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
+class TidioAlert(Base):
+    """Alert state for Tidio live chats routed to Support-Sales."""
+    __tablename__ = "tidio_alerts"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    thread_id: Mapped[str] = mapped_column(String(100), unique=True, index=True)
+    conversation_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    visitor_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    thread_started_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    is_unassigned: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
+    notified_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
 class ReleaseEvent(Base):
     __tablename__ = "release_events"
 
