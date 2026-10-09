@@ -651,8 +651,17 @@ def list_notifications(
             stmt = stmt.where(*filters)
             count_stmt = count_stmt.where(*filters)
         total = db.scalar(count_stmt) or 0
+        unread_count = db.scalar(
+            select(func.count(Notification.id)).where(Notification.status == "new")
+        ) or 0
         rows = db.scalars(stmt.order_by(Notification.created_at.desc(), Notification.id.desc()).offset(offset).limit(limit)).all()
-        return {"items": [_serialize_notification(row) for row in rows], "total": total, "limit": limit, "offset": offset}
+        return {
+            "items": [_serialize_notification(row) for row in rows],
+            "total": total,
+            "unread_count": unread_count,
+            "limit": limit,
+            "offset": offset,
+        }
     finally:
         db.close()
 
@@ -683,9 +692,9 @@ def get_notification(
 @app.post("/api/v1/notifications/test", status_code=201, dependencies=[Depends(require_admin)])
 def test_notification(current: Principal = Depends(require_admin)):
     notification = create_notification(
-        source="watchtower",
+        source="system",
         title="Test Notification",
-        message="This is a test notification from the WatchTower Management Panel.",
+        message="WatchTower Notification Center is working correctly.",
         status="new",
         severity="info",
         requires_approval=False,

@@ -775,6 +775,9 @@
     const refreshButton = $('#notification-refresh');
     const refreshStatus = $('#notification-refresh-status');
     const pagination = $('#notification-pagination');
+    const unreadCount = $('#notification-unread-count');
+    const testButton = $('#send-notification-test');
+    const testStatus = $('#notification-test-status');
     let offset = 0;
     const limit = 25;
     let pollTimer;
@@ -862,14 +865,16 @@
       try {
         const result = await api(`/api/v1/notifications?${params.toString()}`);
         const items = result.items || [];
+        if (unreadCount) unreadCount.textContent = `Unread: ${Number(result.unread_count) || 0}`;
         const currentIds = new Set(items.map(item => Number(item.id)));
+        let newItemsCount = 0;
         if (knownNotificationIds === null) {
           knownNotificationIds = currentIds;
         } else if (items.length) {
           const newItems = items.filter(item => !knownNotificationIds.has(Number(item.id)));
           if (newItems.length) {
             playNotificationAlert();
-            if (refreshStatus) refreshStatus.textContent = `🔊 ${newItems.length} new notification${newItems.length === 1 ? '' : 's'}`;
+            newItemsCount = newItems.length;
           }
           knownNotificationIds = new Set([...knownNotificationIds, ...currentIds]);
         }
@@ -882,9 +887,13 @@
         pagination.innerHTML = `<span>${first}–${last} of ${total}</span><div><button class="button button-quiet" id="notification-prev" type="button" ${offset <= 0 ? 'disabled' : ''}>Previous</button><button class="button button-quiet" id="notification-next" type="button" ${offset + items.length >= total ? 'disabled' : ''}>Next</button></div>`;
         $('#notification-prev')?.addEventListener('click', () => { offset = Math.max(0, offset - limit); loadNotifications(); });
         $('#notification-next')?.addEventListener('click', () => { offset += limit; loadNotifications(); });
-        if (refreshStatus) refreshStatus.textContent = `Updated ${relativeTime(new Date())}`;
+        if (refreshStatus) refreshStatus.textContent = newItemsCount
+          ? `🔊 ${newItemsCount} new notification${newItemsCount === 1 ? '' : 's'}`
+          : `Updated ${relativeTime(new Date())}`;
+        return true;
       } catch (error) {
         feed.innerHTML = `<div class="notification-empty">Unable to load notifications: ${escapeHtml(error.message)}</div>`;
+        return false;
       }
     }
 
@@ -894,6 +903,28 @@
     status?.addEventListener('change', filterChanged);
     approval?.addEventListener('change', filterChanged);
     refreshButton?.addEventListener('click', () => loadNotifications());
+    testButton?.addEventListener('click', async () => {
+      testButton.disabled = true;
+      const label = testButton.querySelectorAll('span')[1];
+      if (label) label.textContent = 'Sending…';
+      if (testStatus) testStatus.textContent = 'Creating a test notification…';
+      try {
+        const result = await api('/api/v1/notifications/test', { method: 'POST' });
+        offset = 0;
+        [source, severity, status, approval].forEach(filter => { if (filter) filter.value = ''; });
+        const feedUpdated = await loadNotifications({ silent: true });
+        if (testStatus) testStatus.textContent = feedUpdated
+          ? `Notification #${result.id} appeared in the feed.`
+          : `Notification #${result.id} was created, but the feed could not refresh.`;
+        toast(feedUpdated ? 'Test notification added to Notification Center.' : 'Test notification created; feed refresh failed.');
+      } catch (error) {
+        if (testStatus) testStatus.textContent = `Test notification failed: ${error.message}`;
+        toast(`Test notification failed: ${error.message}`);
+      } finally {
+        testButton.disabled = false;
+        if (label) label.textContent = 'Send Test Notification';
+      }
+    });
     // Prepare audio silently. Browsers may suspend it until the user has
     // interacted with the site; interaction only unlocks the mandatory alert
     // channel and there is intentionally no mute/disable control.
@@ -901,31 +932,11 @@
     ['pointerdown', 'keydown', 'touchstart'].forEach(eventName => {
       document.addEventListener(eventName, prepareNotificationSound, { passive: true });
     });
+    if (testButton) testButton.disabled = true;
     await loadNotifications();
+    if (testButton) testButton.disabled = false;
     pollTimer = window.setInterval(() => loadNotifications({ silent: true }), 5000);
     window.addEventListener('beforeunload', () => window.clearInterval(pollTimer), { once: true });
-  }
-
-  function initializeNotificationTest() {
-    const button = $('#send-notification-test');
-    const status = $('#notification-test-status');
-    if (!button) return;
-    button.addEventListener('click', async () => {
-      button.disabled = true;
-      button.querySelectorAll('span').forEach((span, index) => { if (index === 1) span.textContent = 'Sending…'; });
-      if (status) status.textContent = 'Creating a test notification…';
-      try {
-        const result = await api('/api/v1/notifications/test', { method: 'POST' });
-        if (status) status.textContent = `Notification #${result.id} was added to the Notification Center.`;
-        toast('Test notification added to Notification Center.');
-      } catch (error) {
-        if (status) status.textContent = `Test notification failed: ${error.message}`;
-        toast(`Test notification failed: ${error.message}`);
-      } finally {
-        button.disabled = false;
-        button.querySelectorAll('span').forEach((span, index) => { if (index === 1) span.textContent = 'Send test to Notification Center'; });
-      }
-    });
   }
 
   async function initializeAccount() {
@@ -967,7 +978,6 @@
     if ($('#tidio-connect-form')) initializeTidio();
     if ($('#account-password-form')) initializeAccount();
     if ($('#notification-feed')) initializeNotificationCenter();
-    if ($('#send-notification-test')) initializeNotificationTest();
   });
 
   window.addEventListener('load', () => {

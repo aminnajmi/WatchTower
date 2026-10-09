@@ -8,10 +8,20 @@
       <p>Review operational notifications and approve or deny OpenClaw actions that require human authorization.</p>
     </div>
     <div class="notification-header-actions">
+      <span class="notification-unread-count" id="notification-unread-count" aria-live="polite">Unread: —</span>
       <span class="notification-sound-indicator">🔊 Loud alerts enabled</span>
       <span class="notification-refresh" id="notification-refresh-status">Waiting for notifications</span>
     </div>
   </section>
+  {% if is_admin %}
+  <section class="notification-test-panel panel" aria-labelledby="notification-test-heading">
+    <div class="panel-heading">
+      <div><h2 id="notification-test-heading">Notification Center test</h2><p>Confirm that notifications appear and remain available.</p></div>
+      <button class="button button-primary" id="send-notification-test" type="button"><span aria-hidden="true">🧪</span><span>Send Test Notification</span></button>
+    </div>
+    <p class="notification-test-status" id="notification-test-status" role="status" aria-live="polite">Creates one test notification for the Notification Center.</p>
+  </section>
+  {% endif %}
   <section class="filter-panel notification-filters">
     <div class="filter-row">
       <label>Source<select id="notification-source"><option value="">All sources</option><option value="openclaw">OpenClaw</option><option value="human_agent">Human Agent</option><option value="watchtower">WatchTower</option><option value="system">System</option></select></label>

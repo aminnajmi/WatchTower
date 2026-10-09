@@ -300,9 +300,9 @@
     "semantic_hash": ""
   },
   "tests/test_telegram.py": {
-    "mtime": 1791562949.1063876,
-    "seen": 1791562966.753263,
-    "ast_hash": "dd1d1fcdf5b21c8157186678c683c1bc",
+    "mtime": 1791562982.6605349,
+    "seen": 1791562999.398292,
+    "ast_hash": "7ca44c9a6b169aa198935aec01e2f4ee",
     "semantic_hash": ""
   },
   "tests/test_scheduler.py": {
