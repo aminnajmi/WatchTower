@@ -1,7 +1,7 @@
 import logging
 
 from .discord import send as send_discord
-from .telegram import send as send_telegram
+from .telegram import send as send_telegram, send_support_sales as send_support_sales_telegram
 
 logger = logging.getLogger(__name__)
 
@@ -33,4 +33,4 @@ async def notify(message: str) -> tuple[bool, str | None]:
 
 from .service import create_notification, metadata_for
 
-__all__ = ["notify", "send_discord", "send_telegram", "create_notification", "metadata_for"]
+__all__ = ["notify", "send_discord", "send_telegram", "send_support_sales_telegram", "create_notification", "metadata_for"]

@@ -57,5 +57,44 @@ async def send(message: str) -> TelegramSendResult:
     return TelegramSendResult(success=True, sent=True)
 
 
+async def send_support_sales(message: str) -> TelegramSendResult:
+    """Send only to the independently configured Support-Sales group."""
+    if not settings.support_sales_telegram_enabled:
+        return TelegramSendResult(success=True, sent=False)
+    if not settings.telegram_bot_token:
+        return _failure("TELEGRAM_BOT_TOKEN is required when Support-Sales Telegram is enabled")
+    if not settings.support_sales_telegram_chat_id:
+        return _failure("SUPPORT_SALES_TELEGRAM_CHAT_ID is required when Support-Sales Telegram is enabled")
+
+    url = f"https://api.telegram.org/bot{settings.telegram_bot_token}/sendMessage"
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            response = await client.post(
+                url,
+                data={"chat_id": settings.support_sales_telegram_chat_id, "text": message},
+            )
+        response.raise_for_status()
+        payload = response.json()
+    except httpx.HTTPStatusError as exc:
+        return _failure(f"Telegram API returned HTTP {exc.response.status_code}")
+    except httpx.HTTPError as exc:
+        return _failure(f"Telegram network request failed ({type(exc).__name__})")
+    except (ValueError, TypeError):
+        return _failure("Telegram API returned an invalid response")
+    except Exception as exc:
+        return _failure(f"Telegram request failed ({type(exc).__name__})")
+
+    if not isinstance(payload, dict) or payload.get("ok") is not True:
+        return _failure("Telegram API rejected the message")
+    return TelegramSendResult(success=True, sent=True)
+
+
 async def send_test() -> TelegramSendResult:
     return await send("🧪 WatchTower — TEST\n\nTelegram notification test successful.")
+
+
+async def send_support_sales_test() -> TelegramSendResult:
+    return await send_support_sales(
+        "WatchTower — Support-Sales\n\n✅ Test Notification\n\n"
+        "Support-Sales Telegram notifications are configured successfully."
+    )

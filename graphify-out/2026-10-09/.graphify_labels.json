@@ -17,8 +17,8 @@
   "15": "scheduler.py",
   "16": "main.py",
   "17": "deployment-health-check.sh",
-  "18": "Principal",
-  "19": "UserManagementTests",
+  "18": "User",
+  "19": "Principal",
   "20": "Notification",
   "21": "post",
   "22": "authenticate_token",
@@ -45,6 +45,5 @@
   "43": "Settings Page",
   "44": "Tidio Integration Page",
   "45": "User Management Page",
-  "46": "ProductionConfigTests",
-  "47": "NotificationCenterTests"
+  "46": "ProductionConfigTests"
 }

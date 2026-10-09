@@ -5,6 +5,7 @@ import hmac
 import logging
 import json
 from pathlib import Path
+from threading import Lock
 
 from contextlib import asynccontextmanager
 
@@ -34,7 +35,10 @@ from .auth import (
 from .config import settings
 from .models import init_db, SessionLocal, OSRelease, ReleaseHistory, ReleaseEvent, User, Notification, TidioConnection
 from .schemas import UserCreate, UserUpdate, PasswordReset, PasswordChange, NotificationCreate
-from .notifications.telegram import send_test as send_telegram_test
+from .notifications.telegram import (
+    send_test as send_telegram_test,
+    send_support_sales_test as send_support_sales_telegram_test,
+)
 from .notifications.service import (
     ALLOWED_SEVERITIES, ALLOWED_SOURCES, ALLOWED_STATUSES,
     create_notification, metadata_for,
@@ -72,6 +76,7 @@ logger = logging.getLogger(__name__)
 # Compatibility seam for tests/integrations that inject a scheduler instance.
 # Normal operation always reads the lifecycle-owned scheduler from its module.
 scheduler = None
+support_sales_test_lock = Lock()
 allowed_hosts = [host.strip() for host in settings.allowed_hosts.split(",") if host.strip()]
 if allowed_hosts and "*" not in allowed_hosts:
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=allowed_hosts)
@@ -511,6 +516,38 @@ async def test_telegram_notification():
     return {"success": True, "message": "Telegram test message sent"}
 
 
+@app.post("/api/v1/notifications/test/support-sales", dependencies=[Depends(require_admin)])
+async def test_support_sales_telegram_notification():
+    if not settings.support_sales_telegram_enabled:
+        return JSONResponse(
+            {"success": False, "error": "Support-Sales Telegram notifications are disabled"},
+            status_code=400,
+        )
+    if not support_sales_test_lock.acquire(blocking=False):
+        return JSONResponse(
+            {"success": False, "error": "A Support-Sales test notification is already being sent"},
+            status_code=409,
+        )
+
+    try:
+        result = await send_support_sales_telegram_test()
+    except Exception as exc:
+        logger.warning("Support-Sales Telegram test failed (%s)", type(exc).__name__)
+        return JSONResponse(
+            {"success": False, "error": f"Support-Sales Telegram test failed ({type(exc).__name__})"},
+            status_code=503,
+        )
+    finally:
+        support_sales_test_lock.release()
+
+    if not result.success or not result.sent:
+        return JSONResponse(
+            {"success": False, "error": result.error or "Support-Sales Telegram test message was not sent"},
+            status_code=503,
+        )
+    return {"success": True, "message": "Support-Sales Telegram test message sent"}
+
+
 def _serialize_notification(notification: Notification) -> dict:
     return {
         "id": notification.id,
@@ -863,6 +900,10 @@ def status():
                 settings.telegram_enabled and settings.telegram_bot_token and settings.telegram_chat_id
             ),
             "telegram_chat_configured": bool(settings.telegram_chat_id),
+            "support_sales_telegram_enabled": bool(settings.support_sales_telegram_enabled),
+            "support_sales_telegram_configured": bool(
+                settings.telegram_bot_token and settings.support_sales_telegram_chat_id
+            ),
         },
     }
 

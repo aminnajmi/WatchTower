@@ -346,5 +346,119 @@ class TelegramTestEndpointTests(unittest.TestCase):
         self.assertIn("TEST", sender.await_args.args[0])
 
 
+class SupportSalesTelegramTests(unittest.IsolatedAsyncioTestCase):
+    async def test_sender_targets_only_support_sales_and_disable_is_independent(self):
+        from app.notifications import telegram
+        client = FakeAsyncClient(FakeResponse())
+        with patch.object(settings, "support_sales_telegram_enabled", True), \
+             patch.object(settings, "support_sales_telegram_chat_id", "sales-chat"), \
+             patch.object(settings, "telegram_enabled", False), \
+             patch.object(settings, "telegram_chat_id", "tech-chat"), \
+             patch.object(settings, "telegram_bot_token", "shared-token"), \
+             patch.object(telegram.httpx, "AsyncClient", return_value=client):
+            sent = await telegram.send_support_sales("sales only")
+            disabled = await telegram.send("tech message")
+        self.assertTrue(sent.sent)
+        self.assertTrue(disabled.success)
+        self.assertFalse(disabled.sent)
+        self.assertEqual(client.post.await_args.kwargs["data"], {"chat_id": "sales-chat", "text": "sales only"})
+        client.post.assert_awaited_once()
+
+    async def test_disabling_support_sales_does_not_disable_support_tech(self):
+        from app.notifications import telegram
+        client = FakeAsyncClient(FakeResponse())
+        with patch.object(settings, "support_sales_telegram_enabled", False), \
+             patch.object(settings, "support_sales_telegram_chat_id", "sales-chat"), \
+             patch.object(settings, "telegram_enabled", True), \
+             patch.object(settings, "telegram_chat_id", "tech-chat"), \
+             patch.object(settings, "telegram_bot_token", "shared-token"), \
+             patch.object(telegram.httpx, "AsyncClient", return_value=client):
+            sales = await telegram.send_support_sales("sales message")
+            tech = await telegram.send("tech message")
+        self.assertFalse(sales.sent)
+        self.assertTrue(tech.sent)
+        self.assertEqual(client.post.await_args.kwargs["data"], {"chat_id": "tech-chat", "text": "tech message"})
+        client.post.assert_awaited_once()
+
+    async def test_support_sales_test_message(self):
+        from app.notifications import telegram
+        sender = AsyncMock(return_value=TelegramSendResult(success=True, sent=True))
+        with patch.object(telegram, "send_support_sales", new=sender):
+            result = await telegram.send_support_sales_test()
+        self.assertTrue(result.success)
+        message = sender.await_args.args[0]
+        self.assertIn("WatchTower — Support-Sales", message)
+        self.assertIn("✅ Test Notification", message)
+        self.assertIn("configured successfully", message)
+
+
+class SupportSalesTelegramEndpointTests(unittest.TestCase):
+    def setUp(self):
+        self.init_patch = patch.object(main, "init_db")
+        self.scheduler_patch = patch.object(main, "start_scheduler")
+        self.auth_patch = patch.object(auth, "principal_for_username", return_value=Principal(None, settings.admin_username, "admin"))
+        self.init_patch.start()
+        self.scheduler_patch.start()
+        self.auth_patch.start()
+        self.client_context = TestClient(main.app)
+        self.client = self.client_context.__enter__()
+
+    def tearDown(self):
+        self.client_context.__exit__(None, None, None)
+        self.auth_patch.stop()
+        self.scheduler_patch.stop()
+        self.init_patch.stop()
+
+    def test_endpoint_is_admin_only_and_uses_sales_sender(self):
+        sender = AsyncMock(return_value=TelegramSendResult(success=True, sent=True))
+        with patch.object(main, "send_support_sales_telegram_test", new=sender), \
+             patch.object(settings, "support_sales_telegram_enabled", True):
+            self.assertEqual(self.client.post("/api/v1/notifications/test/support-sales").status_code, 401)
+            with patch.object(auth, "principal_for_username", return_value=Principal("user-id", "member", "user")):
+                user_token = create_access_token("member")
+                forbidden = self.client.post(
+                    "/api/v1/notifications/test/support-sales",
+                    headers={"Authorization": f"Bearer {user_token}"},
+                )
+            token = create_access_token(settings.admin_username)
+            response = self.client.post("/api/v1/notifications/test/support-sales", headers={"Authorization": f"Bearer {token}"})
+        self.assertEqual(forbidden.status_code, 403)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"success": True, "message": "Support-Sales Telegram test message sent"})
+        sender.assert_awaited_once()
+
+    def test_disabled_and_in_progress_requests_are_rejected(self):
+        sender = AsyncMock(return_value=TelegramSendResult(success=True, sent=True))
+        token = create_access_token(settings.admin_username)
+        headers = {"Authorization": f"Bearer {token}"}
+        with patch.object(main, "send_support_sales_telegram_test", new=sender), \
+             patch.object(settings, "support_sales_telegram_enabled", False):
+            disabled = self.client.post("/api/v1/notifications/test/support-sales", headers=headers)
+        self.assertEqual(disabled.status_code, 400)
+        self.assertFalse(disabled.json()["success"])
+
+        self.assertTrue(main.support_sales_test_lock.acquire(blocking=False))
+        try:
+            with patch.object(settings, "support_sales_telegram_enabled", True):
+                duplicate = self.client.post("/api/v1/notifications/test/support-sales", headers=headers)
+        finally:
+            main.support_sales_test_lock.release()
+        self.assertEqual(duplicate.status_code, 409)
+        sender.assert_not_awaited()
+
+    def test_sender_errors_are_safe_and_clear(self):
+        sender = AsyncMock(side_effect=RuntimeError("secret bot token"))
+        token = create_access_token(settings.admin_username)
+        with patch.object(main, "send_support_sales_telegram_test", new=sender), \
+             patch.object(settings, "support_sales_telegram_enabled", True):
+            response = self.client.post(
+                "/api/v1/notifications/test/support-sales",
+                headers={"Authorization": f"Bearer {token}"},
+            )
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json()["error"], "Support-Sales Telegram test failed (RuntimeError)")
+        self.assertNotIn("secret bot token", response.text)
+
+
 if __name__ == "__main__":
     unittest.main()

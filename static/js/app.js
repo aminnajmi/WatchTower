@@ -452,6 +452,8 @@
       $('#settings-discord').outerHTML = renderStatus(status.notifications.discord_enabled ? 'Enabled' : 'Disabled', status.notifications.discord_enabled ? 'good' : 'unknown');
       $('#settings-telegram').outerHTML = renderStatus(status.notifications.telegram_enabled ? 'Enabled' : 'Disabled', status.notifications.telegram_enabled ? 'good' : 'unknown');
       $('#settings-telegram-chat').outerHTML = renderStatus(status.notifications.telegram_chat_configured ? 'Configured' : 'Not configured', status.notifications.telegram_chat_configured ? 'good' : 'unknown');
+      $('#settings-support-sales-telegram').innerHTML = renderStatus(status.notifications.support_sales_telegram_enabled ? 'Enabled' : 'Disabled', status.notifications.support_sales_telegram_enabled ? 'good' : 'unknown');
+      $('#settings-support-sales-telegram-chat').innerHTML = renderStatus(status.notifications.support_sales_telegram_configured ? 'Configured' : 'Not configured', status.notifications.support_sales_telegram_configured ? 'good' : 'unknown');
       $('#settings-providers').innerHTML = providers.providers.map(slug => `<div class="provider-item"><strong>${escapeHtml(providerNames[slug] || slug)}</strong>${renderStatus('Enabled', 'good')}</div>`).join('');
     } catch (error) { $('#settings-providers').textContent = error.message; }
 
@@ -471,6 +473,25 @@
       } finally {
         button.disabled = false;
         button.textContent = 'Test Telegram Notifications';
+      }
+    });
+
+    const supportSalesButton = $('#support-sales-telegram-test-button');
+    const supportSalesStatus = $('#support-sales-telegram-test-status');
+    if (supportSalesButton && supportSalesStatus) supportSalesButton.addEventListener('click', async () => {
+      supportSalesButton.disabled = true;
+      supportSalesButton.textContent = 'Sending test…';
+      supportSalesStatus.textContent = 'Sending test message to Support-Sales…';
+      try {
+        const result = await api('/api/v1/notifications/test/support-sales', { method: 'POST' });
+        supportSalesStatus.textContent = result.message || 'Support-Sales Telegram test message sent.';
+        toast('Support-Sales Telegram test sent successfully.');
+      } catch (error) {
+        supportSalesStatus.textContent = `Support-Sales Telegram test failed: ${error.message}`;
+        toast(`Support-Sales Telegram test failed: ${error.message}`);
+      } finally {
+        supportSalesButton.disabled = false;
+        supportSalesButton.textContent = 'Test Support-Sales Telegram';
       }
     });
   }

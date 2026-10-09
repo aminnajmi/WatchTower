@@ -302,7 +302,21 @@ class WebDashboardTests(unittest.TestCase):
         self.assertTrue(payload["notifications"]["telegram_chat_configured"])
         html = self.client.get("/settings").text
         self.assertIn("Test Telegram Notifications", html)
+        self.assertIn("Support-Sales Telegram", html)
+        self.assertIn("Test Support-Sales Telegram", html)
+        self.assertIn("/api/v1/notifications/test/support-sales", Path("static/js/app.js").read_text())
         self.assertNotIn("hidden-token", html)
+
+    def test_status_exposes_support_sales_configuration_without_secrets(self):
+        self.sign_in()
+        with patch.object(settings, "support_sales_telegram_enabled", True), \
+             patch.object(settings, "support_sales_telegram_chat_id", "sales-chat-id"), \
+             patch.object(settings, "telegram_bot_token", "never-display-this-token"):
+            response = self.client.get("/api/v1/status")
+        self.assertTrue(response.json()["notifications"]["support_sales_telegram_enabled"])
+        self.assertTrue(response.json()["notifications"]["support_sales_telegram_configured"])
+        self.assertNotIn("never-display-this-token", response.text)
+        self.assertNotIn("sales-chat-id", response.text)
 
     def test_check_now_api_and_logout(self):
         self.sign_in()

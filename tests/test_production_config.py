@@ -33,6 +33,14 @@ class ProductionConfigTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "TELEGRAM_BOT_TOKEN.*TELEGRAM_CHAT_ID"):
             config.validate_production_settings()
 
+    def test_production_configuration_requires_support_sales_chat_when_enabled(self):
+        config = self._valid_production_settings(
+            support_sales_telegram_enabled=True,
+            telegram_bot_token="shared-bot-token",
+        )
+        with self.assertRaisesRegex(RuntimeError, "SUPPORT_SALES_TELEGRAM_CHAT_ID"):
+            config.validate_production_settings()
+
     def test_sqlite_directory_is_created_for_nested_database_path(self):
         with tempfile.TemporaryDirectory() as root:
             database = Path(root) / "persistent" / "nested" / "tracker.db"

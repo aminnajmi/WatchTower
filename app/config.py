@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     telegram_enabled: bool = False
     telegram_bot_token: str = ""
     telegram_chat_id: str = ""
+    support_sales_telegram_enabled: bool = False
+    support_sales_telegram_chat_id: str = ""
     track_point_releases: bool = True
     openclaw_notification_api_key: str = ""
 
@@ -52,6 +54,11 @@ class Settings(BaseSettings):
                 missing.append("TELEGRAM_BOT_TOKEN is required when Telegram is enabled")
             if not self.telegram_chat_id:
                 missing.append("TELEGRAM_CHAT_ID is required when Telegram is enabled")
+        if self.support_sales_telegram_enabled:
+            if not self.telegram_bot_token:
+                missing.append("TELEGRAM_BOT_TOKEN is required when Support-Sales Telegram is enabled")
+            if not self.support_sales_telegram_chat_id:
+                missing.append("SUPPORT_SALES_TELEGRAM_CHAT_ID is required when Support-Sales Telegram is enabled")
 
         if missing:
             raise RuntimeError("Invalid production configuration: " + "; ".join(missing))
