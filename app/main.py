@@ -751,15 +751,15 @@ def _tidio_status_payload() -> dict:
         row = db.get(TidioConnection, 1)
         snapshot = tidio_monitor.snapshot
         return {
-            "configured": bool(row and row.username and row.password_encrypted),
-            "username": row.username if row else None,
-            "status": snapshot.status if snapshot.status != "not_configured" else (row.status if row else "not_configured"),
+            "configured": bool(row and (row.username or row.password_encrypted or row.enabled)),
+            "username": row.username or None if row else None,
+            "status": snapshot.status if snapshot.status != "not_configured" else (row.status if row and row.status != "not_configured" else "login_required"),
             "connected": snapshot.connected,
             "unassigned_chats": snapshot.unassigned_count,
             "last_checked_at": _utc_timestamp(row.last_checked_at) if row else snapshot.last_checked_at,
             "last_error": snapshot.error or (row.last_error if row else None),
             "poll_interval_seconds": 3,
-            "verification_required": snapshot.status == "manual_verification_required",
+            "verification_required": snapshot.status in {"manual_verification_required", "waiting_for_manual_login"},
         }
     finally:
         db.close()
@@ -770,12 +770,15 @@ def tidio_status():
     return _tidio_status_payload()
 
 
-@app.post("/api/v1/tidio/connect", dependencies=[Depends(require_admin)])
-async def tidio_connect(payload: TidioConnectRequest):
+@app.post("/api/v1/tidio/connect")
+async def tidio_connect(payload: TidioConnectRequest, principal: Principal = Depends(require_admin)):
     username = payload.username.strip()
     if not username or not payload.password:
         raise HTTPException(status_code=422, detail="Tidio username and password are required")
-    result = await tidio_monitor.connect(username, payload.password)
+    try:
+        result = await tidio_monitor.connect(username, payload.password, owner=principal.username)
+    except PermissionError:
+        raise HTTPException(status_code=403, detail="This Tidio browser session belongs to another administrator")
     if not result.connected:
         return JSONResponse(
             {"success": False, "error": result.error or "Tidio connection failed", "status": result.status},
@@ -784,16 +787,30 @@ async def tidio_connect(payload: TidioConnectRequest):
     return {"success": True, **_tidio_status_payload()}
 
 
-@app.post("/api/v1/tidio/disconnect", dependencies=[Depends(require_admin)])
-async def tidio_disconnect():
-    await tidio_monitor.disconnect()
+@app.post("/api/v1/tidio/open-login")
+async def tidio_open_login(principal: Principal = Depends(require_admin)):
+    try:
+        await tidio_monitor.open_login(principal.username)
+    except PermissionError:
+        raise HTTPException(status_code=403, detail="This Tidio browser session belongs to another administrator")
+    return {"success": tidio_monitor.snapshot.status == "waiting_for_manual_login", **_tidio_status_payload()}
+
+
+@app.post("/api/v1/tidio/disconnect")
+async def tidio_disconnect(principal: Principal = Depends(require_admin)):
+    try:
+        await tidio_monitor.disconnect(owner=principal.username)
+    except PermissionError:
+        raise HTTPException(status_code=403, detail="This Tidio browser session belongs to another administrator")
     return {"success": True, **_tidio_status_payload()}
 
 
-@app.get("/api/v1/tidio/verification/screenshot", dependencies=[Depends(require_admin)])
-async def tidio_verification_screenshot():
+@app.get("/api/v1/tidio/verification/screenshot")
+async def tidio_verification_screenshot(principal: Principal = Depends(require_admin)):
     try:
-        screenshot = await tidio_monitor.verification_screenshot()
+        screenshot = await tidio_monitor.verification_screenshot(owner=principal.username)
+    except PermissionError:
+        raise HTTPException(status_code=403, detail="This Tidio browser session belongs to another administrator")
     except Exception:
         screenshot = None
     if screenshot is None:
@@ -801,12 +818,14 @@ async def tidio_verification_screenshot():
     return Response(screenshot, media_type="image/png", headers={"Cache-Control": "no-store", "Pragma": "no-cache"})
 
 
-@app.post("/api/v1/tidio/verification/action", dependencies=[Depends(require_admin)])
-async def tidio_verification_action(payload: TidioVerificationAction):
+@app.post("/api/v1/tidio/verification/action")
+async def tidio_verification_action(payload: TidioVerificationAction, principal: Principal = Depends(require_admin)):
     try:
         accepted = await tidio_monitor.verification_action(
-            payload.action, x=payload.x, y=payload.y, delta_y=payload.delta_y, value=payload.value
+            payload.action, x=payload.x, y=payload.y, delta_y=payload.delta_y, value=payload.value, owner=principal.username
         )
+    except PermissionError:
+        raise HTTPException(status_code=403, detail="This Tidio browser session belongs to another administrator")
     except Exception:
         accepted = False
     if not accepted:
@@ -814,9 +833,12 @@ async def tidio_verification_action(payload: TidioVerificationAction):
     return {"success": True}
 
 
-@app.post("/api/v1/tidio/verification/resume", dependencies=[Depends(require_admin)])
-async def tidio_verification_resume():
-    await tidio_monitor.resume_verification()
+@app.post("/api/v1/tidio/verification/resume")
+async def tidio_verification_resume(principal: Principal = Depends(require_admin)):
+    try:
+        await tidio_monitor.resume_verification(owner=principal.username)
+    except PermissionError:
+        raise HTTPException(status_code=403, detail="This Tidio browser session belongs to another administrator")
     return {"success": tidio_monitor.snapshot.connected, **_tidio_status_payload()}
 
 

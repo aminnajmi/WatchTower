@@ -16,6 +16,7 @@
       <input id="tidio-password" type="password" autocomplete="current-password" maxlength="256" placeholder="••••••••" required>
       <div class="dialog-actions">
         <button class="button button-primary" id="tidio-connect-button" type="submit">Connect to Tidio</button>
+        <button class="button button-quiet" id="tidio-open-login-button" type="button">Open Tidio Login</button>
         <button class="button button-quiet" id="tidio-disconnect-button" type="button" hidden>Disconnect</button>
       </div>
       <p class="form-error" id="tidio-connect-error" role="alert" hidden></p>
@@ -35,20 +36,20 @@
 <section class="panel settings-wide tidio-verification-panel" id="tidio-verification-panel" hidden>
   <div class="panel-heading">
     <div>
-      <h2>Complete Tidio verification</h2>
-      <p id="tidio-verification-message">Use this secure, admin-only view to finish Tidio’s MFA or CAPTCHA challenge. The browser session stays on the WatchTower server.</p>
+      <h2>Complete Tidio login</h2>
+      <p id="tidio-verification-message">Use this secure, admin-only view to sign in and finish any MFA or CAPTCHA challenge. The browser session stays on the WatchTower server.</p>
     </div>
   </div>
   <p class="form-error" id="tidio-verification-error" role="status" aria-live="polite" hidden></p>
   <img id="tidio-verification-screen" alt="Tidio verification page. Click the challenge or field to interact." style="display:block;max-width:100%;height:auto;border:1px solid currentColor;border-radius:8px;cursor:crosshair">
-  <p class="muted">Click the Tidio page to focus a field or CAPTCHA control. For a code, enter it below and select “Type code into Tidio”. Do not enter your Tidio password here.</p>
+  <p class="muted">Click the Tidio page to focus a field or CAPTCHA control. Enter text in the box below and select “Type into Tidio” to enter it in the focused field.</p>
   <div class="dialog-actions">
     <button class="button button-quiet" id="tidio-verification-scroll-up" type="button">Scroll up</button>
     <button class="button button-quiet" id="tidio-verification-scroll-down" type="button">Scroll down</button>
-    <input id="tidio-verification-code" type="text" inputmode="text" autocomplete="one-time-code" maxlength="200" aria-label="Tidio verification code" placeholder="Verification code">
-    <button class="button button-quiet" id="tidio-verification-type" type="button">Type code into Tidio</button>
+    <input id="tidio-verification-code" type="password" inputmode="text" autocomplete="off" maxlength="200" aria-label="Text to enter on Tidio page" placeholder="Text to enter">
+    <button class="button button-quiet" id="tidio-verification-type" type="button">Type into Tidio</button>
     <button class="button button-quiet" id="tidio-verification-enter" type="button">Press Enter</button>
-    <button class="button button-primary" id="tidio-verification-resume" type="button">Check Verification</button>
+    <button class="button button-primary" id="tidio-verification-resume" type="button">Resume Monitoring</button>
   </div>
 </section>
 

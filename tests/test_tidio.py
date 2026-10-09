@@ -4,10 +4,12 @@ from unittest.mock import AsyncMock
 
 import pytest
 from cryptography.fernet import Fernet
+from fastapi.testclient import TestClient
 
 from app import main
+from app.auth import Principal
 from app.config import settings
-from app.tidio import TidioMonitor, TidioSnapshot, VerificationRequired
+from app.tidio import TidioMonitor, TidioSnapshot, VerificationRequired, TIDIO_LOGIN_URL
 
 
 def test_tidio_snapshot_defaults():
@@ -87,6 +89,8 @@ def test_tidio_status_payload_is_safe_and_reports_monitor_state(monkeypatch):
     assert "password" not in str(payload).lower()
     assert "encrypted-password" not in str(payload)
     monkeypatch.setattr(main.tidio_monitor, "_snapshot", TidioSnapshot(False, "manual_verification_required"))
+    assert main._tidio_status_payload()["verification_required"] is True
+    monkeypatch.setattr(main.tidio_monitor, "_snapshot", TidioSnapshot(False, "waiting_for_manual_login"))
     assert main._tidio_status_payload()["verification_required"] is True
 
 
@@ -218,7 +222,7 @@ def test_tidio_mfa_stops_automatic_reconnect(monkeypatch):
     monkeypatch.setattr(monitor, "_set_status", AsyncMock())
 
     asyncio.run(monitor._reconnect("Tidio session expired"))
-    assert monitor.snapshot.status == "manual_verification_required"
+    assert monitor.snapshot.status == "waiting_for_manual_login"
     assert monitor._stop_event.is_set()
     set_enabled.assert_not_awaited()
 
@@ -255,7 +259,7 @@ def test_tidio_manual_verification_keeps_live_browser(monkeypatch):
 
     async def run():
         result = await monitor.connect("operator", "secret")
-        assert result.status == "manual_verification_required"
+        assert result.status == "waiting_for_manual_login"
         assert "secure Tidio browser" in result.error
         assert await monitor.verification_screenshot() == b"verification-image"
 
@@ -295,6 +299,60 @@ def test_tidio_verification_resume_opens_inbox_and_restarts_monitor(monkeypatch)
     started.assert_awaited_once()
 
 
+def test_tidio_open_login_opens_manual_page_without_submitting_credentials(monkeypatch):
+    monitor = TidioMonitor()
+
+    class Page:
+        url = TIDIO_LOGIN_URL
+        goto = AsyncMock()
+
+    async def ensure_browser():
+        monitor._page = Page()
+
+    monkeypatch.setattr(monitor, "_ensure_browser", ensure_browser)
+    save_state = AsyncMock()
+    monkeypatch.setattr(monitor, "_set_login_state", save_state)
+    result = asyncio.run(monitor.open_login("admin-a"))
+    assert result.status == "waiting_for_manual_login"
+    assert monitor._page.url == TIDIO_LOGIN_URL
+    monitor._page.goto.assert_awaited_once_with(TIDIO_LOGIN_URL, wait_until="domcontentloaded", timeout=30_000)
+    save_state.assert_awaited_once_with("waiting_for_manual_login", None, enabled=True)
+    assert monitor._session_owner == "admin-a"
+
+
+def test_tidio_browser_view_is_restricted_to_the_admin_who_opened_it():
+    monitor = TidioMonitor()
+    monitor._session_owner = "admin-a"
+    with pytest.raises(PermissionError):
+        asyncio.run(monitor.verification_screenshot(owner="admin-b"))
+    with pytest.raises(PermissionError):
+        asyncio.run(monitor.verification_action("click", x=10, y=10, owner="admin-b"))
+    with pytest.raises(PermissionError):
+        asyncio.run(monitor.resume_verification(owner="admin-b"))
+    with pytest.raises(PermissionError):
+        asyncio.run(monitor.disconnect(owner="admin-b"))
+
+
+def test_tidio_browser_view_routes_require_admin_and_enforce_session_owner(monkeypatch):
+    monitor = main.tidio_monitor
+    monkeypatch.setattr(monitor, "_session_owner", "admin-a")
+    client = TestClient(main.app)
+    assert client.get("/api/v1/tidio/verification/screenshot").status_code == 401
+    previous = main.app.dependency_overrides.get(main.require_admin)
+    main.app.dependency_overrides[main.require_admin] = lambda: Principal(2, "admin-b", "admin")
+    try:
+        response = client.post(
+            "/api/v1/tidio/verification/action",
+            json={"action": "click", "x": 10, "y": 10},
+        )
+        assert response.status_code == 403
+    finally:
+        if previous is None:
+            main.app.dependency_overrides.pop(main.require_admin, None)
+        else:
+            main.app.dependency_overrides[main.require_admin] = previous
+
+
 def test_tidio_pending_or_expired_challenge_can_be_checked_again(monkeypatch):
     monitor = TidioMonitor()
     monitor._snapshot = TidioSnapshot(False, "manual_verification_required")
@@ -315,9 +373,9 @@ def test_tidio_pending_or_expired_challenge_can_be_checked_again(monkeypatch):
     set_status = AsyncMock()
     monkeypatch.setattr(monitor, "_set_status", set_status)
     result = asyncio.run(monitor.resume_verification())
-    assert result.status == "manual_verification_required"
+    assert result.status == "waiting_for_manual_login"
     assert "still pending or expired" in result.error
-    set_status.assert_awaited_once_with("manual_verification_required", result.error)
+    set_status.assert_awaited_once_with("waiting_for_manual_login", result.error)
 
 
 def test_tidio_rejected_verification_updates_status_and_keeps_reconnect_available(monkeypatch):
@@ -340,9 +398,9 @@ def test_tidio_rejected_verification_updates_status_and_keeps_reconnect_availabl
     set_status = AsyncMock()
     monkeypatch.setattr(monitor, "_set_status", set_status)
     result = asyncio.run(monitor.resume_verification())
-    assert result.status == "session_expired"
-    assert "Reconnect to start another attempt" in result.error
-    set_status.assert_awaited_once_with("session_expired", result.error)
+    assert result.status == "authentication_failed"
+    assert "Open Tidio Login" in result.error
+    set_status.assert_awaited_once_with("authentication_failed", result.error)
 
 
 def test_tidio_shutdown_cancels_waiter_and_closes_verification_browser():

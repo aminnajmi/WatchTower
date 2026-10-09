@@ -482,6 +482,7 @@
     const password = $('#tidio-password');
     const connectButton = $('#tidio-connect-button');
     const disconnectButton = $('#tidio-disconnect-button');
+    const openLoginButton = $('#tidio-open-login-button');
     const errorBox = $('#tidio-connect-error');
     const statusBadge = $('#tidio-status-badge');
     const connectionState = $('#tidio-connection-state');
@@ -497,9 +498,10 @@
 
     const statusLabel = status => ({
       connected: 'Connected', connecting: 'Connecting…', reconnecting: 'Reconnecting…',
+      login_required: 'Login required', waiting_for_manual_login: 'Waiting for manual login',
       authentication_failed: 'Authentication failed', session_expired: 'Session expired',
-      manual_verification_required: 'Manual verification required', reconnect_paused: 'Reconnect paused',
-      disconnected: 'Disconnected', not_configured: 'Not configured', credentials_unavailable: 'Credentials unavailable'
+      manual_verification_required: 'Waiting for manual login', reconnect_paused: 'Reconnect paused',
+      disconnected: 'Disconnected', not_configured: 'Login required', credentials_unavailable: 'Credentials unavailable'
     }[status] || status || 'Unknown');
 
     const statusKind = status => status === 'connected' ? 'good' : (['authentication_failed', 'session_expired', 'manual_verification_required', 'reconnect_paused'].includes(status) ? 'bad' : 'unknown');
@@ -513,7 +515,8 @@
       count.textContent = data.connected ? String(Number(data.unassigned_chats) || 0) : '—';
       lastCheck.textContent = data.last_checked_at ? dateText(data.last_checked_at) : '—';
       lastError.textContent = data.last_error || '—';
-      verificationPanel.hidden = data.status !== 'manual_verification_required';
+      verificationPanel.hidden = !['waiting_for_manual_login', 'manual_verification_required'].includes(data.status);
+      openLoginButton.hidden = data.status === 'connected' || data.status === 'waiting_for_manual_login' || data.status === 'manual_verification_required';
       if (!verificationPanel.hidden && !verificationTimer) {
         refreshVerificationScreen();
         verificationTimer = window.setInterval(refreshVerificationScreen, 1500);
@@ -577,6 +580,20 @@
       } catch (error) {
         verificationError.textContent = error.message;
         verificationError.hidden = false;
+      } finally {
+        event.currentTarget.disabled = false;
+      }
+    });
+
+    openLoginButton.addEventListener('click', async event => {
+      event.currentTarget.disabled = true;
+      errorBox.hidden = true;
+      try {
+        const result = await api('/api/v1/tidio/open-login', { method: 'POST' });
+        renderStatus(result);
+      } catch (error) {
+        errorBox.textContent = error.message;
+        errorBox.hidden = false;
       } finally {
         event.currentTarget.disabled = false;
       }
