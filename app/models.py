@@ -1,6 +1,6 @@
 from datetime import datetime
 from pathlib import Path
-from sqlalchemy import DateTime, Integer, String, Text, Boolean, ForeignKey, UniqueConstraint, create_engine, event
+from sqlalchemy import DateTime, Integer, String, Text, Boolean, ForeignKey, UniqueConstraint, create_engine, event, inspect
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
 from .config import settings
@@ -67,6 +67,9 @@ class Notification(Base):
     severity: Mapped[str] = mapped_column(String(20), default="info", index=True)
     requires_approval: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     approval_status: Mapped[str] = mapped_column(String(20), default="not_required", index=True)
+    action_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    approval_expires_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    approval_owner_hash: Mapped[str | None] = mapped_column(String(64), nullable=True)
     approved_by: Mapped[str | None] = mapped_column(String(32), nullable=True)
     approved_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     denial_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -133,6 +136,20 @@ if engine.dialect.name == "sqlite":
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 
+def _migrate_notification_approval_fields(database_engine=engine):
+    """Add nullable approval-binding fields without granting legacy rows access."""
+    columns = {column["name"] for column in inspect(database_engine).get_columns("notifications")}
+    migrations = {
+        "action_id": "VARCHAR(64)",
+        "approval_expires_at": "TIMESTAMP",
+        "approval_owner_hash": "VARCHAR(64)",
+    }
+    with database_engine.begin() as conn:
+        for name, sql_type in migrations.items():
+            if name not in columns:
+                conn.exec_driver_sql(f"ALTER TABLE notifications ADD COLUMN {name} {sql_type}")
+
+
 def init_db():
     ensure_sqlite_directory(settings.database_url)
     Base.metadata.create_all(engine)
@@ -189,3 +206,4 @@ def init_db():
                 "WHEN requires_approval = 1 AND (approval_status IS NULL OR approval_status = 'not_required') THEN 'pending' "
                 "ELSE COALESCE(approval_status, 'not_required') END"
             )
+    _migrate_notification_approval_fields(engine)

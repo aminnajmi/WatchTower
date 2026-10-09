@@ -130,6 +130,7 @@ class NotificationCreate(BaseModel):
     severity: str = Field(default="info", min_length=1, max_length=20)
     requires_approval: bool = False
     approval_status: str | None = None
+    approval_expires_at: datetime | None = None
     task_id: str | None = Field(default=None, max_length=100)
     task_name: str | None = Field(default=None, max_length=200)
     report_id: str | None = Field(default=None, max_length=100)

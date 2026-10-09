@@ -1,11 +1,12 @@
 import os
 import tempfile
 import unittest
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import patch
 
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
 
 from app import main, models
@@ -156,6 +157,180 @@ class NotificationCenterTests(unittest.TestCase):
         response = self.client.get(f"/api/v1/notifications/{item['id']}", headers={"Authorization": "Bearer openclaw-test-key"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["approval_status"], "approved")
+
+    def test_openclaw_approval_decision_endpoint_is_key_owned_action_bound_and_read_only(self):
+        headers = {"Authorization": "Bearer openclaw-test-key"}
+        created = self.client.post(
+            "/api/v1/notifications",
+            headers=headers,
+            json={
+                "source": "openclaw",
+                "title": "Approval Required",
+                "message": "Deploy service alpha",
+                "requires_approval": True,
+                "task_id": "deploy-alpha-42",
+                "metadata": {"service": "alpha", "version": "4.2"},
+            },
+        )
+        self.assertEqual(created.status_code, 201, created.text)
+        approval = created.json()
+        self.assertEqual(len(approval["action_id"]), 64)
+        self.assertIsNotNone(approval["approval_expires_at"])
+
+        path = f"/api/v1/notifications/{approval['id']}/approval"
+        self.client.cookies.set(SESSION_COOKIE_NAME, create_access_token("admin"))
+        self.assertEqual(self.client.get(path).status_code, 401)
+        self.client.cookies.clear()
+        self.assertEqual(self.client.get(path, headers={"Authorization": "Bearer wrong"}).status_code, 401)
+        pending = self.client.get(path, headers=headers)
+        self.assertEqual(pending.status_code, 200, pending.text)
+        self.assertEqual(pending.json()["approval_status"], "pending")
+        self.assertTrue(pending.json()["requires_approval"])
+        self.assertEqual(pending.json()["action_id"], approval["action_id"])
+        self.assertEqual(
+            set(pending.json()),
+            {"notification_id", "requires_approval", "approval_status", "action_id", "approval_expires_at"},
+        )
+        mismatch = self.client.get(f"{path}?action_id={'0' * 64}", headers=headers)
+        self.assertEqual(mismatch.status_code, 404)
+
+        db = self.sessions()
+        try:
+            row = db.get(models.Notification, approval["id"])
+            original = (row.approval_status, row.updated_at, row.approved_at)
+        finally:
+            db.close()
+        self.assertEqual(self.client.get(path, headers=headers).json()["approval_status"], "pending")
+        self.assertEqual(self.client.get(path, headers=headers).json()["approval_status"], "pending")
+        db = self.sessions()
+        try:
+            row = db.get(models.Notification, approval["id"])
+            self.assertEqual((row.approval_status, row.updated_at, row.approved_at), original)
+        finally:
+            db.close()
+
+        self.assertEqual(self.client.post(f"/api/v1/notifications/{approval['id']}/approve", headers=headers).status_code, 401)
+        self.assertEqual(self.client.post(f"/api/v1/notifications/{approval['id']}/deny", headers=headers).status_code, 401)
+        approved = self.client.post(f"/api/v1/notifications/{approval['id']}/approve", headers=self.admin_headers)
+        self.assertEqual(approved.status_code, 200, approved.text)
+        decision = self.client.get(path, headers=headers)
+        self.assertEqual(decision.status_code, 200, decision.text)
+        self.assertEqual(decision.json()["approval_status"], "approved")
+
+        # The dedicated key is bound to the owner fingerprint stored at creation.
+        with patch.object(settings, "openclaw_notification_api_key", "rotated-openclaw-key"):
+            self.assertEqual(
+                self.client.get(path, headers={"Authorization": "Bearer rotated-openclaw-key"}).status_code,
+                404,
+            )
+
+    def test_openclaw_approval_decision_returns_denied_and_hides_non_owned_records(self):
+        headers = {"Authorization": "Bearer openclaw-test-key"}
+        created = self.client.post(
+            "/api/v1/notifications",
+            headers=headers,
+            json={"source": "openclaw", "title": "Delete account", "message": "Delete account 17", "requires_approval": True},
+        )
+        approval = created.json()
+        denied = self.client.post(
+            f"/api/v1/notifications/{approval['id']}/deny",
+            headers=self.admin_headers,
+            json={"reason": "Not approved"},
+        )
+        self.assertEqual(denied.status_code, 200, denied.text)
+        decision = self.client.get(f"/api/v1/notifications/{approval['id']}/approval", headers=headers)
+        self.assertEqual(decision.status_code, 200, decision.text)
+        self.assertEqual(decision.json()["approval_status"], "denied")
+
+        ordinary = self.client.post(
+            "/api/v1/notifications",
+            headers=headers,
+            json={"source": "openclaw", "title": "FYI", "message": "No approval needed"},
+        ).json()
+        non_approval = self.client.get(f"/api/v1/notifications/{ordinary['id']}/approval", headers=headers)
+        self.assertEqual(non_approval.status_code, 404)
+
+        admin_test = self.client.post("/api/v1/notifications/test", headers=self.admin_headers).json()
+        hidden = self.client.get(f"/api/v1/notifications/{admin_test['id']}/approval", headers=headers)
+        self.assertEqual(hidden.status_code, 404)
+        missing = self.client.get("/api/v1/notifications/99999/approval", headers=headers)
+        self.assertEqual(missing.status_code, 404)
+
+    def test_expired_approval_cannot_be_retrieved_or_approved(self):
+        headers = {"Authorization": "Bearer openclaw-test-key"}
+        created = self.client.post(
+            "/api/v1/notifications",
+            headers=headers,
+            json={"source": "openclaw", "title": "Restart", "message": "Restart server 3", "requires_approval": True},
+        )
+        approval = created.json()
+        db = self.sessions()
+        try:
+            row = db.get(models.Notification, approval["id"])
+            row.approval_expires_at = datetime.utcnow() - timedelta(seconds=1)
+            db.commit()
+        finally:
+            db.close()
+
+        path = f"/api/v1/notifications/{approval['id']}/approval"
+        self.assertEqual(self.client.get(path, headers=headers).status_code, 410)
+        admin_response = self.client.post(f"/api/v1/notifications/{approval['id']}/approve", headers=self.admin_headers)
+        self.assertEqual(admin_response.status_code, 410)
+        db = self.sessions()
+        try:
+            self.assertEqual(db.get(models.Notification, approval["id"]).approval_status, "pending")
+        finally:
+            db.close()
+
+    def test_legacy_approval_without_binding_metadata_is_not_authorized(self):
+        from app.notifications.service import create_notification
+        legacy = create_notification(
+            source="openclaw",
+            title="Legacy request",
+            message="Old approval record",
+            requires_approval=True,
+        )
+        response = self.client.get(
+            f"/api/v1/notifications/{legacy.id}/approval",
+            headers={"Authorization": "Bearer openclaw-test-key"},
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_approval_expiration_must_be_future_and_non_approval_cannot_set_expiry(self):
+        headers = {"Authorization": "Bearer openclaw-test-key"}
+        past = (datetime.now(timezone.utc) - timedelta(minutes=1)).isoformat()
+        expired = self.client.post(
+            "/api/v1/notifications",
+            headers=headers,
+            json={"source": "openclaw", "title": "Action", "message": "Do action", "requires_approval": True, "approval_expires_at": past},
+        )
+        self.assertEqual(expired.status_code, 422)
+        invalid = self.client.post(
+            "/api/v1/notifications",
+            headers=headers,
+            json={"source": "openclaw", "title": "FYI", "message": "No approval", "approval_expires_at": (datetime.now(timezone.utc) + timedelta(hours=1)).isoformat()},
+        )
+        self.assertEqual(invalid.status_code, 422)
+
+    def test_migration_adds_nullable_approval_fields_without_backfilling_legacy_rows(self):
+        from app.models import _migrate_notification_approval_fields
+        with tempfile.TemporaryDirectory() as root:
+            legacy_engine = create_engine(f"sqlite:///{Path(root) / 'legacy.db'}")
+            try:
+                with legacy_engine.begin() as conn:
+                    conn.exec_driver_sql(
+                        "CREATE TABLE notifications (id INTEGER PRIMARY KEY, source VARCHAR(30), requires_approval BOOLEAN, approval_status VARCHAR(20))"
+                    )
+                    conn.exec_driver_sql("INSERT INTO notifications (id, source, requires_approval, approval_status) VALUES (1, 'openclaw', 1, 'pending')")
+                _migrate_notification_approval_fields(legacy_engine)
+                _migrate_notification_approval_fields(legacy_engine)
+                with legacy_engine.connect() as conn:
+                    columns = {row["name"] for row in inspect(legacy_engine).get_columns("notifications")}
+                    row = conn.exec_driver_sql("SELECT action_id, approval_expires_at, approval_owner_hash FROM notifications WHERE id = 1").one()
+                self.assertTrue({"action_id", "approval_expires_at", "approval_owner_hash"}.issubset(columns))
+                self.assertEqual(row, (None, None, None))
+            finally:
+                legacy_engine.dispose()
 
     def test_openclaw_approval_request_can_be_denied_with_reason(self):
         response = self.client.post(

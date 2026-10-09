@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import asyncio
 import hashlib
 import hmac
@@ -558,6 +558,8 @@ def _serialize_notification(notification: Notification) -> dict:
         "severity": notification.severity,
         "requires_approval": notification.requires_approval,
         "approval_status": notification.approval_status,
+        "action_id": notification.action_id,
+        "approval_expires_at": _utc_timestamp(notification.approval_expires_at),
         "approved_by": notification.approved_by,
         "approved_at": _utc_timestamp(notification.approved_at),
         "denial_reason": notification.denial_reason,
@@ -583,6 +585,8 @@ def _validate_notification_payload(payload: NotificationCreate) -> None:
         raise HTTPException(status_code=422, detail="OpenClaw may only create pending approval requests")
     if payload.requires_approval and payload.approval_status == "not_required":
         raise HTTPException(status_code=422, detail="Approval requests must use pending approval status")
+    if payload.approval_expires_at is not None and not payload.requires_approval:
+        raise HTTPException(status_code=422, detail="Only approval requests may have an approval expiration")
     if len(json.dumps(payload.metadata, ensure_ascii=False)) > 10000:
         raise HTTPException(status_code=413, detail="Notification metadata is too large")
 
@@ -595,6 +599,28 @@ def _openclaw_authorized(authorization: str | None) -> bool:
     return scheme.lower() == "bearer" and bool(token) and hmac.compare_digest(token.strip(), configured)
 
 
+def _openclaw_key_fingerprint(authorization: str | None) -> str | None:
+    if not _openclaw_authorized(authorization):
+        return None
+    _, _, token = authorization.partition(" ")
+    return hashlib.sha256(token.strip().encode("utf-8")).hexdigest()
+
+
+def _approval_action_id(payload: NotificationCreate) -> str:
+    """Bind approval to a stable hash of the proposed action fields."""
+    action = {
+        "title": payload.title.strip(),
+        "message": payload.message.strip(),
+        "task_id": payload.task_id.strip() if payload.task_id else None,
+        "task_name": payload.task_name.strip() if payload.task_name else None,
+        "report_id": payload.report_id.strip() if payload.report_id else None,
+        "external_url": payload.external_url.strip() if payload.external_url else None,
+        "metadata": payload.metadata,
+    }
+    canonical = json.dumps(action, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 @app.post("/api/v1/notifications", status_code=201)
 def create_openclaw_notification(payload: NotificationCreate, authorization: str | None = Header(default=None)):
     if not _openclaw_authorized(authorization):
@@ -602,8 +628,29 @@ def create_openclaw_notification(payload: NotificationCreate, authorization: str
     _validate_notification_payload(payload)
     if payload.source != "openclaw":
         raise HTTPException(status_code=403, detail="OpenClaw endpoint accepts only openclaw notifications")
+    action_id = None
+    approval_expires_at = None
+    approval_owner_hash = None
+    if payload.requires_approval:
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
+        approval_expires_at = payload.approval_expires_at
+        if approval_expires_at is not None and approval_expires_at.tzinfo is not None:
+            approval_expires_at = approval_expires_at.astimezone(timezone.utc).replace(tzinfo=None)
+        if approval_expires_at is None:
+            approval_expires_at = now + timedelta(hours=24)
+        elif approval_expires_at <= now:
+            raise HTTPException(status_code=422, detail="Approval expiration must be in the future")
+        action_id = _approval_action_id(payload)
+        approval_owner_hash = _openclaw_key_fingerprint(authorization)
+        if approval_owner_hash is None:
+            raise HTTPException(status_code=401, detail="Valid OpenClaw notification credentials required")
     try:
-        notification = create_notification(**payload.model_dump())
+        notification = create_notification(
+            **payload.model_dump(exclude={"approval_expires_at"}),
+            action_id=action_id,
+            approval_expires_at=approval_expires_at,
+            approval_owner_hash=approval_owner_hash,
+        )
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
     return _serialize_notification(notification)
@@ -689,6 +736,55 @@ def get_notification(
         db.close()
 
 
+@app.get("/api/v1/notifications/{notification_id}/approval")
+def get_openclaw_approval_decision(
+    notification_id: int,
+    authorization: str | None = Header(default=None),
+    action_id: str | None = Query(default=None, min_length=1, max_length=64),
+):
+    """Return only an OpenClaw request's action-bound approval decision."""
+    key_fingerprint = _openclaw_key_fingerprint(authorization)
+    if key_fingerprint is None:
+        raise HTTPException(
+            status_code=401,
+            detail="Valid OpenClaw notification credentials required",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    db = SessionLocal()
+    try:
+        notification = db.get(Notification, notification_id)
+        if notification is None:
+            raise HTTPException(status_code=404, detail="Approval request not found")
+        if (
+            notification.source != "openclaw"
+            or not notification.approval_owner_hash
+            or not hmac.compare_digest(notification.approval_owner_hash, key_fingerprint)
+        ):
+            raise HTTPException(status_code=404, detail="Approval request not found")
+        if not notification.requires_approval:
+            raise HTTPException(status_code=409, detail="Notification does not require approval")
+        # Existing records receive NULLs in the migration. Do not infer approval
+        # ownership or action authorization for records predating these fields.
+        if not notification.action_id or notification.approval_expires_at is None:
+            raise HTTPException(status_code=404, detail="Approval request not found")
+        if action_id is not None and not hmac.compare_digest(notification.action_id, action_id):
+            raise HTTPException(status_code=404, detail="Approval request not found")
+        if notification.approval_expires_at <= datetime.utcnow():
+            raise HTTPException(status_code=410, detail="Approval request has expired")
+        if notification.approval_status not in {"pending", "approved", "denied"}:
+            raise HTTPException(status_code=409, detail="Approval decision is unavailable")
+        return {
+            "notification_id": notification.id,
+            "requires_approval": True,
+            "approval_status": notification.approval_status,
+            "action_id": notification.action_id,
+            "approval_expires_at": _utc_timestamp(notification.approval_expires_at),
+        }
+    finally:
+        db.close()
+
+
 @app.post("/api/v1/notifications/test", status_code=201, dependencies=[Depends(require_admin)])
 def test_notification(current: Principal = Depends(require_admin)):
     notification = create_notification(
@@ -711,7 +807,12 @@ def approve_notification(notification_id: int, current: Principal = Depends(auth
         now = datetime.utcnow()
         result = db.execute(
             update(Notification)
-            .where(Notification.id == notification_id, Notification.requires_approval.is_(True), Notification.approval_status == "pending")
+            .where(
+                Notification.id == notification_id,
+                Notification.requires_approval.is_(True),
+                Notification.approval_status == "pending",
+                (Notification.approval_expires_at.is_(None) | (Notification.approval_expires_at > now)),
+            )
             .values(
                 approval_status="approved",
                 status="resolved",
@@ -727,6 +828,8 @@ def approve_notification(notification_id: int, current: Principal = Depends(auth
                 raise HTTPException(status_code=404, detail="Notification not found")
             if not notification.requires_approval:
                 raise HTTPException(status_code=409, detail="This notification does not require approval")
+            if notification.approval_expires_at is not None and notification.approval_expires_at <= now:
+                raise HTTPException(status_code=410, detail="This approval request has expired")
             raise HTTPException(status_code=409, detail=f"Notification is already {notification.approval_status}")
         db.commit()
         notification = db.get(Notification, notification_id)
@@ -753,7 +856,12 @@ def deny_notification(
         now = datetime.utcnow()
         result = db.execute(
             update(Notification)
-            .where(Notification.id == notification_id, Notification.requires_approval.is_(True), Notification.approval_status == "pending")
+            .where(
+                Notification.id == notification_id,
+                Notification.requires_approval.is_(True),
+                Notification.approval_status == "pending",
+                (Notification.approval_expires_at.is_(None) | (Notification.approval_expires_at > now)),
+            )
             .values(
                 approval_status="denied",
                 status="resolved",
@@ -769,6 +877,8 @@ def deny_notification(
                 raise HTTPException(status_code=404, detail="Notification not found")
             if not notification.requires_approval:
                 raise HTTPException(status_code=409, detail="This notification does not require approval")
+            if notification.approval_expires_at is not None and notification.approval_expires_at <= now:
+                raise HTTPException(status_code=410, detail="This approval request has expired")
             raise HTTPException(status_code=409, detail=f"Notification is already {notification.approval_status}")
         db.commit()
         notification = db.get(Notification, notification_id)
