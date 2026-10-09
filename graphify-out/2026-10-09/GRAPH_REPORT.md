@@ -1,7 +1,7 @@
 # Graph Report - WatchTower  (2026-10-09)
 
 ## Corpus Check
-- 51 files · ~37,326 words
+- 51 files · ~37,335 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 9 file(s) not represented in the graph (top: (none) 5, .example 1, .db-shm 1)
 

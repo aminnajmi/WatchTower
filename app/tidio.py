@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import re
+from urllib.parse import urlsplit, urlunsplit
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -93,7 +94,12 @@ class TidioMonitor:
             try:
                 await self._ensure_browser()
                 assert self._page is not None
-                await self._page.goto(TIDIO_LOGIN_URL, wait_until="domcontentloaded", timeout=30_000)
+                response = await self._page.goto(TIDIO_LOGIN_URL, wait_until="domcontentloaded", timeout=30_000)
+                logger.info(
+                    "Tidio manual login page loaded url=%s status=%s",
+                    self._safe_browser_url(self._page.url),
+                    response.status if response else "no_response",
+                )
                 self._snapshot = TidioSnapshot(False, "waiting_for_manual_login")
                 await self._set_login_state("waiting_for_manual_login", None, enabled=True)
             except Exception as exc:
@@ -244,6 +250,61 @@ class TidioMonitor:
             locale="en-US",
         )
         self._page = await self._context.new_page()
+        self._attach_browser_diagnostics(self._page)
+
+    @staticmethod
+    def _safe_browser_url(url: str) -> str:
+        parsed = urlsplit(url)
+        host = parsed.hostname or "unknown"
+        if parsed.port:
+            host = f"{host}:{parsed.port}"
+        return urlunsplit((parsed.scheme, host, parsed.path, "", ""))
+
+    @classmethod
+    def _safe_browser_diagnostic(cls, text: str) -> str:
+        text = re.sub(
+            r"https?://[^\s\"'<>]+",
+            lambda match: cls._safe_browser_url(match.group(0)),
+            text,
+        )
+        text = re.sub(
+            r"(?i)(password|token|cookie|secret|authorization)(\s*[:=]\s*)\S+",
+            r"\1\2[redacted]",
+            text,
+        )
+        return text[:240]
+
+    @classmethod
+    def _attach_browser_diagnostics(cls, page: Page) -> None:
+        def log_console_error(message) -> None:
+            if message.type != "error":
+                return
+            # Console messages may contain full resource URLs. Strip query data
+            # and fragments before writing the safe diagnostic to server logs.
+            logger.warning("Tidio browser console error text=%s", cls._safe_browser_diagnostic(message.text))
+
+        def log_failed_request(request) -> None:
+            if request.resource_type != "script":
+                return
+            host = urlsplit(request.url).hostname or "unknown"
+            reason = cls._safe_browser_diagnostic((request.failure or "unknown failure").splitlines()[0])
+            logger.warning("Tidio script request failed host=%s reason=%s", host, reason)
+
+        def log_script_response(response) -> None:
+            if response.request.is_navigation_request():
+                logger.info(
+                    "Tidio browser navigation url=%s status=%s",
+                    cls._safe_browser_url(response.url),
+                    response.status,
+                )
+            if response.request.resource_type != "script" or response.status < 400:
+                return
+            host = urlsplit(response.url).hostname or "unknown"
+            logger.warning("Tidio script response failed host=%s status=%s", host, response.status)
+
+        page.on("console", log_console_error)
+        page.on("requestfailed", log_failed_request)
+        page.on("response", log_script_response)
 
     async def _login(self, username: str, password: str) -> None:
         assert self._page is not None

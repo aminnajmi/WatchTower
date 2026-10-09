@@ -372,9 +372,9 @@
     "semantic_hash": "c298c68524c9f94198b0653879de6ceb"
   },
   "app/tidio.py": {
-    "mtime": 1791529656.9005904,
-    "seen": 1791529715.818327,
-    "ast_hash": "29f44aa307cb082f5d26fbacb8bc8b67",
+    "mtime": 1791529752.7924867,
+    "seen": 1791529760.284508,
+    "ast_hash": "216905fae5134cf3880ad03118fa0110",
     "semantic_hash": ""
   },
   "tests/test_notifications_center.py": {

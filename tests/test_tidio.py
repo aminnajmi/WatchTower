@@ -121,6 +121,39 @@ def test_tidio_browser_startup_failure_is_logged_and_cleaned_up(monkeypatch, cap
     assert "Check server logs" in monitor._public_error(RuntimeError("Target page, context or browser has been closed"))
 
 
+def test_tidio_browser_diagnostics_log_failures_without_query_secrets(caplog):
+    class Page:
+        handlers = {}
+
+        def on(self, event, handler):
+            self.handlers[event] = handler
+
+    class Request:
+        resource_type = "script"
+        url = "https://www.google.com/recaptcha/api.js?token=private-value"
+        failure = "net::ERR_NAME_NOT_RESOLVED"
+
+        def is_navigation_request(self):
+            return False
+
+    class Response:
+        request = Request()
+        url = request.url
+        status = 403
+
+    page = Page()
+    TidioMonitor._attach_browser_diagnostics(page)
+    page.handlers["requestfailed"](Request())
+    page.handlers["response"](Response())
+    page.handlers["console"](type("Message", (), {
+        "type": "error",
+        "text": "Failed to load https://www.google.com/recaptcha/api.js?token=private-value",
+    })())
+    assert "ERR_NAME_NOT_RESOLVED" in caplog.text
+    assert "host=www.google.com status=403" in caplog.text
+    assert "private-value" not in caplog.text
+
+
 def test_tidio_disconnect_disables_monitoring_and_removes_saved_credentials(monkeypatch):
     class Row:
         username = "operator"
