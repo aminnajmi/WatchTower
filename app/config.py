@@ -12,6 +12,8 @@ class Settings(BaseSettings):
 
     # JWT authentication for users/Swagger.
     jwt_secret: str = ""
+    # Dedicated Fernet key used only for persisted Tidio credentials.
+    tidio_encryption_key: str = ""
     access_token_expire_minutes: int = 60
     admin_username: str = "admin"
     admin_password_hash: str = ""

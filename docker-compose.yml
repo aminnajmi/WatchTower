@@ -18,16 +18,17 @@ services:
       FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-127.0.0.1}
     ports:
       - "${HOST_BIND:-0.0.0.0}:${PORT:-8000}:8000"
+    shm_size: 512m
     volumes:
       - watchtower-data:/app/data
     read_only: true
     tmpfs:
-      - /tmp:rw,noexec,nosuid,size=16m
+      - /tmp:rw,nosuid,size=128m,mode=1777
     cap_drop:
       - ALL
     security_opt:
       - no-new-privileges:true
-    pids_limit: 128
+    pids_limit: 256
     healthcheck:
       test: ["CMD", "python", "-c", "import os,urllib.request; host=os.environ.get('ALLOWED_HOSTS','127.0.0.1').split(',')[0].strip(); paths=('/health','/static/css/app.css','/static/js/app.js','/static/watchtower.svg'); [urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:8000'+path,headers={'Host':host}),timeout=3).read() for path in paths]"]
       interval: 30s

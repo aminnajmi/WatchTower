@@ -493,15 +493,17 @@
     const statusLabel = status => ({
       connected: 'Connected', connecting: 'Connecting…', reconnecting: 'Reconnecting…',
       authentication_failed: 'Authentication failed', session_expired: 'Session expired',
+      manual_verification_required: 'Manual verification required', reconnect_paused: 'Reconnect paused',
       disconnected: 'Disconnected', not_configured: 'Not configured', credentials_unavailable: 'Credentials unavailable'
     }[status] || status || 'Unknown');
 
-    const statusKind = status => status === 'connected' ? 'good' : (['authentication_failed', 'session_expired'].includes(status) ? 'bad' : 'unknown');
+    const statusKind = status => status === 'connected' ? 'good' : (['authentication_failed', 'session_expired', 'manual_verification_required', 'reconnect_paused'].includes(status) ? 'bad' : 'unknown');
 
     function renderStatus(data) {
       const label = statusLabel(data.status);
-      $('#tidio-status-badge').outerHTML = `<span id="tidio-status-badge" class="status-badge">${escapeHtml(label)}</span>`;
-      $('#tidio-connection-state').outerHTML = `<span id="tidio-connection-state" class="status-badge">${escapeHtml(label)}</span>`;
+      const kind = statusKind(data.status);
+      $('#tidio-status-badge').outerHTML = `<span id="tidio-status-badge" class="status-badge ${kind}">${escapeHtml(label)}</span>`;
+      $('#tidio-connection-state').outerHTML = `<span id="tidio-connection-state" class="status-badge ${kind}">${escapeHtml(label)}</span>`;
       if (data.configured && username.value !== data.username) username.value = data.username || '';
       count.textContent = data.connected ? String(Number(data.unassigned_chats) || 0) : '—';
       lastCheck.textContent = data.last_checked_at ? dateText(data.last_checked_at) : '—';
@@ -528,7 +530,7 @@
         });
         password.value = '';
         renderStatus(result);
-        toast('Tidio connected successfully.');
+        if (result.connected) toast('Tidio connected successfully.');
       } catch (error) {
         errorBox.textContent = error.message;
         errorBox.hidden = false;

@@ -2,14 +2,15 @@ FROM python:3.13-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1
+    PIP_NO_CACHE_DIR=1 \
+    HOME=/tmp \
+    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
 WORKDIR /app
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends chromium \
+    && python -m playwright install --with-deps chromium \
     && rm -rf /var/lib/apt/lists/*
 
 COPY app ./app
@@ -31,7 +32,8 @@ ARG APP_GID=10001
 RUN groupadd --gid "${APP_GID}" watchtower \
     && useradd --uid "${APP_UID}" --gid watchtower --no-create-home --shell /usr/sbin/nologin watchtower \
     && mkdir -p /app/data \
-    && chown -R watchtower:watchtower /app
+    && chown -R watchtower:watchtower /app \
+    && chmod -R a+rX /ms-playwright
 
 USER watchtower:watchtower
 

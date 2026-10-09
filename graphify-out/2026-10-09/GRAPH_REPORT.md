@@ -1,12 +1,12 @@
 # Graph Report - WatchTower  (2026-10-09)
 
 ## Corpus Check
-- 51 files · ~35,332 words
+- 51 files · ~35,239 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 9 file(s) not represented in the graph (top: (none) 5, .example 1, .db-shm 1)
 
 ## Summary
-- 524 nodes · 1422 edges · 22 communities (14 shown, 8 thin omitted)
+- 520 nodes · 1417 edges · 21 communities (15 shown, 6 thin omitted)
 - Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 102 edges (avg confidence: 0.93)
 - Token cost: 0 input · 0 output
 
@@ -32,16 +32,15 @@
 - deployment-health-check.sh
 - DeploymentWorkflowSafetyTests
 - Persistent Tracker Data Volume
-- NotificationCenterTests
+- UserManagementTests
 - telegram.py
 - Python Runtime Dependencies
 - WatchTower Logo
 - shutil
-- WebDashboardTests
 
 ## God Nodes (most connected - your core abstractions)
 1. `Release` - 45 edges
-2. `TidioMonitor` - 36 edges
+2. `TidioMonitor` - 35 edges
 3. `OSRelease` - 29 edges
 4. `Principal` - 25 edges
 5. `create_access_token()` - 23 edges
@@ -70,19 +69,19 @@
 - **Graphify Build Pipeline** — _codex_skills_graphify_skill_graphify, _codex_skills_graphify_references_extraction_spec_graphify, _codex_skills_graphify_references_github_and_merge_graphify [EXTRACTED 1.00]
 - **WatchTower Dashboard Pages** — templates_account_account_page, templates_dashboard_release_dashboard, templates_events_event_history, templates_notifications_notification_center, templates_os_detail_operating_system_detail, templates_releases_release_history, templates_settings_application_settings, templates_tidio_tidio_integration, templates_users_user_management [EXTRACTED 1.00]
 
-## Communities (22 total, 8 thin omitted)
+## Communities (21 total, 6 thin omitted)
 
 ### Community 0 - "main.py"
 Cohesion: 0.05
-Nodes (97): Any, hash_user_password(), Principal, principal_for_username(), Resolve every request against current DB state so disable takes effect…, require_admin(), verify_access_token(), account_page() (+89 more)
+Nodes (99): Any, Principal, principal_for_username(), Resolve every request against current DB state so disable takes effect…, require_admin(), verify_access_token(), verify_user_password(), account_page() (+91 more)
 
 ### Community 1 - "test_telegram.py"
-Cohesion: 0.11
-Nodes (38): create_access_token(), Base, _configure_sqlite_connection(), ensure_sqlite_directory(), init_db(), OSRelease, ReleaseEvent, ReleaseHistory (+30 more)
+Cohesion: 0.08
+Nodes (42): create_access_token(), Base, _configure_sqlite_connection(), ensure_sqlite_directory(), init_db(), OSRelease, ReleaseEvent, ReleaseHistory (+34 more)
 
 ### Community 2 - "auth.py"
-Cohesion: 0.07
-Nodes (22): authenticate_token(), configure_session_factory_provider(), generate_password_hash(), _hash_password(), Request, Allow the app's configured DB session factory to be injected in tests., _request_origin(), verify_password() (+14 more)
+Cohesion: 0.08
+Nodes (17): authenticate_token(), configure_session_factory_provider(), generate_password_hash(), _hash_password(), Request, Allow the app's configured DB session factory to be injected in tests., _request_origin(), verify_password() (+9 more)
 
 ### Community 3 - "app.js"
 Cohesion: 0.14
@@ -98,7 +97,7 @@ Nodes (18): lifespan(), _add_check_job(), get_scheduler(), Create and start one 
 
 ### Community 6 - "TidioMonitor"
 Cohesion: 0.07
-Nodes (22): TidioConnection, datetime, TidioMonitor, TidioSnapshot, asyncio, cryptography_fernet, Exception, Fernet (+14 more)
+Nodes (22): TidioConnection, datetime, TidioMonitor, TidioSnapshot, cryptography_fernet, dataclasses, Exception, Fernet (+14 more)
 
 ### Community 7 - "schemas.py"
 Cohesion: 0.15
@@ -124,20 +123,24 @@ Nodes (4): Fail startup on missing/unsafe credentials in production mode., Setti
 Cohesion: 1.00
 Nodes (3): diagnose(), run_docker(), deployment-health-check.sh script
 
+### Community 16 - "UserManagementTests"
+Cohesion: 0.11
+Nodes (4): hash_user_password(), reset_user_password(), NotificationCenterTests, UserManagementTests
+
 ### Community 17 - "telegram.py"
-Cohesion: 0.12
-Nodes (13): send(), notify(), Deliver to configured channels independently; report aggregate success., _failure(), Send a Telegram message without exposing credentials in errors or logs., send(), send_test(), TelegramSendResult (+5 more)
+Cohesion: 0.24
+Nodes (9): send(), _failure(), Send a Telegram message without exposing credentials in errors or logs., send(), send_test(), TelegramSendResult, httpx, logging (+1 more)
 
 ## Knowledge Gaps
 - **24 isolated node(s):** `Incremental Graph Update`, `Graphify Knowledge Graph`, `Graph Query and Explanation`, `Semantic Extraction`, `Add and Watch Reference` (+19 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 120 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 117 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Release` connect `Release` to `SchedulerExecutionTests`, `test_telegram.py`, `WebDashboardTests`, `telegram.py`?**
-  _High betweenness centrality (0.070) - this node is a cross-community bridge._
+- **Why does `Release` connect `Release` to `SchedulerExecutionTests`, `test_telegram.py`, `auth.py`, `telegram.py`?**
+  _High betweenness centrality (0.071) - this node is a cross-community bridge._
 - **Why does `DeploymentHealthCheckTests` connect `DeploymentHealthCheckTests` to `test_telegram.py`?**
   _High betweenness centrality (0.041) - this node is a cross-community bridge._
 - **Are the 14 inferred relationships involving `Release` (e.g. with `AlmaLinuxProvider` and `ArchLinuxProvider`) actually correct?**
@@ -149,4 +152,4 @@ _Questions this graph is uniquely positioned to answer:_
 - **What connects `Incremental Graph Update`, `Graphify Knowledge Graph`, `Graph Query and Explanation` to the rest of the system?**
   _24 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `main.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.05349324195697697 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05201465201465202 - nodes in this community are weakly interconnected._

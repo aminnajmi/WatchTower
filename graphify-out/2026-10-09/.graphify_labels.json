@@ -15,10 +15,9 @@
   "13": "deployment-health-check.sh",
   "14": "DeploymentWorkflowSafetyTests",
   "15": "Persistent Tracker Data Volume",
-  "16": "NotificationCenterTests",
+  "16": "UserManagementTests",
   "17": "telegram.py",
   "18": "Python Runtime Dependencies",
   "19": "WatchTower Logo",
-  "20": "shutil",
-  "21": "WebDashboardTests"
+  "20": "shutil"
 }

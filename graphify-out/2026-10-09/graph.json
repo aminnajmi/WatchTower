@@ -247,6 +247,32 @@
       "source_location": "L17"
     },
     {
+      "id": "tests_test_telegram_fakeasyncclient",
+      "label": "FakeAsyncClient",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "test_telegram.py",
+      "file_type": "code",
+      "norm_label": "fakeasyncclient",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L37"
+    },
+    {
+      "id": "tests_test_telegram_fakeresponse",
+      "label": "FakeResponse",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "test_telegram.py",
+      "file_type": "code",
+      "norm_label": "fakeresponse",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L21"
+    },
+    {
       "id": "tests_test_telegram_telegramclienttests",
       "label": "TelegramClientTests",
       "_callable": true,
@@ -344,10 +370,23 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "NotificationCenterTests",
+      "community_name": "UserManagementTests",
       "file_type": "code",
       "norm_label": "notificationcentertests",
       "source_file": "tests/test_notifications_center.py",
+      "source_location": "L16"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests",
+      "label": "UserManagementTests",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "UserManagementTests",
+      "file_type": "code",
+      "norm_label": "usermanagementtests",
+      "source_file": "tests/test_users.py",
       "source_location": "L16"
     },
     {
@@ -364,52 +403,13 @@
       "source_location": "L12"
     },
     {
-      "id": "tests_test_telegram_fakeasyncclient",
-      "label": "FakeAsyncClient",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 17,
-      "community_name": "telegram.py",
-      "file_type": "code",
-      "norm_label": "fakeasyncclient",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L37"
-    },
-    {
-      "id": "tests_test_telegram_fakeresponse",
-      "label": "FakeResponse",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 17,
-      "community_name": "telegram.py",
-      "file_type": "code",
-      "norm_label": "fakeresponse",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L21"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests",
-      "label": "UserManagementTests",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "usermanagementtests",
-      "source_file": "tests/test_users.py",
-      "source_location": "L16"
-    },
-    {
       "id": "tests_test_web_webdashboardtests",
       "label": "WebDashboardTests",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 21,
-      "community_name": "WebDashboardTests",
+      "community": 2,
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "webdashboardtests",
       "source_file": "tests/test_web.py",
@@ -702,18 +702,6 @@
       "source_location": "L33"
     },
     {
-      "id": "app_auth_hash_user_password",
-      "label": "hash_user_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "main.py",
-      "file_type": "code",
-      "norm_label": "hash_user_password()",
-      "source_file": "app/auth.py",
-      "source_location": "L144"
-    },
-    {
       "id": "app_auth_principal_for_username",
       "label": "principal_for_username()",
       "_callable": true,
@@ -750,6 +738,18 @@
       "source_location": "L96"
     },
     {
+      "id": "app_auth_verify_user_password",
+      "label": "verify_user_password()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "verify_user_password()",
+      "source_file": "app/auth.py",
+      "source_location": "L150"
+    },
+    {
       "id": "app_main_account_page",
       "label": "account_page()",
       "_callable": true,
@@ -772,6 +772,18 @@
       "norm_label": "approve_notification()",
       "source_file": "app/main.py",
       "source_location": "L662"
+    },
+    {
+      "id": "app_main_authenticate_login",
+      "label": "_authenticate_login()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "_authenticate_login()",
+      "source_file": "app/main.py",
+      "source_location": "L171"
     },
     {
       "id": "app_main_change_own_password",
@@ -1050,6 +1062,18 @@
       "source_location": "L928"
     },
     {
+      "id": "app_main_login",
+      "label": "login()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "login()",
+      "source_file": "app/main.py",
+      "source_location": "L138"
+    },
+    {
       "id": "app_main_login_form",
       "label": "login_form()",
       "_callable": true,
@@ -1216,18 +1240,6 @@
       "norm_label": "_render_page()",
       "source_file": "app/main.py",
       "source_location": "L197"
-    },
-    {
-      "id": "app_main_reset_user_password",
-      "label": "reset_user_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "main.py",
-      "file_type": "code",
-      "norm_label": "reset_user_password()",
-      "source_file": "app/main.py",
-      "source_location": "L1016"
     },
     {
       "id": "app_main_sanitized_validation_error",
@@ -1554,16 +1566,16 @@
       "source_location": "L292"
     },
     {
-      "id": "tests_test_telegram_telegramtestendpointtests_test_test_message_is_visibly_marked_as_test",
-      "label": ".test_test_message_is_visibly_marked_as_test()",
+      "id": "tests_test_users_usermanagementtests_test_create_edit_password_reset_enable_disable_and_delete",
+      "label": ".test_create_edit_password_reset_enable_disable_and_delete()",
       "_callable": true,
       "_origin": "ast",
       "community": 0,
       "community_name": "main.py",
       "file_type": "code",
-      "norm_label": ".test_test_message_is_visibly_marked_as_test()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L340"
+      "norm_label": ".test_create_edit_password_reset_enable_disable_and_delete()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L99"
     },
     {
       "id": "app_auth_create_access_token",
@@ -1612,6 +1624,18 @@
       "norm_label": "init_db()",
       "source_file": "app/models.py",
       "source_location": "L136"
+    },
+    {
+      "id": "app_notifications_init_notify",
+      "label": "notify()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "test_telegram.py",
+      "file_type": "code",
+      "norm_label": "notify()",
+      "source_file": "app/notifications/__init__.py",
+      "source_location": "L9"
     },
     {
       "id": "app_service_check_all",
@@ -1698,6 +1722,90 @@
       "source_location": "L18"
     },
     {
+      "id": "tests_test_telegram_fakeasyncclient_aenter",
+      "label": ".__aenter__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "test_telegram.py",
+      "file_type": "code",
+      "norm_label": ".__aenter__()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L42"
+    },
+    {
+      "id": "tests_test_telegram_fakeasyncclient_aexit",
+      "label": ".__aexit__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "test_telegram.py",
+      "file_type": "code",
+      "norm_label": ".__aexit__()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L45"
+    },
+    {
+      "id": "tests_test_telegram_fakeasyncclient_init",
+      "label": ".__init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "test_telegram.py",
+      "file_type": "code",
+      "norm_label": ".__init__()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L38"
+    },
+    {
+      "id": "tests_test_telegram_fakeresponse_init",
+      "label": ".__init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "test_telegram.py",
+      "file_type": "code",
+      "norm_label": ".__init__()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L22"
+    },
+    {
+      "id": "tests_test_telegram_fakeresponse_json",
+      "label": ".json()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "test_telegram.py",
+      "file_type": "code",
+      "norm_label": ".json()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L33"
+    },
+    {
+      "id": "tests_test_telegram_fakeresponse_raise_for_status",
+      "label": ".raise_for_status()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "test_telegram.py",
+      "file_type": "code",
+      "norm_label": ".raise_for_status()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L26"
+    },
+    {
+      "id": "tests_test_telegram_telegramclienttests_test_api_failure_is_safe_and_logged_by_notifier",
+      "label": ".test_api_failure_is_safe_and_logged_by_notifier()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "test_telegram.py",
+      "file_type": "code",
+      "norm_label": ".test_api_failure_is_safe_and_logged_by_notifier()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L91"
+    },
+    {
       "id": "tests_test_telegram_telegramclienttests_test_disabled_does_not_make_request",
       "label": ".test_disabled_does_not_make_request()",
       "_callable": true,
@@ -1722,6 +1830,18 @@
       "source_location": "L59"
     },
     {
+      "id": "tests_test_telegram_telegramclienttests_test_network_exception_url_does_not_leak_bot_token",
+      "label": ".test_network_exception_url_does_not_leak_bot_token()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "test_telegram.py",
+      "file_type": "code",
+      "norm_label": ".test_network_exception_url_does_not_leak_bot_token()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L108"
+    },
+    {
       "id": "tests_test_telegram_telegramclienttests_test_service_only_notifies_once_for_new_major_release",
       "label": ".test_service_only_notifies_once_for_new_major_release()",
       "_callable": true,
@@ -1744,6 +1864,18 @@
       "norm_label": "latest()",
       "source_file": "tests/test_telegram.py",
       "source_location": "L148"
+    },
+    {
+      "id": "tests_test_telegram_telegramclienttests_test_success_uses_configured_chat_and_expected_message",
+      "label": ".test_success_uses_configured_chat_and_expected_message()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "test_telegram.py",
+      "file_type": "code",
+      "norm_label": ".test_success_uses_configured_chat_and_expected_message()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L75"
     },
     {
       "id": "tests_test_versioning_checkservicetests_test_provider_failures_are_included_in_results",
@@ -1971,7 +2103,7 @@
       "file_type": "code",
       "norm_label": ".validate_production_settings()",
       "source_file": "app/config.py",
-      "source_location": "L31"
+      "source_location": "L30"
     },
     {
       "id": "tests_test_production_config_productionconfigtests_test_production_configuration_accepts_secure_values",
@@ -2058,12 +2190,36 @@
       "source_location": "L190"
     },
     {
+      "id": "app_auth_hash_user_password",
+      "label": "hash_user_password()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "UserManagementTests",
+      "file_type": "code",
+      "norm_label": "hash_user_password()",
+      "source_file": "app/auth.py",
+      "source_location": "L144"
+    },
+    {
+      "id": "app_main_reset_user_password",
+      "label": "reset_user_password()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "UserManagementTests",
+      "file_type": "code",
+      "norm_label": "reset_user_password()",
+      "source_file": "app/main.py",
+      "source_location": "L1016"
+    },
+    {
       "id": "tests_test_notifications_center_notificationcentertests_setup",
       "label": ".setUp()",
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "NotificationCenterTests",
+      "community_name": "UserManagementTests",
       "file_type": "code",
       "norm_label": ".setup()",
       "source_file": "tests/test_notifications_center.py",
@@ -2075,7 +2231,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "NotificationCenterTests",
+      "community_name": "UserManagementTests",
       "file_type": "code",
       "norm_label": ".teardown()",
       "source_file": "tests/test_notifications_center.py",
@@ -2087,7 +2243,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "NotificationCenterTests",
+      "community_name": "UserManagementTests",
       "file_type": "code",
       "norm_label": ".test_admin_test_notification_uses_normal_feed_and_user_is_forbidden()",
       "source_file": "tests/test_notifications_center.py",
@@ -2099,7 +2255,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "NotificationCenterTests",
+      "community_name": "UserManagementTests",
       "file_type": "code",
       "norm_label": ".test_notification_center_has_mandatory_loud_alerts_without_mute_control()",
       "source_file": "tests/test_notifications_center.py",
@@ -2111,7 +2267,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "NotificationCenterTests",
+      "community_name": "UserManagementTests",
       "file_type": "code",
       "norm_label": ".test_notification_center_requires_human_authentication()",
       "source_file": "tests/test_notifications_center.py",
@@ -2123,7 +2279,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "NotificationCenterTests",
+      "community_name": "UserManagementTests",
       "file_type": "code",
       "norm_label": ".test_notification_filters_and_unsafe_external_url_are_rejected()",
       "source_file": "tests/test_notifications_center.py",
@@ -2135,7 +2291,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "NotificationCenterTests",
+      "community_name": "UserManagementTests",
       "file_type": "code",
       "norm_label": ".test_openclaw_approval_request_can_be_approved_or_denied()",
       "source_file": "tests/test_notifications_center.py",
@@ -2147,7 +2303,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "NotificationCenterTests",
+      "community_name": "UserManagementTests",
       "file_type": "code",
       "norm_label": ".test_openclaw_approval_request_can_be_denied_with_reason()",
       "source_file": "tests/test_notifications_center.py",
@@ -2159,11 +2315,95 @@
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "NotificationCenterTests",
+      "community_name": "UserManagementTests",
       "file_type": "code",
       "norm_label": ".test_openclaw_ingestion_requires_api_key()",
       "source_file": "tests/test_notifications_center.py",
       "source_location": "L71"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_setup",
+      "label": ".setUp()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "UserManagementTests",
+      "file_type": "code",
+      "norm_label": ".setup()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L17"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_teardown",
+      "label": ".tearDown()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "UserManagementTests",
+      "file_type": "code",
+      "norm_label": ".teardown()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L45"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_test_admin_and_user_login_disabled_login_and_invalid_credentials",
+      "label": ".test_admin_and_user_login_disabled_login_and_invalid_credentials()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "UserManagementTests",
+      "file_type": "code",
+      "norm_label": ".test_admin_and_user_login_disabled_login_and_invalid_credentials()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L52"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_test_admin_only_routes_and_unauthenticated_rejection",
+      "label": ".test_admin_only_routes_and_unauthenticated_rejection()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "UserManagementTests",
+      "file_type": "code",
+      "norm_label": ".test_admin_only_routes_and_unauthenticated_rejection()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L66"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_test_bad_login_does_not_log_submitted_password",
+      "label": ".test_bad_login_does_not_log_submitted_password()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "UserManagementTests",
+      "file_type": "code",
+      "norm_label": ".test_bad_login_does_not_log_submitted_password()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L174"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_test_last_admin_and_self_protection",
+      "label": ".test_last_admin_and_self_protection()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "UserManagementTests",
+      "file_type": "code",
+      "norm_label": ".test_last_admin_and_self_protection()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L145"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_test_password_change_and_validation_errors_never_echo_password",
+      "label": ".test_password_change_and_validation_errors_never_echo_password()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "UserManagementTests",
+      "file_type": "code",
+      "norm_label": ".test_password_change_and_validation_errors_never_echo_password()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L159"
     },
     {
       "id": "app_notifications_discord_send",
@@ -2176,18 +2416,6 @@
       "norm_label": "send()",
       "source_file": "app/notifications/discord.py",
       "source_location": "L5"
-    },
-    {
-      "id": "app_notifications_init_notify",
-      "label": "notify()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 17,
-      "community_name": "telegram.py",
-      "file_type": "code",
-      "norm_label": "notify()",
-      "source_file": "app/notifications/__init__.py",
-      "source_location": "L9"
     },
     {
       "id": "app_notifications_telegram_failure",
@@ -2226,90 +2454,6 @@
       "source_location": "L60"
     },
     {
-      "id": "tests_test_telegram_fakeasyncclient_aenter",
-      "label": ".__aenter__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 17,
-      "community_name": "telegram.py",
-      "file_type": "code",
-      "norm_label": ".__aenter__()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L42"
-    },
-    {
-      "id": "tests_test_telegram_fakeasyncclient_aexit",
-      "label": ".__aexit__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 17,
-      "community_name": "telegram.py",
-      "file_type": "code",
-      "norm_label": ".__aexit__()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L45"
-    },
-    {
-      "id": "tests_test_telegram_fakeasyncclient_init",
-      "label": ".__init__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 17,
-      "community_name": "telegram.py",
-      "file_type": "code",
-      "norm_label": ".__init__()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L38"
-    },
-    {
-      "id": "tests_test_telegram_fakeresponse_init",
-      "label": ".__init__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 17,
-      "community_name": "telegram.py",
-      "file_type": "code",
-      "norm_label": ".__init__()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L22"
-    },
-    {
-      "id": "tests_test_telegram_fakeresponse_json",
-      "label": ".json()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 17,
-      "community_name": "telegram.py",
-      "file_type": "code",
-      "norm_label": ".json()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L33"
-    },
-    {
-      "id": "tests_test_telegram_fakeresponse_raise_for_status",
-      "label": ".raise_for_status()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 17,
-      "community_name": "telegram.py",
-      "file_type": "code",
-      "norm_label": ".raise_for_status()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L26"
-    },
-    {
-      "id": "tests_test_telegram_telegramclienttests_test_api_failure_is_safe_and_logged_by_notifier",
-      "label": ".test_api_failure_is_safe_and_logged_by_notifier()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 17,
-      "community_name": "telegram.py",
-      "file_type": "code",
-      "norm_label": ".test_api_failure_is_safe_and_logged_by_notifier()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L91"
-    },
-    {
       "id": "tests_test_telegram_telegramclienttests_test_every_completed_check_sends_one_telegram_summary_with_provider_errors",
       "label": ".test_every_completed_check_sends_one_telegram_summary_with_provider_errors()",
       "_callable": true,
@@ -2334,28 +2478,16 @@
       "source_location": "L245"
     },
     {
-      "id": "tests_test_telegram_telegramclienttests_test_network_exception_url_does_not_leak_bot_token",
-      "label": ".test_network_exception_url_does_not_leak_bot_token()",
+      "id": "tests_test_telegram_telegramtestendpointtests_test_test_message_is_visibly_marked_as_test",
+      "label": ".test_test_message_is_visibly_marked_as_test()",
       "_callable": true,
       "_origin": "ast",
       "community": 17,
       "community_name": "telegram.py",
       "file_type": "code",
-      "norm_label": ".test_network_exception_url_does_not_leak_bot_token()",
+      "norm_label": ".test_test_message_is_visibly_marked_as_test()",
       "source_file": "tests/test_telegram.py",
-      "source_location": "L108"
-    },
-    {
-      "id": "tests_test_telegram_telegramclienttests_test_success_uses_configured_chat_and_expected_message",
-      "label": ".test_success_uses_configured_chat_and_expected_message()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 17,
-      "community_name": "telegram.py",
-      "file_type": "code",
-      "norm_label": ".test_success_uses_configured_chat_and_expected_message()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L75"
+      "source_location": "L340"
     },
     {
       "id": "app_auth_authenticate_token",
@@ -2430,114 +2562,6 @@
       "source_location": "L79"
     },
     {
-      "id": "app_auth_verify_user_password",
-      "label": "verify_user_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "verify_user_password()",
-      "source_file": "app/auth.py",
-      "source_location": "L150"
-    },
-    {
-      "id": "app_main_authenticate_login",
-      "label": "_authenticate_login()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "_authenticate_login()",
-      "source_file": "app/main.py",
-      "source_location": "L171"
-    },
-    {
-      "id": "app_main_login",
-      "label": "login()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "login()",
-      "source_file": "app/main.py",
-      "source_location": "L138"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_setup",
-      "label": ".setUp()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".setup()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L17"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_teardown",
-      "label": ".tearDown()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".teardown()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L45"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_test_admin_and_user_login_disabled_login_and_invalid_credentials",
-      "label": ".test_admin_and_user_login_disabled_login_and_invalid_credentials()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".test_admin_and_user_login_disabled_login_and_invalid_credentials()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L52"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_test_admin_only_routes_and_unauthenticated_rejection",
-      "label": ".test_admin_only_routes_and_unauthenticated_rejection()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".test_admin_only_routes_and_unauthenticated_rejection()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L66"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_test_bad_login_does_not_log_submitted_password",
-      "label": ".test_bad_login_does_not_log_submitted_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".test_bad_login_does_not_log_submitted_password()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L174"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_test_create_edit_password_reset_enable_disable_and_delete",
-      "label": ".test_create_edit_password_reset_enable_disable_and_delete()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".test_create_edit_password_reset_enable_disable_and_delete()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L99"
-    },
-    {
       "id": "tests_test_users_usermanagementtests_test_existing_environment_admin_is_bootstrapped_without_replacing_release_data",
       "label": ".test_existing_environment_admin_is_bootstrapped_without_replacing_release_data()",
       "_callable": true,
@@ -2550,28 +2574,52 @@
       "source_location": "L180"
     },
     {
-      "id": "tests_test_users_usermanagementtests_test_last_admin_and_self_protection",
-      "label": ".test_last_admin_and_self_protection()",
+      "id": "tests_test_web_webdashboardtests_sign_in",
+      "label": ".sign_in()",
       "_callable": true,
       "_origin": "ast",
       "community": 2,
       "community_name": "auth.py",
       "file_type": "code",
-      "norm_label": ".test_last_admin_and_self_protection()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L145"
+      "norm_label": ".sign_in()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L60"
     },
     {
-      "id": "tests_test_users_usermanagementtests_test_password_change_and_validation_errors_never_echo_password",
-      "label": ".test_password_change_and_validation_errors_never_echo_password()",
+      "id": "tests_test_web_webdashboardtests_teardown",
+      "label": ".tearDown()",
       "_callable": true,
       "_origin": "ast",
       "community": 2,
       "community_name": "auth.py",
       "file_type": "code",
-      "norm_label": ".test_password_change_and_validation_errors_never_echo_password()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L159"
+      "norm_label": ".teardown()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L53"
+    },
+    {
+      "id": "tests_test_web_webdashboardtests_test_authenticated_pages_render_and_major_event_is_displayed",
+      "label": ".test_authenticated_pages_render_and_major_event_is_displayed()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": ".test_authenticated_pages_render_and_major_event_is_displayed()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L180"
+    },
+    {
+      "id": "tests_test_web_webdashboardtests_test_check_now_api_and_logout",
+      "label": ".test_check_now_api_and_logout()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": ".test_check_now_api_and_logout()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L307"
     },
     {
       "id": "tests_test_web_webdashboardtests_test_html_form_fallback_posts_credentials_without_putting_them_in_url",
@@ -2598,60 +2646,12 @@
       "source_location": "L92"
     },
     {
-      "id": "tests_test_web_webdashboardtests_sign_in",
-      "label": ".sign_in()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".sign_in()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L60"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_teardown",
-      "label": ".tearDown()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".teardown()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L53"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_authenticated_pages_render_and_major_event_is_displayed",
-      "label": ".test_authenticated_pages_render_and_major_event_is_displayed()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".test_authenticated_pages_render_and_major_event_is_displayed()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L180"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_check_now_api_and_logout",
-      "label": ".test_check_now_api_and_logout()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".test_check_now_api_and_logout()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L307"
-    },
-    {
       "id": "tests_test_web_webdashboardtests_test_https_browser_session_marks_cookie_secure",
       "label": ".test_https_browser_session_marks_cookie_secure()",
       "_callable": true,
       "_origin": "ast",
-      "community": 21,
-      "community_name": "WebDashboardTests",
+      "community": 2,
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".test_https_browser_session_marks_cookie_secure()",
       "source_file": "tests/test_web.py",
@@ -2662,8 +2662,8 @@
       "label": ".test_login_page_and_existing_jwt_login_flow()",
       "_callable": true,
       "_origin": "ast",
-      "community": 21,
-      "community_name": "WebDashboardTests",
+      "community": 2,
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".test_login_page_and_existing_jwt_login_flow()",
       "source_file": "tests/test_web.py",
@@ -2674,8 +2674,8 @@
       "label": ".test_manual_check_refreshes_authoritative_timestamps_and_keeps_scheduler_next_run()",
       "_callable": true,
       "_origin": "ast",
-      "community": 21,
-      "community_name": "WebDashboardTests",
+      "community": 2,
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".test_manual_check_refreshes_authoritative_timestamps_and_keeps_scheduler_next_run()",
       "source_file": "tests/test_web.py",
@@ -2686,8 +2686,8 @@
       "label": "__init__()",
       "_callable": true,
       "_origin": "ast",
-      "community": 21,
-      "community_name": "WebDashboardTests",
+      "community": 2,
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "__init__()",
       "source_file": "tests/test_web.py",
@@ -2698,8 +2698,8 @@
       "label": "latest()",
       "_callable": true,
       "_origin": "ast",
-      "community": 21,
-      "community_name": "WebDashboardTests",
+      "community": 2,
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "latest()",
       "source_file": "tests/test_web.py",
@@ -2710,8 +2710,8 @@
       "label": ".test_provider_errors_are_rendered_on_dashboard()",
       "_callable": true,
       "_origin": "ast",
-      "community": 21,
-      "community_name": "WebDashboardTests",
+      "community": 2,
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".test_provider_errors_are_rendered_on_dashboard()",
       "source_file": "tests/test_web.py",
@@ -2722,8 +2722,8 @@
       "label": ".test_settings_displays_telegram_chat_configuration_and_test_button()",
       "_callable": true,
       "_origin": "ast",
-      "community": 21,
-      "community_name": "WebDashboardTests",
+      "community": 2,
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".test_settings_displays_telegram_chat_configuration_and_test_button()",
       "source_file": "tests/test_web.py",
@@ -2734,8 +2734,8 @@
       "label": ".test_static_javascript_full_and_range_responses_are_well_formed()",
       "_callable": true,
       "_origin": "ast",
-      "community": 21,
-      "community_name": "WebDashboardTests",
+      "community": 2,
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".test_static_javascript_full_and_range_responses_are_well_formed()",
       "source_file": "tests/test_web.py",
@@ -2746,8 +2746,8 @@
       "label": ".test_status_release_pagination_event_filters_and_cookie_api_auth()",
       "_callable": true,
       "_origin": "ast",
-      "community": 21,
-      "community_name": "WebDashboardTests",
+      "community": 2,
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".test_status_release_pagination_event_filters_and_cookie_api_auth()",
       "source_file": "tests/test_web.py",
@@ -2758,8 +2758,8 @@
       "label": ".test_unauthenticated_pages_redirect_to_login()",
       "_callable": true,
       "_origin": "ast",
-      "community": 21,
-      "community_name": "WebDashboardTests",
+      "community": 2,
+      "community_name": "auth.py",
       "file_type": "code",
       "norm_label": ".test_unauthenticated_pages_redirect_to_login()",
       "source_file": "tests/test_web.py",
@@ -3906,54 +3906,6 @@
       "source_location": "L50"
     },
     {
-      "id": "tests_test_tidio_test_tidio_disconnect_disables_monitoring_and_removes_saved_credentials",
-      "label": "test_tidio_disconnect_disables_monitoring_and_removes_saved_credentials()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "TidioMonitor",
-      "file_type": "code",
-      "norm_label": "test_tidio_disconnect_disables_monitoring_and_removes_saved_credentials()",
-      "source_file": "tests/test_tidio.py",
-      "source_location": "L117"
-    },
-    {
-      "id": "tests_test_tidio_test_tidio_disconnect_disables_monitoring_and_removes_saved_credentials_close",
-      "label": "close()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "TidioMonitor",
-      "file_type": "code",
-      "norm_label": "close()",
-      "source_file": "tests/test_tidio.py",
-      "source_location": "L135"
-    },
-    {
-      "id": "tests_test_tidio_test_tidio_disconnect_disables_monitoring_and_removes_saved_credentials_commit",
-      "label": "commit()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "TidioMonitor",
-      "file_type": "code",
-      "norm_label": "commit()",
-      "source_file": "tests/test_tidio.py",
-      "source_location": "L132"
-    },
-    {
-      "id": "tests_test_tidio_test_tidio_disconnect_disables_monitoring_and_removes_saved_credentials_get",
-      "label": "get()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "TidioMonitor",
-      "file_type": "code",
-      "norm_label": "get()",
-      "source_file": "tests/test_tidio.py",
-      "source_location": "L129"
-    },
-    {
       "id": "tests_test_tidio_test_tidio_encryption_requires_dedicated_stable_key",
       "label": "test_tidio_encryption_requires_dedicated_stable_key()",
       "_callable": true,
@@ -3975,7 +3927,7 @@
       "file_type": "code",
       "norm_label": "test_tidio_mfa_stops_automatic_reconnect()",
       "source_file": "tests/test_tidio.py",
-      "source_location": "L184"
+      "source_location": "L151"
     },
     {
       "id": "tests_test_tidio_test_tidio_mfa_stops_automatic_reconnect_close",
@@ -3987,7 +3939,7 @@
       "file_type": "code",
       "norm_label": "close()",
       "source_file": "tests/test_tidio.py",
-      "source_location": "L196"
+      "source_location": "L163"
     },
     {
       "id": "tests_test_tidio_test_tidio_mfa_stops_automatic_reconnect_get",
@@ -3999,7 +3951,7 @@
       "file_type": "code",
       "norm_label": "get()",
       "source_file": "tests/test_tidio.py",
-      "source_location": "L193"
+      "source_location": "L160"
     },
     {
       "id": "tests_test_tidio_test_tidio_monitor_does_not_retry_before_backoff_deadline",
@@ -4011,7 +3963,7 @@
       "file_type": "code",
       "norm_label": "test_tidio_monitor_does_not_retry_before_backoff_deadline()",
       "source_file": "tests/test_tidio.py",
-      "source_location": "L214"
+      "source_location": "L181"
     },
     {
       "id": "tests_test_tidio_test_tidio_monitor_does_not_retry_before_backoff_deadline_wait_once",
@@ -4023,7 +3975,7 @@
       "file_type": "code",
       "norm_label": "wait_once()",
       "source_file": "tests/test_tidio.py",
-      "source_location": "L222"
+      "source_location": "L189"
     },
     {
       "id": "tests_test_tidio_test_tidio_password_encryption_round_trip",
@@ -4047,7 +3999,7 @@
       "file_type": "code",
       "norm_label": "test_tidio_reconnect_uses_bounded_backoff()",
       "source_file": "tests/test_tidio.py",
-      "source_location": "L149"
+      "source_location": "L116"
     },
     {
       "id": "tests_test_tidio_test_tidio_reconnect_uses_bounded_backoff_close",
@@ -4059,7 +4011,7 @@
       "file_type": "code",
       "norm_label": "close()",
       "source_file": "tests/test_tidio.py",
-      "source_location": "L163"
+      "source_location": "L130"
     },
     {
       "id": "tests_test_tidio_test_tidio_reconnect_uses_bounded_backoff_get",
@@ -4071,7 +4023,7 @@
       "file_type": "code",
       "norm_label": "get()",
       "source_file": "tests/test_tidio.py",
-      "source_location": "L160"
+      "source_location": "L127"
     },
     {
       "id": "tests_test_tidio_test_tidio_reconnect_uses_bounded_backoff_run",
@@ -4083,7 +4035,7 @@
       "file_type": "code",
       "norm_label": "run()",
       "source_file": "tests/test_tidio.py",
-      "source_location": "L172"
+      "source_location": "L139"
     },
     {
       "id": "tests_test_tidio_test_tidio_snapshot_defaults",
@@ -4635,6 +4587,17 @@
       "source_location": "L37"
     },
     {
+      "id": "app_main_rationale_172",
+      "label": "DB user credentials first; retain the configured admin as bootstrap fallback.",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "main.py",
+      "file_type": "rationale",
+      "norm_label": "db user credentials first; retain the configured admin as bootstrap fallback.",
+      "source_file": "app/main.py",
+      "source_location": "L172"
+    },
+    {
       "id": "app_main_rationale_224",
       "label": "POST fallback for browsers when client-side JavaScript is unavailable.",
       "_origin": "ast",
@@ -4833,6 +4796,17 @@
       "source_location": "L1"
     },
     {
+      "id": "app_notifications_init_rationale_10",
+      "label": "Deliver to configured channels independently; report aggregate success.",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "test_telegram.py",
+      "file_type": "rationale",
+      "norm_label": "deliver to configured channels independently; report aggregate success.",
+      "source_file": "app/notifications/__init__.py",
+      "source_location": "L10"
+    },
+    {
       "id": "app_versioning_rationale_28",
       "label": "Compare stored and fetched releases; current-version classification is separate.",
       "_origin": "ast",
@@ -4866,7 +4840,7 @@
       "source_location": ""
     },
     {
-      "id": "app_config_rationale_32",
+      "id": "app_config_rationale_31",
       "label": "Fail startup on missing/unsafe credentials in production mode.",
       "_origin": "ast",
       "community": 12,
@@ -4874,7 +4848,7 @@
       "file_type": "rationale",
       "norm_label": "fail startup on missing/unsafe credentials in production mode.",
       "source_file": "app/config.py",
-      "source_location": "L32"
+      "source_location": "L31"
     },
     {
       "id": "scripts_deployment_health_check",
@@ -4970,17 +4944,6 @@
       "source_location": "L1"
     },
     {
-      "id": "app_notifications_init_rationale_10",
-      "label": "Deliver to configured channels independently; report aggregate success.",
-      "_origin": "ast",
-      "community": 17,
-      "community_name": "telegram.py",
-      "file_type": "rationale",
-      "norm_label": "deliver to configured channels independently; report aggregate success.",
-      "source_file": "app/notifications/__init__.py",
-      "source_location": "L10"
-    },
-    {
       "id": "app_notifications_telegram_rationale_24",
       "label": "Send a Telegram message without exposing credentials in errors or logs.",
       "_origin": "ast",
@@ -5045,17 +5008,6 @@
       "norm_label": "allow the app's configured db session factory to be injected in tests.",
       "source_file": "app/auth.py",
       "source_location": "L23"
-    },
-    {
-      "id": "app_main_rationale_172",
-      "label": "DB user credentials first; retain the configured admin as bootstrap fallback.",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "auth.py",
-      "file_type": "rationale",
-      "norm_label": "db user credentials first; retain the configured admin as bootstrap fallback.",
-      "source_file": "app/main.py",
-      "source_location": "L172"
     },
     {
       "id": "static_js_app",
@@ -5683,18 +5635,6 @@
       "type": "external"
     },
     {
-      "id": "datetime",
-      "label": "datetime",
-      "_origin": "semantic",
-      "community": 1,
-      "community_name": "test_telegram.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "datetime",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "fastapi_testclient",
       "label": "fastapi_testclient",
       "_origin": "semantic",
@@ -5859,18 +5799,6 @@
       "source_file": "docker-compose.yml"
     },
     {
-      "id": "dataclasses",
-      "label": "dataclasses",
-      "_origin": "semantic",
-      "community": 17,
-      "community_name": "telegram.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "dataclasses",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "httpx",
       "label": "httpx",
       "_origin": "semantic",
@@ -5879,6 +5807,18 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "httpx",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "logging",
+      "label": "logging",
+      "_origin": "semantic",
+      "community": 17,
+      "community_name": "telegram.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "logging",
       "source_file": "",
       "type": "external"
     },
@@ -5987,18 +5927,6 @@
       "type": "external"
     },
     {
-      "id": "urllib_parse",
-      "label": "urllib_parse",
-      "_origin": "semantic",
-      "community": 2,
-      "community_name": "auth.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "urllib_parse",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "shutil",
       "label": "shutil",
       "_origin": "semantic",
@@ -6083,23 +6011,11 @@
       "type": "external"
     },
     {
-      "id": "logging",
-      "label": "logging",
-      "_origin": "semantic",
-      "community": 5,
-      "community_name": "scheduler.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "logging",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "asyncio",
       "label": "asyncio",
       "_origin": "semantic",
-      "community": 6,
-      "community_name": "TidioMonitor",
+      "community": 5,
+      "community_name": "scheduler.py",
       "external": true,
       "file_type": "concept",
       "norm_label": "asyncio",
@@ -6119,6 +6035,18 @@
       "type": "external"
     },
     {
+      "id": "dataclasses",
+      "label": "dataclasses",
+      "_origin": "semantic",
+      "community": 6,
+      "community_name": "TidioMonitor",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "dataclasses",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "playwright_async_api",
       "label": "playwright_async_api",
       "_origin": "semantic",
@@ -6131,18 +6059,6 @@
       "type": "external"
     },
     {
-      "id": "pytest",
-      "label": "pytest",
-      "_origin": "semantic",
-      "community": 6,
-      "community_name": "TidioMonitor",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "pytest",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "time",
       "label": "time",
       "_origin": "semantic",
@@ -6151,6 +6067,18 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "time",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "urllib_parse",
+      "label": "urllib_parse",
+      "_origin": "semantic",
+      "community": 6,
+      "community_name": "TidioMonitor",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "urllib_parse",
       "source_file": "",
       "type": "external"
     },
@@ -6315,6 +6243,28 @@
       "file_type": "document",
       "norm_label": "user management page",
       "source_file": "templates/users.html"
+    },
+    {
+      "id": "datetime",
+      "label": "datetime",
+      "community": 1,
+      "community_name": "test_telegram.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "datetime",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "pytest",
+      "label": "pytest",
+      "community": 6,
+      "community_name": "TidioMonitor",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "pytest",
+      "source_file": "",
+      "type": "external"
     }
   ],
   "links": [
@@ -10315,18 +10265,6 @@
       "weight": 1.0
     },
     {
-      "source": "tests_test_tidio_test_tidio_disconnect_disables_monitoring_and_removes_saved_credentials",
-      "target": "app_tidio_tidiomonitor",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "tests/test_tidio.py",
-      "source_location": "L139",
-      "weight": 1.0
-    },
-    {
       "source": "tests_test_tidio_test_tidio_encryption_requires_dedicated_stable_key",
       "target": "app_tidio_tidiomonitor",
       "relation": "calls",
@@ -10347,7 +10285,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_tidio.py",
-      "source_location": "L189",
+      "source_location": "L156",
       "weight": 1.0
     },
     {
@@ -10359,7 +10297,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_tidio.py",
-      "source_location": "L215",
+      "source_location": "L182",
       "weight": 1.0
     },
     {
@@ -10383,7 +10321,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_tidio.py",
-      "source_location": "L156",
+      "source_location": "L123",
       "weight": 1.0
     },
     {
@@ -11043,7 +10981,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_tidio.py",
-      "source_location": "L172",
+      "source_location": "L139",
       "weight": 1.0
     },
     {
@@ -19211,13 +19149,13 @@
     },
     {
       "source": "tests_test_tidio",
-      "target": "tests_test_tidio_test_tidio_disconnect_disables_monitoring_and_removes_saved_credentials",
+      "target": "tests_test_tidio_test_tidio_reconnect_uses_bounded_backoff",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_tidio.py",
-      "source_location": "L117",
+      "source_location": "L116",
       "weight": 1.0
     },
     {
@@ -19233,24 +19171,24 @@
     },
     {
       "source": "tests_test_tidio",
-      "target": "tests_test_tidio_test_tidio_reconnect_uses_bounded_backoff",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_tidio.py",
-      "source_location": "L149",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_tidio",
       "target": "tests_test_tidio_test_tidio_mfa_stops_automatic_reconnect",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_tidio.py",
-      "source_location": "L184",
+      "source_location": "L151",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_tidio",
+      "target": "tests_test_tidio_test_tidio_monitor_does_not_retry_before_backoff_deadline",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_tidio.py",
+      "source_location": "L181",
       "weight": 1.0
     },
     {
@@ -19262,17 +19200,6 @@
       "confidence_score": 1.0,
       "source_file": "tests/test_tidio.py",
       "source_location": "L19",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_tidio",
-      "target": "tests_test_tidio_test_tidio_monitor_does_not_retry_before_backoff_deadline",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_tidio.py",
-      "source_location": "L214",
       "weight": 1.0
     },
     {
@@ -19342,39 +19269,6 @@
       "weight": 1.0
     },
     {
-      "source": "tests_test_tidio_test_tidio_disconnect_disables_monitoring_and_removes_saved_credentials",
-      "target": "tests_test_tidio_test_tidio_disconnect_disables_monitoring_and_removes_saved_credentials_get",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_tidio.py",
-      "source_location": "L129",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_tidio_test_tidio_disconnect_disables_monitoring_and_removes_saved_credentials",
-      "target": "tests_test_tidio_test_tidio_disconnect_disables_monitoring_and_removes_saved_credentials_commit",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_tidio.py",
-      "source_location": "L132",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_tidio_test_tidio_disconnect_disables_monitoring_and_removes_saved_credentials",
-      "target": "tests_test_tidio_test_tidio_disconnect_disables_monitoring_and_removes_saved_credentials_close",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_tidio.py",
-      "source_location": "L135",
-      "weight": 1.0
-    },
-    {
       "source": "tests_test_tidio_test_tidio_mfa_stops_automatic_reconnect",
       "target": "tests_test_tidio_test_tidio_mfa_stops_automatic_reconnect_get",
       "relation": "contains",
@@ -19382,7 +19276,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_tidio.py",
-      "source_location": "L193",
+      "source_location": "L160",
       "weight": 1.0
     },
     {
@@ -19393,7 +19287,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_tidio.py",
-      "source_location": "L196",
+      "source_location": "L163",
       "weight": 1.0
     },
     {
@@ -19404,7 +19298,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_tidio.py",
-      "source_location": "L160",
+      "source_location": "L127",
       "weight": 1.0
     },
     {
@@ -19415,7 +19309,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_tidio.py",
-      "source_location": "L163",
+      "source_location": "L130",
       "weight": 1.0
     },
     {
@@ -19877,7 +19771,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/config.py",
-      "source_location": "L31",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -21355,14 +21249,14 @@
       "weight": 1.0
     },
     {
-      "source": "app_config_rationale_32",
+      "source": "app_config_rationale_31",
       "target": "app_config_settings_validate_production_settings",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/config.py",
-      "source_location": "L32",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -21544,7 +21438,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "tests/test_tidio.py",
-      "source_location": "L227",
+      "source_location": "L194",
       "weight": 1.0
     },
     {

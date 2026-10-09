@@ -45,6 +45,8 @@ python -m app.create_admin
 
 Enter the chosen administrator username and password when prompted, then copy the displayed hash and salt into `ADMIN_PASSWORD_HASH` and `ADMIN_PASSWORD_SALT`. Do not put the plain password in `.env`. Configure Telegram or Discord credentials only when needed. With Telegram enabled, both its bot token and chat ID are required.
 
+To use the Tidio integration, set `TIDIO_ENCRYPTION_KEY` to a dedicated Fernet key and keep it stable across deployments. Generate one with `python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'`. Do not reuse `JWT_SECRET`; changing or losing this key makes saved Tidio credentials unreadable.
+
 To enable Telegram notifications, set `TELEGRAM_ENABLED=true`, `TELEGRAM_BOT_TOKEN`, and `TELEGRAM_CHAT_ID` in `.env`, then recreate the container with `docker compose up -d`. Use the dashboard's Telegram test action to verify delivery. Keep the bot token private.
 
 The production app refuses to start if the JWT secret, admin credentials, allowed hosts, or enabled Telegram credentials are invalid. Compose defaults `DATABASE_URL` to `sqlite:////app/data/os_tracker.db`; that location is persisted in the named volume. Do not change it to a path outside `/app/data` unless you configure another persistent writable mount.
