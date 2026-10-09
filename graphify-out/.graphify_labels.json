@@ -1,7 +1,7 @@
 {
   "0": "get",
   "1": "auth.py",
-  "2": "TelegramClientTests",
+  "2": "telegram.py",
   "3": "app.js",
   "4": "Release",
   "5": "scheduler.py",
@@ -24,16 +24,17 @@
   "22": "TidioSnapshot",
   "23": "test_tidio_manual_verification_keeps_live_browser",
   "24": "Principal",
-  "25": "test_tidio_pending_or_expired_challenge_can_be_checked_again",
-  "26": "main.py",
+  "25": "tidio.py",
+  "26": "_utc_timestamp",
   "27": "test_tidio_disconnect_disables_monitoring_and_removes_saved_credentials",
   "28": "test_tidio_reconnect_uses_bounded_backoff",
-  "29": "post",
+  "29": "main.py",
   "30": "Notification",
-  "31": "ProductionConfigTests",
+  "31": "UserManagementTests",
   "32": "NotificationCenterTests",
   "33": "NotificationCenterTests",
   "34": "authenticate_token",
-  "35": "_authenticate_login",
-  "36": "sanitized_validation_error"
+  "35": "generate_password_hash",
+  "36": "sanitized_validation_error",
+  "37": "hash_user_password"
 }

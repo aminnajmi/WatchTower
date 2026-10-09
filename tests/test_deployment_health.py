@@ -25,7 +25,7 @@ class DeploymentHealthCheckTests(unittest.TestCase):
             """#!/bin/sh
 args="$*"
 case "$args" in
-  "compose ps -q watchtower") printf '%s\\n' "${MOCK_CONTAINER_ID-container-id}" ;;
+  "compose ps --all -q watchtower") printf '%s\\n' "${MOCK_CONTAINER_ID-container-id}" ;;
   "compose port watchtower 8000") echo 127.0.0.1:18000 ;;
   "inspect --format {{.State.Status}} "*) echo "${MOCK_CONTAINER_STATUS:-running}" ;;
   "inspect --format {{if .State.Health}}{{.State.Health.Status}}{{else}}missing{{end}} "*)
@@ -46,6 +46,9 @@ esac
             """#!/bin/sh
 n=$(cat "$MOCK_CURL_COUNT" 2>/dev/null || echo 0); n=$((n + 1)); echo "$n" > "$MOCK_CURL_COUNT"
 case "$*" in *--verbose*) echo "$*" ;; esac
+case "$*" in
+  *--include*) printf 'HTTP/1.1 %s\\r\\nContent-Type: application/json\\r\\n\\r\\n%s\\n' "${MOCK_HTTP_STATUS:-503 Service Unavailable}" "${MOCK_HTTP_BODY:-health probe failed}" ;;
+esac
 if [ "$n" -le "${MOCK_CURL_FAILURES:-0}" ]; then exit 22; fi
 exit 0
 """,
@@ -144,13 +147,17 @@ exit 0
             MOCK_DOCKER_HEALTH_SEQUENCE="unhealthy",
             MOCK_LOG=(
                 f"request https://api.telegram.org/bot{secret}/sendMessage "
-                "TELEGRAM_BOT_TOKEN=another-secret DATABASE_URL=postgres://user:pass@db/app"
+                "TELEGRAM_BOT_TOKEN=another-secret DATABASE_URL=postgres://user:pass@db/app "
+                "JWT_SECRET=jwt-secret TIDIO_ENCRYPTION_KEY=fernet-key ADMIN_PASSWORD_HASH=admin-hash"
             ),
         )
         self.assertEqual(result.returncode, 1, result.stdout)
         self.assertNotIn(secret, result.stdout)
         self.assertNotIn("another-secret", result.stdout)
         self.assertNotIn("postgres://user:pass", result.stdout)
+        self.assertNotIn("jwt-secret", result.stdout)
+        self.assertNotIn("fernet-key", result.stdout)
+        self.assertNotIn("admin-hash", result.stdout)
 
     def test_deploy_failure_diagnostics_include_published_http_probe(self):
         configured = self.env.copy()
@@ -167,6 +174,34 @@ exit 0
         self.assertEqual(result.returncode, 0, result.stdout)
         self.assertIn("HTTP health check", result.stdout)
         self.assertIn("localhost:18000/health", result.stdout)
+
+    def test_diagnose_without_container_reports_http_probe_not_attempted(self):
+        configured = self.env.copy()
+        configured["MOCK_CONTAINER_ID"] = ""
+        result = subprocess.run(
+            ["sh", str(HEALTH_CHECK), "--diagnose"],
+            cwd=ROOT,
+            env=configured,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            timeout=5,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertIn("Not attempted: no published WatchTower container was found", result.stdout)
+
+    def test_http_diagnostics_include_response_status_and_body(self):
+        result = self.run_check(
+            WATCHTOWER_HEALTH_TIMEOUT_SECONDS="2",
+            MOCK_DOCKER_HEALTH_SEQUENCE="healthy",
+            MOCK_CURL_FAILURES="10",
+            MOCK_HTTP_STATUS="503 Service Unavailable",
+            MOCK_HTTP_BODY='{"detail":"health route unavailable"}',
+        )
+        self.assertEqual(result.returncode, 1, result.stdout)
+        self.assertIn("HTTP/1.1 503 Service Unavailable", result.stdout)
+        self.assertIn("health route unavailable", result.stdout)
 
     def test_exited_container_fails_immediately(self):
         result = self.run_check(
@@ -186,11 +221,22 @@ class DeploymentWorkflowSafetyTests(unittest.TestCase):
         self.assertIn("steps.result.outputs.success != 'true'", workflow)
         self.assertIn("HTTP /health", workflow)
         self.assertIn("Docker health", workflow)
+        self.assertIn("DEPLOY_DIAGNOSTICS", workflow)
+        self.assertIn("Sanitized deployment diagnostics", workflow)
+        self.assertIn('run_deploy_command "Build production image"', workflow)
+        self.assertIn('tail -n 80 "$deploy_log"', workflow)
+        self.assertIn("WATCHTOWER_DIAGNOSTICS_BEGIN", workflow)
 
     def test_workflow_never_prints_telegram_token_or_ssh_key(self):
         workflow = WORKFLOW.read_text(encoding="utf-8")
         self.assertNotRegex(workflow, r"print\([^\n]*(TELEGRAM_BOT_TOKEN|SERVER_SSH_KEY)")
         self.assertIn("except Exception:\n              print(", workflow)
+
+    def test_deploy_preserves_existing_environment_file_and_preflights_compose(self):
+        workflow = WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn('if [ ! -f /opt/WatchTower/.env ]; then', workflow)
+        self.assertIn("docker compose -f /opt/WatchTower/docker-compose.yml --project-directory /opt/WatchTower config --quiet", workflow)
+        self.assertNotIn("deploy.sh", workflow)
 
 
 if __name__ == "__main__":

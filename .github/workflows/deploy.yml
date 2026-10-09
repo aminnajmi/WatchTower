@@ -89,19 +89,59 @@ jobs:
             set +e
             cd /opt/WatchTower 2>/dev/null
             if [ "$?" -ne 0 ]; then
-              printf 'WATCHTOWER_RESULT=failure\nWATCHTOWER_STEP=Open deployment directory\nWATCHTOWER_ERROR=Remote directory /opt/WatchTower is unavailable\n'
+              printf 'WATCHTOWER_RESULT=failure\nWATCHTOWER_STEP=Open deployment directory\nWATCHTOWER_ERROR=Remote directory /opt/WatchTower is unavailable\nWATCHTOWER_IMAGE=unknown\nWATCHTOWER_CONTAINER=unknown\nWATCHTOWER_DOCKER_HEALTH=unknown\nWATCHTOWER_HTTP=not run\n'
               exit 0
             fi
 
-            /opt/WatchTower/deploy.sh >/dev/null 2>&1
+            if [ ! -f /opt/WatchTower/.env ]; then
+              printf 'WATCHTOWER_RESULT=failure\nWATCHTOWER_STEP=Production environment file\nWATCHTOWER_ERROR=The existing /opt/WatchTower/.env file is missing; deployment did not create or replace it\nWATCHTOWER_IMAGE=not built\nWATCHTOWER_CONTAINER=unchanged\nWATCHTOWER_DOCKER_HEALTH=unknown\nWATCHTOWER_HTTP=not run\n'
+              exit 0
+            fi
+
+            deploy_log=$(mktemp)
+            trap 'rm -f "$deploy_log"' EXIT
+            deploy_step=""
+            run_deploy_command() {
+              deploy_step="$1"
+              shift
+              "$@" >>"$deploy_log" 2>&1
+            }
+
+            run_deploy_command "Pull latest code" git -C /opt/WatchTower pull origin main
             result=$?
+            if [ "$result" -eq 0 ]; then
+              run_deploy_command "Validate Docker Compose and server environment" docker compose -f /opt/WatchTower/docker-compose.yml --project-directory /opt/WatchTower config --quiet
+              result=$?
+            fi
+            if [ "$result" -eq 0 ]; then
+              run_deploy_command "Build production image" docker compose -f /opt/WatchTower/docker-compose.yml --project-directory /opt/WatchTower build --pull
+              result=$?
+            fi
+            if [ "$result" -eq 0 ]; then
+              run_deploy_command "Start production container" docker compose -f /opt/WatchTower/docker-compose.yml --project-directory /opt/WatchTower up -d
+              result=$?
+            fi
+            if [ "$result" -eq 0 ]; then
+              run_deploy_command "Prune unused Docker images" docker image prune -f
+              result=$?
+            fi
+            if [ "$result" -eq 0 ]; then
+              run_deploy_command "List deployed services" docker compose -f /opt/WatchTower/docker-compose.yml --project-directory /opt/WatchTower ps
+              result=$?
+            fi
             if [ "$result" -ne 0 ]; then
+              printf '%s\n' 'WATCHTOWER_DIAGNOSTICS_BEGIN' '--- Deployment command output (sanitized, last 80 lines) ---'
+              tail -n 80 "$deploy_log" | sed -E \
+                -e 's#(https?://api\.telegram\.org/bot)[^/[:space:]]+#\1[REDACTED]#g' \
+                -e 's#(://[^:/[:space:]]+:)[^@/[:space:]]+@#\1[REDACTED]@#g' \
+                -e 's/([A-Za-z0-9_]*(TOKEN|SECRET|PASSWORD|DATABASE_URL|CHAT_ID|CLIENT_ID|API_KEY|WEBHOOK_URL|ENCRYPTION_KEY|PRIVATE_KEY)[A-Za-z0-9_]*[[:space:]]*[:=][[:space:]]*)[^[:space:],;]+/\1[REDACTED]/Ig'
+              printf '%s\n' 'WATCHTOWER_DIAGNOSTICS_END'
               if [ -f /opt/WatchTower/scripts/deployment-health-check.sh ]; then
+                printf '%s\n' 'WATCHTOWER_DIAGNOSTICS_BEGIN'
                 sh /opt/WatchTower/scripts/deployment-health-check.sh --diagnose
-              else
-                docker compose ps 2>&1 || true
+                printf '%s\n' 'WATCHTOWER_DIAGNOSTICS_END'
               fi
-              printf 'WATCHTOWER_RESULT=failure\nWATCHTOWER_STEP=Pull, build, or restart\nWATCHTOWER_ERROR=deploy.sh exited with status %s\nWATCHTOWER_IMAGE=failed or unknown\nWATCHTOWER_CONTAINER=unknown\nWATCHTOWER_DOCKER_HEALTH=unknown\nWATCHTOWER_HTTP=not run\n' "$result"
+              printf 'WATCHTOWER_RESULT=failure\nWATCHTOWER_STEP=%s\nWATCHTOWER_ERROR=Deployment command exited with status %s\nWATCHTOWER_IMAGE=failed or unknown\nWATCHTOWER_CONTAINER=unknown\nWATCHTOWER_DOCKER_HEALTH=unknown\nWATCHTOWER_HTTP=not run\n' "$deploy_step" "$result"
               exit 0
             fi
 
@@ -110,7 +150,9 @@ jobs:
               exit 0
             fi
 
+            printf '%s\n' 'WATCHTOWER_DIAGNOSTICS_BEGIN'
             sh /opt/WatchTower/scripts/deployment-health-check.sh
+            printf '%s\n' 'WATCHTOWER_DIAGNOSTICS_END'
             exit 0
 
       - name: Record deployment result
@@ -123,10 +165,21 @@ jobs:
           python3 - <<'PY'
           import os
           import re
+          import uuid
 
           output = os.environ.get("DEPLOY_OUTPUT", "")
           values = {}
+          diagnostics = []
+          in_diagnostics = False
           for line in output.splitlines():
+              if line.strip() == "WATCHTOWER_DIAGNOSTICS_BEGIN":
+                  in_diagnostics = True
+                  continue
+              if line.strip() == "WATCHTOWER_DIAGNOSTICS_END":
+                  in_diagnostics = False
+                  continue
+              if in_diagnostics:
+                  diagnostics.append(line)
               match = re.search(r"WATCHTOWER_(RESULT|STEP|ERROR|IMAGE|CONTAINER|DOCKER_HEALTH|HTTP)=([^\r\n]*)", line)
               if match:
                   values[match.group(1)] = match.group(2).strip()
@@ -161,6 +214,10 @@ jobs:
               for key in ("STEP", "ERROR", "IMAGE", "CONTAINER", "DOCKER_HEALTH", "HTTP"):
                   value = values.get(key, "unknown").replace("\n", " ").replace("\r", " ")
                   output_file.write(f"{key.lower()}={value}\n")
+              delimiter = "WATCHTOWER_DIAGNOSTICS_" + uuid.uuid4().hex
+              output_file.write(f"diagnostics<<{delimiter}\n")
+              output_file.write("\n".join(diagnostics).replace(delimiter, "[REDACTED]") + "\n")
+              output_file.write(f"{delimiter}\n")
           PY
 
       - name: Notify deployment completed
@@ -265,6 +322,7 @@ jobs:
           CONTAINER_STATUS: ${{ steps.result.outputs.container }}
           DOCKER_HEALTH_STATUS: ${{ steps.result.outputs.docker_health }}
           HTTP_STATUS: ${{ steps.result.outputs.http }}
+          DEPLOY_DIAGNOSTICS: ${{ steps.result.outputs.diagnostics }}
           BRANCH: ${{ github.ref_name }}
           COMMIT_SHA: ${{ github.sha }}
           SERVER: ${{ secrets.SERVER_HOST }}
@@ -293,6 +351,10 @@ jobs:
           ]
           if not success:
               rows.extend([f"- **Failed step:** {md(os.environ.get('FAILED_STEP', 'unknown'))}", f"- **Error:** {md(os.environ.get('ERROR_INFO', 'unknown'))}"])
+              diagnostics = os.environ.get("DEPLOY_DIAGNOSTICS", "").strip()
+              if diagnostics:
+                  diagnostics = re.sub(r"```", "'''", diagnostics)[:12000]
+                  rows.extend(["", "### Sanitized deployment diagnostics", "", "```text", diagnostics, "```"])
           rows.extend(["", f"[Open workflow run]({md(os.environ.get('RUN_URL', ''))})"])
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
               summary.write("\n".join(rows) + "\n")
@@ -300,4 +362,9 @@ jobs:
 
       - name: Fail job if deployment failed
         if: ${{ always() && steps.result.outputs.success != 'true' }}
-        run: exit 1
+        env:
+          FAILED_STEP: ${{ steps.result.outputs.step }}
+          ERROR_INFO: ${{ steps.result.outputs.error }}
+        run: |
+          echo "::error title=WatchTower deployment failed::${FAILED_STEP}: ${ERROR_INFO}"
+          exit 1
