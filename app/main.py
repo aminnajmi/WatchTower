@@ -8,13 +8,14 @@ from pathlib import Path
 
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, Form, HTTPException, Query, Request, Header
+from fastapi import Depends, FastAPI, Form, HTTPException, Query, Request, Header, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import BaseModel
+from typing import Literal
 from sqlalchemy import func, select, update
 from sqlalchemy.exc import IntegrityError, OperationalError
 
@@ -736,6 +737,14 @@ class TidioConnectRequest(BaseModel):
     password: str
 
 
+class TidioVerificationAction(BaseModel):
+    action: Literal["click", "scroll", "type", "press"]
+    x: int | None = None
+    y: int | None = None
+    delta_y: int | None = None
+    value: str | None = None
+
+
 def _tidio_status_payload() -> dict:
     db = SessionLocal()
     try:
@@ -750,6 +759,7 @@ def _tidio_status_payload() -> dict:
             "last_checked_at": _utc_timestamp(row.last_checked_at) if row else snapshot.last_checked_at,
             "last_error": snapshot.error or (row.last_error if row else None),
             "poll_interval_seconds": 3,
+            "verification_required": snapshot.status == "manual_verification_required",
         }
     finally:
         db.close()
@@ -778,6 +788,36 @@ async def tidio_connect(payload: TidioConnectRequest):
 async def tidio_disconnect():
     await tidio_monitor.disconnect()
     return {"success": True, **_tidio_status_payload()}
+
+
+@app.get("/api/v1/tidio/verification/screenshot", dependencies=[Depends(require_admin)])
+async def tidio_verification_screenshot():
+    try:
+        screenshot = await tidio_monitor.verification_screenshot()
+    except Exception:
+        screenshot = None
+    if screenshot is None:
+        raise HTTPException(status_code=409, detail="Tidio verification is not active. Reconnect to start a new session.")
+    return Response(screenshot, media_type="image/png", headers={"Cache-Control": "no-store", "Pragma": "no-cache"})
+
+
+@app.post("/api/v1/tidio/verification/action", dependencies=[Depends(require_admin)])
+async def tidio_verification_action(payload: TidioVerificationAction):
+    try:
+        accepted = await tidio_monitor.verification_action(
+            payload.action, x=payload.x, y=payload.y, delta_y=payload.delta_y, value=payload.value
+        )
+    except Exception:
+        accepted = False
+    if not accepted:
+        raise HTTPException(status_code=409, detail="Tidio verification session ended or the action was invalid.")
+    return {"success": True}
+
+
+@app.post("/api/v1/tidio/verification/resume", dependencies=[Depends(require_admin)])
+async def tidio_verification_resume():
+    await tidio_monitor.resume_verification()
+    return {"success": tidio_monitor.snapshot.connected, **_tidio_status_payload()}
 
 
 @app.get("/api/v1/providers", dependencies=[Depends(require_admin)])

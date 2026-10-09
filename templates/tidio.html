@@ -32,6 +32,26 @@
   </article>
 </section>
 
+<section class="panel settings-wide tidio-verification-panel" id="tidio-verification-panel" hidden>
+  <div class="panel-heading">
+    <div>
+      <h2>Complete Tidio verification</h2>
+      <p id="tidio-verification-message">Use this secure, admin-only view to finish Tidio’s MFA or CAPTCHA challenge. The browser session stays on the WatchTower server.</p>
+    </div>
+  </div>
+  <p class="form-error" id="tidio-verification-error" role="status" aria-live="polite" hidden></p>
+  <img id="tidio-verification-screen" alt="Tidio verification page. Click the challenge or field to interact." style="display:block;max-width:100%;height:auto;border:1px solid currentColor;border-radius:8px;cursor:crosshair">
+  <p class="muted">Click the Tidio page to focus a field or CAPTCHA control. For a code, enter it below and select “Type code into Tidio”. Do not enter your Tidio password here.</p>
+  <div class="dialog-actions">
+    <button class="button button-quiet" id="tidio-verification-scroll-up" type="button">Scroll up</button>
+    <button class="button button-quiet" id="tidio-verification-scroll-down" type="button">Scroll down</button>
+    <input id="tidio-verification-code" type="text" inputmode="text" autocomplete="one-time-code" maxlength="200" aria-label="Tidio verification code" placeholder="Verification code">
+    <button class="button button-quiet" id="tidio-verification-type" type="button">Type code into Tidio</button>
+    <button class="button button-quiet" id="tidio-verification-enter" type="button">Press Enter</button>
+    <button class="button button-primary" id="tidio-verification-resume" type="button">Check Verification</button>
+  </div>
+</section>
+
 <section class="panel settings-wide tidio-note-panel">
   <div class="panel-heading"><div><h2>Automatic reconnect</h2><p>If the Tidio browser session expires, WatchTower automatically signs in again using the saved encrypted credentials. Manual action is only required if Tidio rejects the credentials or requires an additional verification step.</p></div></div>
 </section>

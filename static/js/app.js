@@ -488,7 +488,12 @@
     const count = $('#tidio-unassigned-count');
     const lastCheck = $('#tidio-last-check');
     const lastError = $('#tidio-last-error');
+    const verificationPanel = $('#tidio-verification-panel');
+    const verificationScreen = $('#tidio-verification-screen');
+    const verificationCode = $('#tidio-verification-code');
+    const verificationError = $('#tidio-verification-error');
     let timer = null;
+    let verificationTimer = null;
 
     const statusLabel = status => ({
       connected: 'Connected', connecting: 'Connecting…', reconnecting: 'Reconnecting…',
@@ -508,10 +513,74 @@
       count.textContent = data.connected ? String(Number(data.unassigned_chats) || 0) : '—';
       lastCheck.textContent = data.last_checked_at ? dateText(data.last_checked_at) : '—';
       lastError.textContent = data.last_error || '—';
+      verificationPanel.hidden = data.status !== 'manual_verification_required';
+      if (!verificationPanel.hidden && !verificationTimer) {
+        refreshVerificationScreen();
+        verificationTimer = window.setInterval(refreshVerificationScreen, 1500);
+      } else if (verificationPanel.hidden && verificationTimer) {
+        window.clearInterval(verificationTimer);
+        verificationTimer = null;
+        verificationCode.value = '';
+        verificationScreen.removeAttribute('src');
+      }
       disconnectButton.hidden = !data.configured || data.status === 'disconnected';
       connectButton.textContent = 'Connect to Tidio';
       password.required = true;
     }
+
+    function refreshVerificationScreen() {
+      if (!verificationPanel.hidden) {
+        verificationScreen.src = `/api/v1/tidio/verification/screenshot?ts=${Date.now()}`;
+      }
+    }
+
+    async function sendVerificationAction(action) {
+      verificationError.hidden = true;
+      try {
+        await api('/api/v1/tidio/verification/action', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(action)
+        });
+        refreshVerificationScreen();
+        return true;
+      } catch (error) {
+        verificationError.textContent = error.message;
+        verificationError.hidden = false;
+        await refresh();
+        return false;
+      }
+    }
+
+    verificationScreen.addEventListener('click', event => {
+      const rect = verificationScreen.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const x = Math.floor((event.clientX - rect.left) * verificationScreen.naturalWidth / rect.width);
+      const y = Math.floor((event.clientY - rect.top) * verificationScreen.naturalHeight / rect.height);
+      sendVerificationAction({ action: 'click', x, y });
+    });
+
+    $('#tidio-verification-type').addEventListener('click', async () => {
+      const value = verificationCode.value;
+      if (!value) return;
+      if (await sendVerificationAction({ action: 'type', value })) verificationCode.value = '';
+    });
+    $('#tidio-verification-enter').addEventListener('click', () => sendVerificationAction({ action: 'press', value: 'Enter' }));
+    $('#tidio-verification-scroll-up').addEventListener('click', () => sendVerificationAction({ action: 'scroll', delta_y: -600 }));
+    $('#tidio-verification-scroll-down').addEventListener('click', () => sendVerificationAction({ action: 'scroll', delta_y: 600 }));
+    $('#tidio-verification-resume').addEventListener('click', async event => {
+      event.currentTarget.disabled = true;
+      verificationError.hidden = true;
+      try {
+        const result = await api('/api/v1/tidio/verification/resume', { method: 'POST' });
+        renderStatus(result);
+        if (result.connected) toast('Tidio monitoring resumed.');
+      } catch (error) {
+        verificationError.textContent = error.message;
+        verificationError.hidden = false;
+      } finally {
+        event.currentTarget.disabled = false;
+      }
+    });
 
     async function refresh() {
       try { renderStatus(await api('/api/v1/tidio')); }
@@ -557,7 +626,10 @@
 
     await refresh();
     timer = window.setInterval(refresh, 3000);
-    window.addEventListener('beforeunload', () => window.clearInterval(timer), { once: true });
+    window.addEventListener('beforeunload', () => {
+      window.clearInterval(timer);
+      if (verificationTimer) window.clearInterval(verificationTimer);
+    }, { once: true });
   }
 
   async function loadUsers() {
