@@ -452,11 +452,6 @@
       $('#settings-discord').outerHTML = renderStatus(status.notifications.discord_enabled ? 'Enabled' : 'Disabled', status.notifications.discord_enabled ? 'good' : 'unknown');
       $('#settings-telegram').outerHTML = renderStatus(status.notifications.telegram_enabled ? 'Enabled' : 'Disabled', status.notifications.telegram_enabled ? 'good' : 'unknown');
       $('#settings-telegram-chat').outerHTML = renderStatus(status.notifications.telegram_chat_configured ? 'Configured' : 'Not configured', status.notifications.telegram_chat_configured ? 'good' : 'unknown');
-      $('#settings-tidio-enabled').outerHTML = renderStatus(status.notifications.tidio_enabled ? 'Enabled' : 'Disabled', status.notifications.tidio_enabled ? 'good' : 'unknown');
-      $('#settings-tidio-credentials').outerHTML = renderStatus(status.notifications.tidio_credentials_configured ? 'Configured' : 'Not configured', status.notifications.tidio_credentials_configured ? 'good' : 'unknown');
-      $('#settings-tidio-interval').textContent = `${status.notifications.tidio_poll_interval_seconds} seconds`;
-      $('#settings-tidio-lookback').textContent = `${status.notifications.tidio_lookback_minutes} minutes`;
-      $('#settings-tidio-telegram').outerHTML = renderStatus(status.notifications.tidio_telegram_enabled ? 'Enabled' : 'Disabled', status.notifications.tidio_telegram_enabled ? 'good' : 'unknown');
       $('#settings-providers').innerHTML = providers.providers.map(slug => `<div class="provider-item"><strong>${escapeHtml(providerNames[slug] || slug)}</strong>${renderStatus('Enabled', 'good')}</div>`).join('');
     } catch (error) { $('#settings-providers').textContent = error.message; }
 
@@ -478,25 +473,6 @@
         button.textContent = 'Test Telegram Notifications';
       }
     });
-
-    const tidioButton = $('#tidio-telegram-test-button');
-    const tidioStatusText = $('#tidio-telegram-test-status');
-    if (tidioButton && tidioStatusText) tidioButton.addEventListener('click', async () => {
-      tidioButton.disabled = true;
-      tidioButton.textContent = 'Sending test…';
-      tidioStatusText.textContent = 'Sending test message to Support-Sales…';
-      try {
-        const result = await api('/api/v1/notifications/test/tidio-telegram', { method: 'POST' });
-        tidioStatusText.textContent = result.message || 'Support-Sales Telegram test message sent.';
-        toast('Support-Sales Telegram test sent successfully.');
-      } catch (error) {
-        tidioStatusText.textContent = `Support-Sales test failed: ${error.message}`;
-        toast(`Support-Sales test failed: ${error.message}`);
-      } finally {
-        tidioButton.disabled = false;
-        tidioButton.textContent = 'Test Support-Sales Telegram';
-      }
-    });
   }
 
   async function initializeTidio() {
@@ -506,122 +482,34 @@
     const password = $('#tidio-password');
     const connectButton = $('#tidio-connect-button');
     const disconnectButton = $('#tidio-disconnect-button');
-    const openLoginButton = $('#tidio-open-login-button');
     const errorBox = $('#tidio-connect-error');
     const statusBadge = $('#tidio-status-badge');
     const connectionState = $('#tidio-connection-state');
     const count = $('#tidio-unassigned-count');
     const lastCheck = $('#tidio-last-check');
     const lastError = $('#tidio-last-error');
-    const verificationPanel = $('#tidio-verification-panel');
-    const verificationScreen = $('#tidio-verification-screen');
-    const verificationCode = $('#tidio-verification-code');
-    const verificationError = $('#tidio-verification-error');
     let timer = null;
-    let verificationTimer = null;
 
     const statusLabel = status => ({
       connected: 'Connected', connecting: 'Connecting…', reconnecting: 'Reconnecting…',
-      login_required: 'Login required', waiting_for_manual_login: 'Waiting for manual login',
       authentication_failed: 'Authentication failed', session_expired: 'Session expired',
-      manual_verification_required: 'Waiting for manual login', reconnect_paused: 'Reconnect paused',
-      disconnected: 'Disconnected', not_configured: 'Login required', credentials_unavailable: 'Credentials unavailable'
+      disconnected: 'Disconnected', not_configured: 'Not configured', credentials_unavailable: 'Credentials unavailable'
     }[status] || status || 'Unknown');
 
-    const statusKind = status => status === 'connected' ? 'good' : (['authentication_failed', 'session_expired', 'manual_verification_required', 'reconnect_paused'].includes(status) ? 'bad' : 'unknown');
+    const statusKind = status => status === 'connected' ? 'good' : (['authentication_failed', 'session_expired'].includes(status) ? 'bad' : 'unknown');
 
     function renderStatus(data) {
       const label = statusLabel(data.status);
-      const kind = statusKind(data.status);
-      $('#tidio-status-badge').outerHTML = `<span id="tidio-status-badge" class="status-badge ${kind}">${escapeHtml(label)}</span>`;
-      $('#tidio-connection-state').outerHTML = `<span id="tidio-connection-state" class="status-badge ${kind}">${escapeHtml(label)}</span>`;
+      $('#tidio-status-badge').outerHTML = `<span id="tidio-status-badge" class="status-badge">${escapeHtml(label)}</span>`;
+      $('#tidio-connection-state').outerHTML = `<span id="tidio-connection-state" class="status-badge">${escapeHtml(label)}</span>`;
       if (data.configured && username.value !== data.username) username.value = data.username || '';
       count.textContent = data.connected ? String(Number(data.unassigned_chats) || 0) : '—';
       lastCheck.textContent = data.last_checked_at ? dateText(data.last_checked_at) : '—';
       lastError.textContent = data.last_error || '—';
-      verificationPanel.hidden = !['waiting_for_manual_login', 'manual_verification_required'].includes(data.status);
-      openLoginButton.hidden = data.status === 'connected' || data.status === 'waiting_for_manual_login' || data.status === 'manual_verification_required';
-      if (!verificationPanel.hidden && !verificationTimer) {
-        refreshVerificationScreen();
-        verificationTimer = window.setInterval(refreshVerificationScreen, 1500);
-      } else if (verificationPanel.hidden && verificationTimer) {
-        window.clearInterval(verificationTimer);
-        verificationTimer = null;
-        verificationCode.value = '';
-        verificationScreen.removeAttribute('src');
-      }
       disconnectButton.hidden = !data.configured || data.status === 'disconnected';
       connectButton.textContent = 'Connect to Tidio';
       password.required = true;
     }
-
-    function refreshVerificationScreen() {
-      if (!verificationPanel.hidden) {
-        verificationScreen.src = `/api/v1/tidio/verification/screenshot?ts=${Date.now()}`;
-      }
-    }
-
-    async function sendVerificationAction(action) {
-      verificationError.hidden = true;
-      try {
-        await api('/api/v1/tidio/verification/action', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(action)
-        });
-        refreshVerificationScreen();
-        return true;
-      } catch (error) {
-        verificationError.textContent = error.message;
-        verificationError.hidden = false;
-        await refresh();
-        return false;
-      }
-    }
-
-    verificationScreen.addEventListener('click', event => {
-      const rect = verificationScreen.getBoundingClientRect();
-      if (!rect.width || !rect.height) return;
-      const x = Math.floor((event.clientX - rect.left) * verificationScreen.naturalWidth / rect.width);
-      const y = Math.floor((event.clientY - rect.top) * verificationScreen.naturalHeight / rect.height);
-      sendVerificationAction({ action: 'click', x, y });
-    });
-
-    $('#tidio-verification-type').addEventListener('click', async () => {
-      const value = verificationCode.value;
-      if (!value) return;
-      if (await sendVerificationAction({ action: 'type', value })) verificationCode.value = '';
-    });
-    $('#tidio-verification-enter').addEventListener('click', () => sendVerificationAction({ action: 'press', value: 'Enter' }));
-    $('#tidio-verification-scroll-up').addEventListener('click', () => sendVerificationAction({ action: 'scroll', delta_y: -600 }));
-    $('#tidio-verification-scroll-down').addEventListener('click', () => sendVerificationAction({ action: 'scroll', delta_y: 600 }));
-    $('#tidio-verification-resume').addEventListener('click', async event => {
-      event.currentTarget.disabled = true;
-      verificationError.hidden = true;
-      try {
-        const result = await api('/api/v1/tidio/verification/resume', { method: 'POST' });
-        renderStatus(result);
-        if (result.connected) toast('Tidio monitoring resumed.');
-      } catch (error) {
-        verificationError.textContent = error.message;
-        verificationError.hidden = false;
-      } finally {
-        event.currentTarget.disabled = false;
-      }
-    });
-
-    openLoginButton.addEventListener('click', async event => {
-      event.currentTarget.disabled = true;
-      errorBox.hidden = true;
-      try {
-        const result = await api('/api/v1/tidio/open-login', { method: 'POST' });
-        renderStatus(result);
-      } catch (error) {
-        errorBox.textContent = error.message;
-        errorBox.hidden = false;
-      } finally {
-        event.currentTarget.disabled = false;
-      }
-    });
 
     async function refresh() {
       try { renderStatus(await api('/api/v1/tidio')); }
@@ -640,7 +528,7 @@
         });
         password.value = '';
         renderStatus(result);
-        if (result.connected) toast('Tidio connected successfully.');
+        toast('Tidio connected successfully.');
       } catch (error) {
         errorBox.textContent = error.message;
         errorBox.hidden = false;
@@ -667,10 +555,7 @@
 
     await refresh();
     timer = window.setInterval(refresh, 3000);
-    window.addEventListener('beforeunload', () => {
-      window.clearInterval(timer);
-      if (verificationTimer) window.clearInterval(verificationTimer);
-    }, { once: true });
+    window.addEventListener('beforeunload', () => window.clearInterval(timer), { once: true });
   }
 
   async function loadUsers() {

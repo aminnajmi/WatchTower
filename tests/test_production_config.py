@@ -33,21 +33,6 @@ class ProductionConfigTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "TELEGRAM_BOT_TOKEN.*TELEGRAM_CHAT_ID"):
             config.validate_production_settings()
 
-    def test_production_configuration_requires_separate_tidio_credentials_and_sales_chat(self):
-        config = self._valid_production_settings(tidio_enabled=True, tidio_telegram_enabled=True)
-        with self.assertRaisesRegex(RuntimeError, "TIDIO_CLIENT_ID.*TIDIO_CLIENT_SECRET.*TIDIO_TELEGRAM_CHAT_ID"):
-            config.validate_production_settings()
-
-        config = self._valid_production_settings(
-            tidio_enabled=True,
-            tidio_client_id="ci_test",
-            tidio_client_secret="cs_test",
-            tidio_telegram_enabled=True,
-            tidio_telegram_chat_id="sales-chat",
-            telegram_bot_token="shared-bot-token",
-        )
-        config.validate_production_settings()
-
     def test_sqlite_directory_is_created_for_nested_database_path(self):
         with tempfile.TemporaryDirectory() as root:
             database = Path(root) / "persistent" / "nested" / "tracker.db"

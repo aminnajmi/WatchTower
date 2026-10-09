@@ -13,12 +13,6 @@
       "output_tokens": 783,
       "files": 39,
       "usage_metadata_available": true
-    },
-    {
-      "date": "2026-10-09T06:32:03.864783+00:00",
-      "input_tokens": 0,
-      "output_tokens": 0,
-      "files": 40
     }
   ],
   "total_input_tokens": 1960,

@@ -11,12 +11,11 @@
     <div class="panel-heading"><div><h2>Tidio Connection</h2><p>WatchTower uses a browser session to sign in to Tidio. Credentials are stored encrypted and are never displayed again.</p></div></div>
     <form id="tidio-connect-form" class="form-panel">
       <label for="tidio-username">Tidio email / username</label>
-      <input id="tidio-username" type="text" autocomplete="username" maxlength="320" placeholder="you@example.com" required>
+      <input id="tidio-username" type="email" autocomplete="username" maxlength="320" placeholder="you@example.com" required>
       <label for="tidio-password">Tidio password</label>
       <input id="tidio-password" type="password" autocomplete="current-password" maxlength="256" placeholder="••••••••" required>
       <div class="dialog-actions">
         <button class="button button-primary" id="tidio-connect-button" type="submit">Connect to Tidio</button>
-        <button class="button button-quiet" id="tidio-open-login-button" type="button">Open Tidio Login</button>
         <button class="button button-quiet" id="tidio-disconnect-button" type="button" hidden>Disconnect</button>
       </div>
       <p class="form-error" id="tidio-connect-error" role="alert" hidden></p>
@@ -24,33 +23,13 @@
   </article>
 
   <article class="panel">
-    <div class="panel-heading"><div><h2>Monitoring</h2><p>The WatchTower server checks the Tidio session independently of the dashboard.</p></div></div>
+    <div class="panel-heading"><div><h2>Monitoring</h2><p>The WatchTower server checks the Tidio session every 3 seconds.</p></div></div>
     <div class="settings-row"><div><strong>Connection</strong><span>Current browser session</span></div><span id="tidio-connection-state" class="status-badge">—</span></div>
     <div class="settings-row"><div><strong>Unassigned chats</strong><span>Detected in the Tidio inbox</span></div><strong id="tidio-unassigned-count">—</strong></div>
     <div class="settings-row"><div><strong>Last check</strong><span>Most recent successful check</span></div><strong id="tidio-last-check">—</strong></div>
     <div class="settings-row"><div><strong>Polling interval</strong><span>Server-side monitoring</span></div><strong>3 seconds</strong></div>
     <div class="settings-row"><div><strong>Last error</strong><span>Authentication/session errors</span></div><strong id="tidio-last-error">—</strong></div>
   </article>
-</section>
-
-<section class="panel settings-wide tidio-verification-panel" id="tidio-verification-panel" hidden>
-  <div class="panel-heading">
-    <div>
-      <h2>Complete Tidio login</h2>
-      <p id="tidio-verification-message">Use this secure, admin-only view to sign in and finish any MFA or CAPTCHA challenge. The browser session stays on the WatchTower server.</p>
-    </div>
-  </div>
-  <p class="form-error" id="tidio-verification-error" role="status" aria-live="polite" hidden></p>
-  <img id="tidio-verification-screen" alt="Tidio verification page. Click the challenge or field to interact." style="display:block;max-width:100%;height:auto;border:1px solid currentColor;border-radius:8px;cursor:crosshair">
-  <p class="muted">Click the Tidio page to focus a field or CAPTCHA control. Enter text in the box below and select “Type into Tidio” to enter it in the focused field.</p>
-  <div class="dialog-actions">
-    <button class="button button-quiet" id="tidio-verification-scroll-up" type="button">Scroll up</button>
-    <button class="button button-quiet" id="tidio-verification-scroll-down" type="button">Scroll down</button>
-    <input id="tidio-verification-code" type="password" inputmode="text" autocomplete="off" maxlength="200" aria-label="Text to enter on Tidio page" placeholder="Text to enter">
-    <button class="button button-quiet" id="tidio-verification-type" type="button">Type into Tidio</button>
-    <button class="button button-quiet" id="tidio-verification-enter" type="button">Press Enter</button>
-    <button class="button button-primary" id="tidio-verification-resume" type="button">Resume Monitoring</button>
-  </div>
 </section>
 
 <section class="panel settings-wide tidio-note-panel">

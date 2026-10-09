@@ -8,14 +8,13 @@ from pathlib import Path
 
 from contextlib import asynccontextmanager
 
-from fastapi import Depends, FastAPI, Form, HTTPException, Query, Request, Header, Response
+from fastapi import Depends, FastAPI, Form, HTTPException, Query, Request, Header
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import BaseModel
-from typing import Literal
 from sqlalchemy import func, select, update
 from sqlalchemy.exc import IntegrityError, OperationalError
 
@@ -36,7 +35,6 @@ from .config import settings
 from .models import init_db, SessionLocal, OSRelease, ReleaseHistory, ReleaseEvent, User, Notification, TidioConnection
 from .schemas import UserCreate, UserUpdate, PasswordReset, PasswordChange, NotificationCreate
 from .notifications.telegram import send_test as send_telegram_test
-from .notifications.tidio_telegram import send_test as send_tidio_telegram_test
 from .notifications.service import (
     ALLOWED_SEVERITIES, ALLOWED_SOURCES, ALLOWED_STATUSES,
     create_notification, metadata_for,
@@ -47,7 +45,6 @@ from . import scheduler as scheduler_module
 from .service import check_all
 from .scheduler import JOB_ID, SCHEDULE_LABEL, start_scheduler, stop_scheduler
 from .tidio import monitor as tidio_monitor
-from .tidio_service import tidio_service
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 configure_session_factory_provider(lambda: SessionLocal)
@@ -58,11 +55,9 @@ async def lifespan(_app: FastAPI):
     init_db()
     start_scheduler()
     tidio_restore_task = asyncio.create_task(tidio_monitor.restore())
-    await tidio_service.start()
     try:
         yield
     finally:
-        await tidio_service.shutdown()
         tidio_restore_task.cancel()
         try:
             await tidio_restore_task
@@ -516,52 +511,6 @@ async def test_telegram_notification():
     return {"success": True, "message": "Telegram test message sent"}
 
 
-@app.post("/api/v1/notifications/test/tidio-telegram", dependencies=[Depends(require_admin)])
-async def test_tidio_telegram_notification():
-    if not settings.tidio_telegram_enabled:
-        return JSONResponse(
-            {"success": False, "error": "Tidio Support-Sales Telegram notifications are disabled"},
-            status_code=400,
-        )
-    try:
-        result = await send_tidio_telegram_test()
-    except Exception as exc:
-        logger.warning("Tidio Support-Sales Telegram test failed (%s)", type(exc).__name__)
-        return JSONResponse(
-            {"success": False, "error": f"Tidio Telegram test failed ({type(exc).__name__})"},
-            status_code=503,
-        )
-    if not result.success:
-        return JSONResponse(
-            {"success": False, "error": result.error or "Tidio Telegram test message failed"},
-            status_code=503,
-        )
-    return {"success": True, "message": "Tidio Support-Sales Telegram test message sent"}
-
-
-@app.get("/api/v1/tidio/support-sales", dependencies=[Depends(require_admin)])
-def tidio_support_sales_status():
-    return {
-        "enabled": settings.tidio_enabled,
-        "credentials_configured": bool(settings.tidio_client_id and settings.tidio_client_secret),
-        "telegram_enabled": bool(
-            settings.tidio_telegram_enabled and settings.telegram_bot_token and settings.tidio_telegram_chat_id
-        ),
-        "poll_interval_seconds": settings.tidio_poll_interval_seconds,
-        "lookback_minutes": settings.tidio_lookback_minutes,
-        "running": tidio_service.running,
-        "unassigned_chats": tidio_service.unassigned_count,
-        "last_checked_at": _utc_timestamp(tidio_service.last_checked_at),
-        "last_error": tidio_service.last_error,
-    }
-
-
-@app.post("/api/v1/tidio/support-sales/check", dependencies=[Depends(require_admin)])
-async def tidio_support_sales_check():
-    result = await tidio_service.check_once()
-    return {"success": not result["errors"], **result}
-
-
 def _serialize_notification(notification: Notification) -> dict:
     return {
         "id": notification.id,
@@ -787,29 +736,20 @@ class TidioConnectRequest(BaseModel):
     password: str
 
 
-class TidioVerificationAction(BaseModel):
-    action: Literal["click", "scroll", "type", "press"]
-    x: int | None = None
-    y: int | None = None
-    delta_y: int | None = None
-    value: str | None = None
-
-
 def _tidio_status_payload() -> dict:
     db = SessionLocal()
     try:
         row = db.get(TidioConnection, 1)
         snapshot = tidio_monitor.snapshot
         return {
-            "configured": bool(row and (row.username or row.password_encrypted or row.enabled)),
-            "username": row.username or None if row else None,
-            "status": snapshot.status if snapshot.status != "not_configured" else (row.status if row and row.status != "not_configured" else "login_required"),
+            "configured": bool(row and row.username and row.password_encrypted),
+            "username": row.username if row else None,
+            "status": snapshot.status if snapshot.status != "not_configured" else (row.status if row else "not_configured"),
             "connected": snapshot.connected,
             "unassigned_chats": snapshot.unassigned_count,
             "last_checked_at": _utc_timestamp(row.last_checked_at) if row else snapshot.last_checked_at,
             "last_error": snapshot.error or (row.last_error if row else None),
             "poll_interval_seconds": 3,
-            "verification_required": snapshot.status in {"manual_verification_required", "waiting_for_manual_login"},
         }
     finally:
         db.close()
@@ -820,15 +760,12 @@ def tidio_status():
     return _tidio_status_payload()
 
 
-@app.post("/api/v1/tidio/connect")
-async def tidio_connect(payload: TidioConnectRequest, principal: Principal = Depends(require_admin)):
+@app.post("/api/v1/tidio/connect", dependencies=[Depends(require_admin)])
+async def tidio_connect(payload: TidioConnectRequest):
     username = payload.username.strip()
     if not username or not payload.password:
         raise HTTPException(status_code=422, detail="Tidio username and password are required")
-    try:
-        result = await tidio_monitor.connect(username, payload.password, owner=principal.username)
-    except PermissionError:
-        raise HTTPException(status_code=403, detail="This Tidio browser session belongs to another administrator")
+    result = await tidio_monitor.connect(username, payload.password)
     if not result.connected:
         return JSONResponse(
             {"success": False, "error": result.error or "Tidio connection failed", "status": result.status},
@@ -837,59 +774,10 @@ async def tidio_connect(payload: TidioConnectRequest, principal: Principal = Dep
     return {"success": True, **_tidio_status_payload()}
 
 
-@app.post("/api/v1/tidio/open-login")
-async def tidio_open_login(principal: Principal = Depends(require_admin)):
-    try:
-        await tidio_monitor.open_login(principal.username)
-    except PermissionError:
-        raise HTTPException(status_code=403, detail="This Tidio browser session belongs to another administrator")
-    return {"success": tidio_monitor.snapshot.status == "waiting_for_manual_login", **_tidio_status_payload()}
-
-
-@app.post("/api/v1/tidio/disconnect")
-async def tidio_disconnect(principal: Principal = Depends(require_admin)):
-    try:
-        await tidio_monitor.disconnect(owner=principal.username)
-    except PermissionError:
-        raise HTTPException(status_code=403, detail="This Tidio browser session belongs to another administrator")
+@app.post("/api/v1/tidio/disconnect", dependencies=[Depends(require_admin)])
+async def tidio_disconnect():
+    await tidio_monitor.disconnect()
     return {"success": True, **_tidio_status_payload()}
-
-
-@app.get("/api/v1/tidio/verification/screenshot")
-async def tidio_verification_screenshot(principal: Principal = Depends(require_admin)):
-    try:
-        screenshot = await tidio_monitor.verification_screenshot(owner=principal.username)
-    except PermissionError:
-        raise HTTPException(status_code=403, detail="This Tidio browser session belongs to another administrator")
-    except Exception:
-        screenshot = None
-    if screenshot is None:
-        raise HTTPException(status_code=409, detail="Tidio verification is not active. Reconnect to start a new session.")
-    return Response(screenshot, media_type="image/png", headers={"Cache-Control": "no-store", "Pragma": "no-cache"})
-
-
-@app.post("/api/v1/tidio/verification/action")
-async def tidio_verification_action(payload: TidioVerificationAction, principal: Principal = Depends(require_admin)):
-    try:
-        accepted = await tidio_monitor.verification_action(
-            payload.action, x=payload.x, y=payload.y, delta_y=payload.delta_y, value=payload.value, owner=principal.username
-        )
-    except PermissionError:
-        raise HTTPException(status_code=403, detail="This Tidio browser session belongs to another administrator")
-    except Exception:
-        accepted = False
-    if not accepted:
-        raise HTTPException(status_code=409, detail="Tidio verification session ended or the action was invalid.")
-    return {"success": True}
-
-
-@app.post("/api/v1/tidio/verification/resume")
-async def tidio_verification_resume(principal: Principal = Depends(require_admin)):
-    try:
-        await tidio_monitor.resume_verification(owner=principal.username)
-    except PermissionError:
-        raise HTTPException(status_code=403, detail="This Tidio browser session belongs to another administrator")
-    return {"success": tidio_monitor.snapshot.connected, **_tidio_status_payload()}
 
 
 @app.get("/api/v1/providers", dependencies=[Depends(require_admin)])
@@ -975,17 +863,6 @@ def status():
                 settings.telegram_enabled and settings.telegram_bot_token and settings.telegram_chat_id
             ),
             "telegram_chat_configured": bool(settings.telegram_chat_id),
-            "tidio_enabled": settings.tidio_enabled,
-            "tidio_credentials_configured": bool(settings.tidio_client_id and settings.tidio_client_secret),
-            "tidio_poll_interval_seconds": settings.tidio_poll_interval_seconds,
-            "tidio_lookback_minutes": settings.tidio_lookback_minutes,
-            "tidio_telegram_enabled": bool(
-                settings.tidio_telegram_enabled and settings.telegram_bot_token and settings.tidio_telegram_chat_id
-            ),
-            "tidio_telegram_chat_configured": bool(settings.tidio_telegram_chat_id),
-            "tidio_unassigned_chats": tidio_service.unassigned_count,
-            "tidio_last_checked_at": _utc_timestamp(tidio_service.last_checked_at),
-            "tidio_last_error": tidio_service.last_error,
         },
     }
 

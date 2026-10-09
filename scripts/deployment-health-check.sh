@@ -6,13 +6,6 @@ SERVICE=watchtower
 TIMEOUT_SECONDS=${WATCHTOWER_HEALTH_TIMEOUT_SECONDS:-60}
 INTERVAL_SECONDS=${WATCHTOWER_HEALTH_INTERVAL_SECONDS:-2}
 COMMAND_TIMEOUT_SECONDS=${WATCHTOWER_COMMAND_TIMEOUT_SECONDS:-4}
-container_id=
-container_status="not found"
-docker_health="not run"
-http_status="not run"
-http_url=
-health_host=
-published_port=
 
 case "$TIMEOUT_SECONDS:$INTERVAL_SECONDS:$COMMAND_TIMEOUT_SECONDS" in
   *[!0-9:]*|:*|*::*) echo "Invalid health-check timeout configuration" >&2; exit 2 ;;
@@ -24,16 +17,13 @@ fi
 
 started_at=$(date +%s)
 deadline=$((started_at + TIMEOUT_SECONDS))
+container_id=
+container_status="not found"
+docker_health="not run"
+http_status="not run"
 DIAGNOSING=0
 failure_step="Deployment health check"
 failure_reason="WatchTower did not become ready within ${TIMEOUT_SECONDS} seconds"
-
-sanitize_output() {
-  sed -E \
-    -e 's#(https?://api\.telegram\.org/bot)[^/[:space:]]+#\1[REDACTED]#g' \
-    -e 's#(://[^:/[:space:]]+:)[^@/[:space:]]+@#\1[REDACTED]@#g' \
-    -e 's/([A-Za-z0-9_]*(TOKEN|SECRET|PASSWORD|DATABASE_URL|CHAT_ID|CLIENT_ID|API_KEY|WEBHOOK_URL|ENCRYPTION_KEY|PRIVATE_KEY)[A-Za-z0-9_]*[[:space:]]*[:=][[:space:]]*)[^[:space:],;]+/\1[REDACTED]/Ig'
-}
 
 run_docker() {
   command_timeout=$COMMAND_TIMEOUT_SECONDS
@@ -48,32 +38,26 @@ run_docker() {
 
 diagnose() {
   echo "--- docker compose ps ---"
-  run_docker compose ps 2>&1 | sanitize_output || true
+  run_docker compose ps 2>&1 || true
   if [ -n "$container_id" ]; then
     echo "--- WatchTower container status ---"
-    run_docker inspect --format 'status={{.State.Status}} health={{if .State.Health}}{{.State.Health.Status}}{{else}}missing{{end}}' "$container_id" 2>&1 | sanitize_output || true
+    run_docker inspect --format 'status={{.State.Status}} health={{if .State.Health}}{{.State.Health.Status}}{{else}}missing{{end}}' "$container_id" 2>&1 || true
     echo "--- Docker health details ---"
-    run_docker inspect --format '{{if .State.Health}}{{json .State.Health}}{{else}}no healthcheck{{end}}' "$container_id" 2>&1 | sanitize_output || true
+    run_docker inspect --format '{{if .State.Health}}{{json .State.Health}}{{else}}no healthcheck{{end}}' "$container_id" 2>&1 || true
     echo "--- Recent WatchTower logs (credentials redacted) ---"
-    run_docker logs --tail 100 "$container_id" 2>&1 | sanitize_output || true
+    run_docker logs --tail 100 "$container_id" 2>&1 | sed -E \
+      -e 's#(https?://api\.telegram\.org/bot)[^/[:space:]]+#\1[REDACTED]#g' \
+      -e 's/((TOKEN|SECRET|PASSWORD|DATABASE_URL|CHAT_ID)=)[^[:space:]]+/\1[REDACTED]/Ig' || true
   fi
   if [ -n "$http_url" ]; then
     echo "--- HTTP health check ---"
-    echo "Probe URL: $http_url"
-    response=$(curl --silent --show-error --include --max-time "$COMMAND_TIMEOUT_SECONDS" \
-      --resolve "${health_host}:${published_port}:127.0.0.1" -H "Host: $health_host" "$http_url" 2>&1)
-    curl_status=$?
-    printf '%s\n' "$response" | sanitize_output | head -c 4096 || true
-    printf '\nHTTP probe transport exit status: %s\n' "$curl_status"
-  else
-    echo "--- HTTP health check ---"
-    echo "Not attempted: no published WatchTower container was found."
+    curl --verbose --max-time "$COMMAND_TIMEOUT_SECONDS" --resolve "${health_host}:${published_port}:127.0.0.1" -H "Host: $health_host" "$http_url" -o /dev/null 2>&1 || true
   fi
 }
 
 if [ "${1:-}" = "--diagnose" ]; then
   DIAGNOSING=1
-  container_id=$(run_docker compose ps --all -q "$SERVICE" 2>/dev/null | head -n 1)
+  container_id=$(run_docker compose ps -q "$SERVICE" 2>/dev/null | head -n 1)
   if [ -n "$container_id" ]; then
     container_status=$(run_docker inspect --format '{{.State.Status}}' "$container_id" 2>/dev/null || printf 'unknown')
     docker_health=$(run_docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}missing{{end}}' "$container_id" 2>/dev/null || printf 'unknown')
@@ -88,13 +72,15 @@ if [ "${1:-}" = "--diagnose" ]; then
   exit 0
 fi
 
+http_url=
+health_host=
 while :; do
   now=$(date +%s)
   if [ "$now" -ge "$deadline" ]; then
     break
   fi
 
-  container_id=$(run_docker compose ps --all -q "$SERVICE" 2>/dev/null | head -n 1)
+  container_id=$(run_docker compose ps -q "$SERVICE" 2>/dev/null | head -n 1)
   if [ -n "$container_id" ]; then
     container_status=$(run_docker inspect --format '{{.State.Status}}' "$container_id" 2>/dev/null || printf 'unknown')
     case "$container_status" in

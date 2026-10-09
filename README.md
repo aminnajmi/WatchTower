@@ -45,13 +45,7 @@ python -m app.create_admin
 
 Enter the chosen administrator username and password when prompted, then copy the displayed hash and salt into `ADMIN_PASSWORD_HASH` and `ADMIN_PASSWORD_SALT`. Do not put the plain password in `.env`. Configure Telegram or Discord credentials only when needed. With Telegram enabled, both its bot token and chat ID are required.
 
-To use the Tidio integration, set `TIDIO_ENCRYPTION_KEY` to a dedicated Fernet key and keep it stable across deployments. Generate one with `python3 -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'`. Do not reuse `JWT_SECRET`; changing or losing this key makes saved Tidio credentials unreadable.
-
-To enable Support-Tech Telegram notifications, set `TELEGRAM_ENABLED=true`, `TELEGRAM_BOT_TOKEN`, and `TELEGRAM_CHAT_ID` in `.env`, then recreate the container with `docker compose up -d`. OS-release notifications continue to use only this destination. Use the Support-Tech Telegram test action to verify delivery.
-
-Tidio Support-Sales notifications use a separate destination while reusing `TELEGRAM_BOT_TOKEN`. Set `TIDIO_ENABLED=true`, `TIDIO_CLIENT_ID`, and `TIDIO_CLIENT_SECRET` for the Tidio monitor, then set `TIDIO_TELEGRAM_ENABLED=true` and `TIDIO_TELEGRAM_CHAT_ID` for Support-Sales delivery. The default Tidio poll interval is 10 seconds (`TIDIO_POLL_INTERVAL_SECONDS`); `TIDIO_LOOKBACK_MINUTES` scopes the Tidio Analytics API query. Tidio browser login remains a separate feature and is not required by this notification poller. The Settings page shows configuration state only and has a separate Support-Sales test action. Keep the client secret, bot token, and both chat IDs private.
-
-The deployment script pulls code and rebuilds/recreates the Compose service; it does not copy `.env.example` over the server's `.env`. Add the new Tidio variables to the existing server `.env` before enabling the integration.
+To enable Telegram notifications, set `TELEGRAM_ENABLED=true`, `TELEGRAM_BOT_TOKEN`, and `TELEGRAM_CHAT_ID` in `.env`, then recreate the container with `docker compose up -d`. Use the dashboard's Telegram test action to verify delivery. Keep the bot token private.
 
 The production app refuses to start if the JWT secret, admin credentials, allowed hosts, or enabled Telegram credentials are invalid. Compose defaults `DATABASE_URL` to `sqlite:////app/data/os_tracker.db`; that location is persisted in the named volume. Do not change it to a path outside `/app/data` unless you configure another persistent writable mount.
 
