@@ -22,7 +22,8 @@ services:
       - watchtower-data:/app/data
     read_only: true
     tmpfs:
-      - /tmp:rw,noexec,nosuid,size=16m
+      - /tmp:rw,noexec,nosuid,size=64m
+    shm_size: 256m
     cap_drop:
       - ALL
     security_opt:

@@ -153,7 +153,10 @@ class TidioMonitor:
         if self._playwright is None:
             self._playwright = await async_playwright().start()
         if self._browser is None:
-            self._browser = await self._playwright.chromium.launch(headless=True, args=["--disable-dev-shm-usage"])
+            self._browser = await self._playwright.chromium.launch(
+                headless=True,
+                ignore_default_args=["--disable-dev-shm-usage"],
+            )
         storage_state = None
         try:
             if self._session_path.is_file():
