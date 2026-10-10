@@ -3730,7 +3730,7 @@
       "file_type": "code",
       "norm_label": "._check_once()",
       "source_file": "app/tidio.py",
-      "source_location": "L343"
+      "source_location": "L351"
     },
     {
       "id": "app_tidio_tidiomonitor_click_login_action",
@@ -3742,7 +3742,7 @@
       "file_type": "code",
       "norm_label": "._click_login_action()",
       "source_file": "app/tidio.py",
-      "source_location": "L219"
+      "source_location": "L232"
     },
     {
       "id": "app_tidio_tidiomonitor_close_browser",
@@ -3754,7 +3754,7 @@
       "file_type": "code",
       "norm_label": "._close_browser()",
       "source_file": "app/tidio.py",
-      "source_location": "L434"
+      "source_location": "L442"
     },
     {
       "id": "app_tidio_tidiomonitor_connect",
@@ -3850,7 +3850,7 @@
       "file_type": "code",
       "norm_label": "._find_visible_input()",
       "source_file": "app/tidio.py",
-      "source_location": "L207"
+      "source_location": "L220"
     },
     {
       "id": "app_tidio_tidiomonitor_init",
@@ -3898,7 +3898,7 @@
       "file_type": "code",
       "norm_label": "._monitor_loop()",
       "source_file": "app/tidio.py",
-      "source_location": "L286"
+      "source_location": "L294"
     },
     {
       "id": "app_tidio_tidiomonitor_open_inbox",
@@ -3910,7 +3910,7 @@
       "file_type": "code",
       "norm_label": "._open_inbox()",
       "source_file": "app/tidio.py",
-      "source_location": "L263"
+      "source_location": "L276"
     },
     {
       "id": "app_tidio_tidiomonitor_public_error",
@@ -3922,7 +3922,7 @@
       "file_type": "code",
       "norm_label": "._public_error()",
       "source_file": "app/tidio.py",
-      "source_location": "L457"
+      "source_location": "L465"
     },
     {
       "id": "app_tidio_tidiomonitor_raise_login_page_state",
@@ -3934,7 +3934,7 @@
       "file_type": "code",
       "norm_label": "._raise_login_page_state()",
       "source_file": "app/tidio.py",
-      "source_location": "L230"
+      "source_location": "L243"
     },
     {
       "id": "app_tidio_tidiomonitor_read_unassigned_count",
@@ -3946,7 +3946,7 @@
       "file_type": "code",
       "norm_label": "._read_unassigned_count()",
       "source_file": "app/tidio.py",
-      "source_location": "L361"
+      "source_location": "L369"
     },
     {
       "id": "app_tidio_tidiomonitor_reconnect",
@@ -3958,7 +3958,7 @@
       "file_type": "code",
       "norm_label": "._reconnect()",
       "source_file": "app/tidio.py",
-      "source_location": "L306"
+      "source_location": "L314"
     },
     {
       "id": "app_tidio_tidiomonitor_restore",
@@ -3982,7 +3982,7 @@
       "file_type": "code",
       "norm_label": "._save_credentials()",
       "source_file": "app/tidio.py",
-      "source_location": "L383"
+      "source_location": "L391"
     },
     {
       "id": "app_tidio_tidiomonitor_save_session",
@@ -3994,7 +3994,7 @@
       "file_type": "code",
       "norm_label": "._save_session()",
       "source_file": "app/tidio.py",
-      "source_location": "L252"
+      "source_location": "L265"
     },
     {
       "id": "app_tidio_tidiomonitor_session_path",
@@ -4018,7 +4018,7 @@
       "file_type": "code",
       "norm_label": "._set_enabled()",
       "source_file": "app/tidio.py",
-      "source_location": "L410"
+      "source_location": "L418"
     },
     {
       "id": "app_tidio_tidiomonitor_shutdown",
@@ -4054,7 +4054,7 @@
       "file_type": "code",
       "norm_label": "._start_monitor_task()",
       "source_file": "app/tidio.py",
-      "source_location": "L276"
+      "source_location": "L284"
     },
     {
       "id": "app_tidio_tidiomonitor_stop_monitor_task",
@@ -4066,7 +4066,7 @@
       "file_type": "code",
       "norm_label": "._stop_monitor_task()",
       "source_file": "app/tidio.py",
-      "source_location": "L281"
+      "source_location": "L289"
     },
     {
       "id": "app_tidio_tidiomonitor_touch_status",
@@ -4078,7 +4078,7 @@
       "file_type": "code",
       "norm_label": "._touch_status()",
       "source_file": "app/tidio.py",
-      "source_location": "L421"
+      "source_location": "L429"
     },
     {
       "id": "tests_test_tidio_test_tidio_password_encryption_round_trip",
@@ -8404,7 +8404,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L356",
+      "source_location": "L364",
       "weight": 1.0
     },
     {
@@ -8416,7 +8416,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L358",
+      "source_location": "L366",
       "weight": 1.0
     },
     {
@@ -8428,7 +8428,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L359",
+      "source_location": "L367",
       "weight": 1.0
     },
     {
@@ -8440,7 +8440,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L228",
+      "source_location": "L241",
       "weight": 1.0
     },
     {
@@ -8649,19 +8649,7 @@
     },
     {
       "source": "app_tidio_tidiomonitor_login",
-      "target": "app_tidio_tidiomonitor_open_inbox",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "app/tidio.py",
-      "source_location": "L172",
-      "weight": 1.0
-    },
-    {
-      "source": "app_tidio_tidiomonitor_login",
-      "target": "app_tidio_tidiomonitor_save_session",
+      "target": "app_tidio_tidiomonitor_find_visible_input",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8673,19 +8661,19 @@
     },
     {
       "source": "app_tidio_tidiomonitor_login",
-      "target": "app_tidio_tidiomonitor_find_visible_input",
+      "target": "app_tidio_tidiomonitor_open_inbox",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L175",
+      "source_location": "L182",
       "weight": 1.0
     },
     {
       "source": "app_tidio_tidiomonitor_login",
-      "target": "app_tidio_tidiomonitor_raise_login_page_state",
+      "target": "app_tidio_tidiomonitor_save_session",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8697,6 +8685,18 @@
     },
     {
       "source": "app_tidio_tidiomonitor_login",
+      "target": "app_tidio_tidiomonitor_raise_login_page_state",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "app/tidio.py",
+      "source_location": "L186",
+      "weight": 1.0
+    },
+    {
+      "source": "app_tidio_tidiomonitor_login",
       "target": "app_tidio_tidiomonitor_click_login_action",
       "relation": "calls",
       "_origin": "ast",
@@ -8704,7 +8704,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L188",
+      "source_location": "L201",
       "weight": 1.0
     },
     {
@@ -8716,7 +8716,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L289",
+      "source_location": "L297",
       "weight": 1.0
     },
     {
@@ -8728,7 +8728,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L294",
+      "source_location": "L302",
       "weight": 1.0
     },
     {
@@ -8740,7 +8740,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L294",
+      "source_location": "L302",
       "weight": 1.0
     },
     {
@@ -8752,7 +8752,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L298",
+      "source_location": "L306",
       "weight": 1.0
     },
     {
@@ -8764,7 +8764,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L313",
+      "source_location": "L321",
       "weight": 1.0
     },
     {
@@ -8776,7 +8776,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L319",
+      "source_location": "L327",
       "weight": 1.0
     },
     {
@@ -8788,7 +8788,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L324",
+      "source_location": "L332",
       "weight": 1.0
     },
     {
@@ -8800,7 +8800,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L325",
+      "source_location": "L333",
       "weight": 1.0
     },
     {
@@ -8812,7 +8812,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L326",
+      "source_location": "L334",
       "weight": 1.0
     },
     {
@@ -8824,7 +8824,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L328",
+      "source_location": "L336",
       "weight": 1.0
     },
     {
@@ -8872,7 +8872,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L387",
+      "source_location": "L395",
       "weight": 1.0
     },
     {
@@ -8884,7 +8884,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L390",
+      "source_location": "L398",
       "weight": 1.0
     },
     {
@@ -8896,7 +8896,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L257",
+      "source_location": "L270",
       "weight": 1.0
     },
     {
@@ -8932,7 +8932,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L277",
+      "source_location": "L285",
       "weight": 1.0
     },
     {
@@ -8944,7 +8944,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L279",
+      "source_location": "L287",
       "weight": 1.0
     },
     {
@@ -17500,7 +17500,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "app/tidio.py",
-      "source_location": "L457",
+      "source_location": "L465",
       "weight": 1.0
     },
     {
@@ -17512,7 +17512,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "app/tidio.py",
-      "source_location": "L421",
+      "source_location": "L429",
       "weight": 1.0
     },
     {
@@ -20832,7 +20832,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L207",
+      "source_location": "L220",
       "weight": 1.0
     },
     {
@@ -20843,7 +20843,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L219",
+      "source_location": "L232",
       "weight": 1.0
     },
     {
@@ -20854,7 +20854,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L230",
+      "source_location": "L243",
       "weight": 1.0
     },
     {
@@ -20865,7 +20865,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L252",
+      "source_location": "L265",
       "weight": 1.0
     },
     {
@@ -20876,7 +20876,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L263",
+      "source_location": "L276",
       "weight": 1.0
     },
     {
@@ -20887,7 +20887,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L276",
+      "source_location": "L284",
       "weight": 1.0
     },
     {
@@ -20898,7 +20898,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L281",
+      "source_location": "L289",
       "weight": 1.0
     },
     {
@@ -20909,7 +20909,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L286",
+      "source_location": "L294",
       "weight": 1.0
     },
     {
@@ -20920,7 +20920,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L306",
+      "source_location": "L314",
       "weight": 1.0
     },
     {
@@ -20931,7 +20931,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L343",
+      "source_location": "L351",
       "weight": 1.0
     },
     {
@@ -20953,7 +20953,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L361",
+      "source_location": "L369",
       "weight": 1.0
     },
     {
@@ -20964,7 +20964,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L383",
+      "source_location": "L391",
       "weight": 1.0
     },
     {
@@ -20975,7 +20975,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L410",
+      "source_location": "L418",
       "weight": 1.0
     },
     {
@@ -20986,7 +20986,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L421",
+      "source_location": "L429",
       "weight": 1.0
     },
     {
@@ -20997,7 +20997,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L434",
+      "source_location": "L442",
       "weight": 1.0
     },
     {
@@ -21008,7 +21008,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L457",
+      "source_location": "L465",
       "weight": 1.0
     },
     {
@@ -23871,5 +23871,5 @@
       "source_file": ".codex/skills/graphify/SKILL.md"
     }
   ],
-  "built_at_commit": "498235491d00531a5a54fab42c1088d568021a2f"
+  "built_at_commit": "064a10f6b6b6973059fccaef048db7f2ddce12cc"
 }

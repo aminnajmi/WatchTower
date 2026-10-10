@@ -167,7 +167,10 @@ class TidioMonitor:
     async def _login(self, username: str, password: str) -> None:
         assert self._page is not None
         page = self._page
-        await page.goto(TIDIO_INBOX_URL, wait_until="domcontentloaded", timeout=30_000)
+        response = await page.goto(TIDIO_INBOX_URL, wait_until="domcontentloaded", timeout=30_000)
+        # The panel hydrates after the initial document response. Give its
+        # client-side router time to redirect to login or render the inbox.
+        await page.wait_for_timeout(2_000)
         current_path = urlparse(page.url).path
         if "/panel/login" not in current_path:
             email = await self._find_visible_input((
@@ -183,7 +186,9 @@ class TidioMonitor:
                 await self._save_session()
                 return
             if email is None:
-                await self._raise_login_page_state("Tidio did not show an authenticated inbox or login form")
+                await self._raise_login_page_state(
+                    f"Tidio panel did not render login or inbox (HTTP {response.status if response else 'unknown'})"
+                )
         else:
             email = await self._find_visible_input((
                 'input[type="email"]', 'input[autocomplete="username"]',
@@ -259,7 +264,15 @@ class TidioMonitor:
                 pass
         if any(term in body_text for term in ("recaptcha", "captcha", "two-factor", "verification", "verify your identity")):
             raise RuntimeError("Tidio requires additional browser verification")
-        logger.warning("Tidio login form unavailable frame_hosts=%s input_types=%s", sorted(set(frame_hosts))[:8], sorted(set(input_types))[:8])
+        try:
+            ready_state = await self._page.evaluate("() => document.readyState")
+        except Exception:
+            ready_state = "unavailable"
+        logger.warning(
+            "Tidio login form unavailable path=%s ready_state=%s frame_hosts=%s input_types=%s",
+            urlparse(self._page.url).path[:100], ready_state,
+            sorted(set(frame_hosts))[:8], sorted(set(input_types))[:8],
+        )
         raise RuntimeError(fallback)
 
     async def _save_session(self) -> None:
