@@ -146,10 +146,12 @@ def test_tidio_console_diagnostics_redact_error_text(caplog):
         text = "Uncaught TypeError: secret-token-value was rejected"
         location = {"url": "https://code.tidio.co/app.js?token=secret", "lineNumber": 42}
 
-    TidioMonitor._log_console_error(Message())
+    monitor = TidioMonitor()
+    monitor._diagnostic_secrets.add("secret-token-value")
+    monitor._log_console_error(Message())
 
     assert "category=type_error" in caplog.text
-    assert "host=code.tidio.co" in caplog.text
+    assert "source=code.tidio.co/app.js" in caplog.text
     assert "secret-token-value" not in caplog.text
     assert "token=secret" not in caplog.text
 
@@ -164,7 +166,7 @@ def test_tidio_recaptcha_response_logs_path_without_query(caplog):
         status = 200
         headers = {"content-type": "application/javascript", "x-content-type-options": "nosniff"}
 
-    TidioMonitor._log_browser_response(Response())
+    TidioMonitor()._log_browser_response(Response())
 
     assert "host=www.gstatic.com" in caplog.text
     assert "path=/recaptcha/releases/release-id/api.js" in caplog.text

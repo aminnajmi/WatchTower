@@ -45,6 +45,8 @@ class TidioMonitor:
         self._snapshot = TidioSnapshot(False, "not_configured")
         self._last_unassigned_ids: set[str] = set()
         self._retrying = False
+        self._diagnostic_secrets: set[str] = set()
+        self._login_phase = "idle"
 
     @property
     def _session_path(self) -> Path:
@@ -54,15 +56,58 @@ class TidioMonitor:
         page.on("requestfailed", lambda request: self._log_request_failure(request))
         page.on("response", lambda response: self._log_browser_response(response))
         page.on("console", self._log_console_error)
-        page.on("pageerror", lambda error: logger.warning("Tidio browser page error type=%s", type(error).__name__))
+        page.on("pageerror", self._log_page_error)
         page.on("crash", lambda: logger.error("Tidio Chromium page crashed"))
 
+    def _sanitize_diagnostic_text(self, value: str, limit: int = 1200) -> str:
+        text = str(value or "")
+        for secret in sorted(self._diagnostic_secrets, key=len, reverse=True):
+            if secret:
+                text = text.replace(secret, "[REDACTED]")
+        text = re.sub(r"(?i)\bBearer\s+[^\s,;]+", "Bearer [REDACTED]", text)
+        text = re.sub(
+            r"(?i)\b(authorization|set-cookie|cookie|password|passwd|token|secret|api[_-]?key|g-recaptcha-response)\b(\s*[:=]\s*)(?:\"[^\"]*\"|'[^']*'|[^\s,;]+)",
+            r"\1\2[REDACTED]", text,
+        )
+        text = re.sub(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b", "[EMAIL]", text)
+        text = re.sub(r"\b[A-Za-z0-9_-]{80,}\b", "[OPAQUE_VALUE]", text)
+        text = re.sub(r"\b[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b", "[JWT]", text)
+
+        def safe_url(match: re.Match) -> str:
+            raw = match.group(0)
+            suffix = ""
+            while raw and raw[-1] in "),.;]":
+                suffix = raw[-1] + suffix
+                raw = raw[:-1]
+            parsed = urlparse(raw)
+            path = "/".join(
+                "[REDACTED]" if len(part) >= 32 or re.fullmatch(r"[0-9a-fA-F-]{32,36}", part) else part
+                for part in parsed.path.split("/")
+            )
+            return f"{parsed.scheme}://{parsed.hostname or 'unknown'}{path}{suffix}"
+
+        text = re.sub(r"https?://[^\s\"'<>]+", safe_url, text)
+        return text[:limit]
+
     @staticmethod
-    def _log_console_error(message) -> None:
+    def _safe_location(value: str) -> str:
+        parsed = urlparse(value or "")
+        host = parsed.hostname or "unknown"
+        parts = [
+            "[REDACTED]" if len(part) >= 32 or re.fullmatch(r"[0-9a-fA-F-]{32,36}", part) else part
+            for part in parsed.path.split("/")
+        ]
+        return f"{host}{'/'.join(parts)}"[:180]
+
+    def _log_console_error(self, message) -> None:
         if message.type != "error":
             return
         text = message.text.lower()
-        if "typeerror" in text:
+        if "content security policy" in text or "content-security-policy" in text:
+            category = "csp_violation"
+        elif "recaptcha" in text and any(word in text for word in ("error", "failed", "blocked", "undefined")):
+            category = "recaptcha_initialization"
+        elif "typeerror" in text:
             category = "type_error"
         elif "referenceerror" in text:
             category = "reference_error"
@@ -79,9 +124,23 @@ class TidioMonitor:
         else:
             category = "script_error"
         location = message.location or {}
-        host = urlparse(location.get("url", "")).hostname or "unknown"
+        source = self._safe_location(location.get("url", ""))
         line = location.get("lineNumber", 0)
-        logger.warning("Tidio browser console error category=%s host=%s line=%s", category, host, line)
+        column = location.get("columnNumber", 0)
+        safe_text = self._sanitize_diagnostic_text(message.text)
+        logger.warning(
+            "Tidio browser console error category=%s source=%s line=%s column=%s message=%s",
+            category, source, line, column, safe_text,
+        )
+
+    def _log_page_error(self, error) -> None:
+        message = getattr(error, "message", str(error))
+        stack = getattr(error, "stack", "")
+        logger.warning(
+            "Tidio browser JavaScript exception type=%s message=%s stack=%s",
+            type(error).__name__, self._sanitize_diagnostic_text(message),
+            self._sanitize_diagnostic_text(stack, limit=2400),
+        )
 
     @property
     def authentication_interaction_available(self) -> bool:
@@ -89,27 +148,42 @@ class TidioMonitor:
             self._page and not self._page.is_closed()
         )
 
-    @staticmethod
-    def _log_request_failure(request) -> None:
+    def _log_request_failure(self, request) -> None:
         parsed = urlparse(request.url)
         host = parsed.hostname or "unknown"
         kind = "recaptcha" if "recaptcha" in host or "recaptcha" in parsed.path else "request"
+        location = self._safe_location(request.url)
+        failure = self._sanitize_diagnostic_text(request.failure or "unknown", limit=160)
         if kind == "recaptcha":
             logger.warning(
-                "Tidio browser recaptcha request failed host=%s path=%s resource=%s error=%s",
-                host, parsed.path[:120], request.resource_type, (request.failure or "unknown")[:160],
+                "Tidio browser recaptcha request failed location=%s resource=%s error=%s",
+                location, request.resource_type, failure,
             )
         else:
-            logger.warning("Tidio browser request request failed host=%s resource=%s error=%s", host, request.resource_type, (request.failure or "unknown")[:160])
+            logger.warning("Tidio browser request failed location=%s resource=%s error=%s", location, request.resource_type, failure)
 
-    @staticmethod
-    def _log_browser_response(response) -> None:
+    def _log_browser_response(self, response) -> None:
         parsed = urlparse(response.url)
         host = parsed.hostname or "unknown"
         recaptcha_resource = "recaptcha" in host or "recaptcha" in parsed.path.lower()
+        headers = response.headers
+        if response.status >= 400:
+            logger.warning(
+                "Tidio browser HTTP error location=%s resource=%s status=%s",
+                self._safe_location(response.url), response.request.resource_type, response.status,
+            )
+        if response.request.resource_type == "document":
+            policy = headers.get("content-security-policy", "")
+            report_only = headers.get("content-security-policy-report-only", "")
+            directives = sorted({piece.strip().split()[0] for piece in policy.split(";") if piece.strip()})
+            report_directives = sorted({piece.strip().split()[0] for piece in report_only.split(";") if piece.strip()})
+            if directives or report_directives:
+                logger.info(
+                    "Tidio document CSP location=%s enforced_directives=%s report_only_directives=%s",
+                    self._safe_location(response.url), directives[:24], report_directives[:24],
+                )
         if host != "code.tidio.co" and not recaptcha_resource:
             return
-        headers = response.headers
         content_type = headers.get("content-type", "unknown").split(";", 1)[0][:80]
         nosniff = headers.get("x-content-type-options", "absent")[:40]
         logger.warning(
@@ -144,6 +218,8 @@ class TidioMonitor:
 
         async with self._lock:
             await self._close_browser()
+            self._diagnostic_secrets = {value for value in (username, password) if value}
+            self._login_phase = "browser_setup"
             self._snapshot = TidioSnapshot(False, "connecting")
             await self._save_credentials(username, password, "connecting", None)
             await self._set_enabled(True)
@@ -155,7 +231,10 @@ class TidioMonitor:
                 self._start_monitor_task()
                 return self._snapshot
             except Exception as exc:
-                logger.warning("Tidio login failed (%s)", type(exc).__name__)
+                logger.warning(
+                    "Tidio login failed phase=%s type=%s message=%s",
+                    self._login_phase, type(exc).__name__, self._sanitize_diagnostic_text(str(exc)),
+                )
                 verification = "verification" in str(exc).lower()
                 status = "authentication_required" if verification else "authentication_failed"
                 await self._save_credentials(username, password, status, type(exc).__name__)
@@ -187,6 +266,7 @@ class TidioMonitor:
             elif action == "type":
                 if not text or len(text) > 64:
                     raise ValueError("Text must contain between 1 and 64 characters")
+                self._diagnostic_secrets.add(text)
                 await page.keyboard.type(text, delay=40)
             elif action == "key":
                 if key not in {"Enter", "Tab", "Backspace", "Space", "Escape", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"}:
@@ -291,17 +371,121 @@ class TidioMonitor:
                 storage_state = json.loads(self._fernet().decrypt(self._session_path.read_bytes()))
         except Exception as exc:
             logger.warning("Tidio saved browser session unavailable type=%s", type(exc).__name__)
-        self._context = await self._browser.new_context(viewport={"width": 1440, "height": 1000}, locale="en-US", storage_state=storage_state)
+        self._context = await self._browser.new_context(
+            viewport={"width": 1440, "height": 1000},
+            locale="en-US",
+            java_script_enabled=True,
+            ignore_https_errors=False,
+            storage_state=storage_state,
+        )
         self._page = await self._context.new_page()
         self._diagnose_page(self._page)
+        logger.info(
+            "Tidio browser context configured browser_version=%s viewport=1440x1000 locale=en-US javascript=true "
+            "ignore_https_errors=false storage_state_restored=%s",
+            self._browser.version, storage_state is not None,
+        )
+
+    async def _log_login_phase(self, phase: str, http_status: int | None = None) -> None:
+        assert self._page is not None
+        try:
+            state = await self._page.evaluate("""() => {
+                const body = (document.body?.innerText || '').toLowerCase();
+                return {
+                    readyState: document.readyState,
+                    recaptchaWarningVisible: body.includes('your browser is blocking the recaptcha script'),
+                    loginFormVisible: !!document.querySelector('input[type="email"], input[type="password"], input[autocomplete="username"]'),
+                };
+            }""")
+        except Exception as exc:
+            state = {"diagnosticError": type(exc).__name__}
+        logger.info(
+            "Tidio login phase=%s path=%s http_status=%s page_state=%s",
+            phase, self._safe_location(self._page.url), http_status or "unknown", state,
+        )
+
+    async def _log_recaptcha_diagnostics(self, phase: str, *, wait_for_ready: bool) -> None:
+        """Inspect API availability and readiness only; never call execute() or read CAPTCHA tokens."""
+        assert self._page is not None
+        try:
+            state = await self._page.evaluate("""async (waitForReady) => {
+                const g = window.grecaptcha;
+                let readyCallbackCompleted = false;
+                if (waitForReady && g && typeof g.ready === 'function') {
+                    readyCallbackCompleted = await Promise.race([
+                        new Promise(resolve => {
+                            try { g.ready(() => resolve(true)); }
+                            catch (_) { resolve(false); }
+                        }),
+                        new Promise(resolve => setTimeout(() => resolve(false), 1500)),
+                    ]);
+                }
+                const scripts = Array.from(document.scripts)
+                    .filter(script => /recaptcha/i.test(script.src || ''))
+                    .slice(0, 12)
+                    .map(script => {
+                        try {
+                            const url = new URL(script.src);
+                            return `${url.hostname}${url.pathname.slice(0, 100)}`;
+                        } catch (_) { return 'invalid-script-url'; }
+                    });
+                const policies = Array.from(document.querySelectorAll('meta[http-equiv]'))
+                    .filter(meta => meta.httpEquiv.toLowerCase() === 'content-security-policy')
+                    .flatMap(meta => (meta.content || '').split(';').map(part => part.trim().split(/\\s+/)[0]))
+                    .filter(Boolean);
+                let localStorageAvailable = false, localStorageKeys = -1;
+                let sessionStorageAvailable = false, sessionStorageKeys = -1;
+                try { localStorageAvailable = true; localStorageKeys = localStorage.length; } catch (_) {}
+                try { sessionStorageAvailable = true; sessionStorageKeys = sessionStorage.length; } catch (_) {}
+                return {
+                    readyState: document.readyState,
+                    grecaptchaPresent: !!g,
+                    readyFunction: !!g && typeof g.ready === 'function',
+                    renderFunction: !!g && typeof g.render === 'function',
+                    executeFunction: !!g && typeof g.execute === 'function',
+                    enterprisePresent: !!g && !!g.enterprise,
+                    readyCallbackCompleted,
+                    recaptchaScriptTags: scripts,
+                    cspMetaDirectives: [...new Set(policies)].slice(0, 24),
+                    localStorageAvailable, localStorageKeys,
+                    sessionStorageAvailable, sessionStorageKeys,
+                    recaptchaWarningVisible: (document.body?.innerText || '').toLowerCase().includes('your browser is blocking the recaptcha script'),
+                };
+            }""", wait_for_ready)
+        except Exception as exc:
+            state = {"diagnosticError": type(exc).__name__}
+
+        cookie_counts = {"tidio": 0, "google": 0, "gstatic": 0}
+        if self._context:
+            try:
+                cookies = await self._context.cookies([
+                    "https://www.tidio.com", "https://www.google.com", "https://www.gstatic.com",
+                ])
+                for cookie in cookies:
+                    domain = str(cookie.get("domain", "")).lstrip(".").lower()
+                    if domain == "tidio.com" or domain.endswith(".tidio.com"):
+                        cookie_counts["tidio"] += 1
+                    elif domain == "google.com" or domain.endswith(".google.com"):
+                        cookie_counts["google"] += 1
+                    elif domain == "gstatic.com" or domain.endswith(".gstatic.com"):
+                        cookie_counts["gstatic"] += 1
+            except Exception as exc:
+                cookie_counts["error"] = type(exc).__name__
+        logger.info(
+            "Tidio reCAPTCHA diagnostics phase=%s path=%s state=%s cookie_counts=%s",
+            phase, self._safe_location(self._page.url), state, cookie_counts,
+        )
 
     async def _login(self, username: str, password: str) -> None:
         assert self._page is not None
         page = self._page
+        self._login_phase = "open_inbox_for_login"
         response = await page.goto(TIDIO_INBOX_URL, wait_until="domcontentloaded", timeout=30_000)
         # The panel hydrates after the initial document response. Give its
         # client-side router time to redirect to login or render the inbox.
         await page.wait_for_timeout(2_000)
+        await self._log_login_phase("login_page_loaded", response.status if response else None)
+        await self._log_recaptcha_diagnostics("login_page_loaded", wait_for_ready=True)
         current_path = urlparse(page.url).path
         if "/panel/login" not in current_path:
             email = await self._find_visible_input((
@@ -331,6 +515,7 @@ class TidioMonitor:
             ))
         if email is None:
             await self._raise_login_page_state("Tidio username field was not found")
+        self._login_phase = "fill_credentials"
         await email.fill(username)
 
         password_field = await self._find_visible_input(('input[type="password"]',))
@@ -340,19 +525,27 @@ class TidioMonitor:
         if password_field is None:
             await self._raise_login_page_state("Tidio password field was not found")
         await password_field.fill(password)
+        await self._log_login_phase("before_login_submit")
+        await self._log_recaptcha_diagnostics("before_login_submit", wait_for_ready=True)
+        self._login_phase = "submit_credentials"
         await self._click_login_action()
+        self._login_phase = "after_login_submit"
         await page.wait_for_timeout(2_000)
+        await self._log_login_phase("after_login_submit")
+        await self._log_recaptcha_diagnostics("after_login_submit", wait_for_ready=False)
         try:
             await page.wait_for_load_state("networkidle", timeout=15_000)
         except Exception:
             pass
         if "/panel/login" in urlparse(page.url).path:
             if await self._verification_required():
+                self._login_phase = "verification_required"
                 raise RuntimeError("Tidio requires additional browser verification")
             body = (await page.locator("body").inner_text()).lower()
             if any(term in body for term in ("incorrect password", "invalid credentials", "email or password is incorrect", "wrong password")):
                 raise RuntimeError("Tidio rejected the supplied credentials")
             raise RuntimeError("Tidio sign-in did not complete; credentials were not confirmed")
+        self._login_phase = "open_authenticated_inbox"
         if not await self._open_inbox():
             await self._raise_login_page_state("Tidio inbox did not render after sign-in")
         await self._save_session()
@@ -484,7 +677,7 @@ class TidioMonitor:
         frame_hosts = sorted({urlparse(frame.url).hostname or "about:blank" for frame in page.frames})[:8]
         logger.warning(
             "Tidio inbox did not render path=%s ready_state=%s body_chars=%s login_input=%s frame_hosts=%s",
-            urlparse(page.url).path[:100], ready_state, body_chars, has_login_input, frame_hosts,
+            self._safe_location(page.url), ready_state, body_chars, has_login_input, frame_hosts,
         )
 
     def _start_monitor_task(self) -> None:
@@ -666,6 +859,8 @@ class TidioMonitor:
                 pass
         self._playwright = None
         self._retrying = False
+        self._diagnostic_secrets.clear()
+        self._login_phase = "idle"
 
     @staticmethod
     def _public_error(exc: Exception) -> str:

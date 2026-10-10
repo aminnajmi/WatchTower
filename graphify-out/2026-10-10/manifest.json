@@ -372,9 +372,9 @@
     "semantic_hash": ""
   },
   "app/tidio.py": {
-    "mtime": 1791645914.3448043,
-    "seen": 1791645923.901974,
-    "ast_hash": "07643af711add4d97d1451b4042a2514",
+    "mtime": 1791646189.7091372,
+    "seen": 1791646202.9705222,
+    "ast_hash": "131003f4b85c86339a5ee230be5a8768",
     "semantic_hash": ""
   },
   "tests/test_notifications_center.py": {
@@ -384,9 +384,9 @@
     "semantic_hash": ""
   },
   "tests/test_tidio.py": {
-    "mtime": 1791645917.3459916,
-    "seen": 1791645923.9019918,
-    "ast_hash": "fbc6d3833a058e9554ca09da03731588",
+    "mtime": 1791646195.2714574,
+    "seen": 1791646202.970541,
+    "ast_hash": "dc1f2dfd82e60b768e0de21ef1dda150",
     "semantic_hash": ""
   },
   "templates/tidio.html": {

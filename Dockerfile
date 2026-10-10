@@ -18,6 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt \
     && rm -rf /var/lib/apt/lists/*
 
 COPY app ./app
+COPY scripts ./scripts
 COPY static ./static
 COPY templates ./templates
 
@@ -26,6 +27,7 @@ COPY templates ./templates
 RUN test -s /app/static/js/app.js \
     && test -s /app/static/css/app.css \
     && test -s /app/static/watchtower.svg \
+    && test -s /app/scripts/diagnose_tidio_recaptcha.py \
     && test -s /app/templates/login.html \
     && test -s /app/templates/base.html
 
