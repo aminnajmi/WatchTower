@@ -509,7 +509,15 @@
     const count = $('#tidio-unassigned-count');
     const lastCheck = $('#tidio-last-check');
     const lastError = $('#tidio-last-error');
+    const authOpenButton = $('#tidio-auth-open');
+    const authDialog = $('#tidio-auth-dialog');
+    const authScreen = $('#tidio-auth-screen');
+    const authMessage = $('#tidio-auth-message');
+    const authText = $('#tidio-auth-text');
     let timer = null;
+    let authScreenTimer = null;
+    let authScreenBusy = false;
+    let authDismissed = false;
 
     const statusLabel = status => ({
       connected: 'Connected', connecting: 'Connecting…', reconnecting: 'Reconnecting…',
@@ -528,9 +536,81 @@
       lastCheck.textContent = data.last_checked_at ? dateText(data.last_checked_at) : '—';
       lastError.textContent = data.last_error || '—';
       disconnectButton.hidden = !data.configured || data.status === 'disconnected';
+      authOpenButton.hidden = !data.authentication_interaction_available;
+      if (data.authentication_interaction_available && !authDialog.open && !authDismissed) authDialog.showModal();
+      if (!data.authentication_interaction_available && authDialog.open) authDialog.close();
+      if (data.authentication_interaction_available && authDialog.open) startAuthScreenRefresh();
+      else stopAuthScreenRefresh();
       connectButton.textContent = 'Connect to Tidio';
       password.required = true;
     }
+
+    async function refreshAuthScreen() {
+      if (authScreenBusy || !authDialog.open) return;
+      authScreenBusy = true;
+      try {
+        const result = await api('/api/v1/tidio/auth-screen');
+        authScreen.src = result.image;
+        authMessage.textContent = 'Click the Tidio browser view to complete verification. Your actions are sent only to this WatchTower session.';
+      } catch (error) {
+        authMessage.textContent = error.message;
+      } finally {
+        authScreenBusy = false;
+      }
+    }
+
+    function startAuthScreenRefresh() {
+      if (authScreenTimer) return;
+      refreshAuthScreen();
+      authScreenTimer = window.setInterval(refreshAuthScreen, 1200);
+    }
+
+    function stopAuthScreenRefresh() {
+      if (authScreenTimer) window.clearInterval(authScreenTimer);
+      authScreenTimer = null;
+    }
+
+    async function sendAuthAction(payload) {
+      await api('/api/v1/tidio/auth-action', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+      });
+      await refreshAuthScreen();
+    }
+
+    authOpenButton.addEventListener('click', () => {
+      authDismissed = false;
+      if (!authDialog.open) authDialog.showModal();
+      startAuthScreenRefresh();
+    });
+    $('#tidio-auth-close').addEventListener('click', () => { authDismissed = true; authDialog.close(); });
+    authDialog.addEventListener('close', () => { authDismissed = true; stopAuthScreenRefresh(); });
+    authScreen.addEventListener('click', event => {
+      const rect = authScreen.getBoundingClientRect();
+      const x = (event.clientX - rect.left) * authScreen.naturalWidth / rect.width;
+      const y = (event.clientY - rect.top) * authScreen.naturalHeight / rect.height;
+      sendAuthAction({ action: 'click', x, y }).catch(error => { authMessage.textContent = error.message; });
+    });
+    $('#tidio-auth-scroll-up').addEventListener('click', () => {
+      sendAuthAction({ action: 'wheel', delta_y: -450 }).catch(error => { authMessage.textContent = error.message; });
+    });
+    $('#tidio-auth-scroll-down').addEventListener('click', () => {
+      sendAuthAction({ action: 'wheel', delta_y: 450 }).catch(error => { authMessage.textContent = error.message; });
+    });
+    $('#tidio-auth-send-text').addEventListener('click', async () => {
+      if (!authText.value) return;
+      try { await sendAuthAction({ action: 'type', text: authText.value }); authText.value = ''; }
+      catch (error) { authMessage.textContent = error.message; }
+    });
+    $('#tidio-auth-enter').addEventListener('click', () => {
+      sendAuthAction({ action: 'key', key: 'Enter' }).catch(error => { authMessage.textContent = error.message; });
+    });
+    $('#tidio-auth-finish').addEventListener('click', async () => {
+      try {
+        const result = await api('/api/v1/tidio/auth-finish', { method: 'POST' });
+        renderStatus(result);
+        authMessage.textContent = 'Tidio connected.';
+      } catch (error) { authMessage.textContent = error.message; await refresh(); }
+    });
 
     async function refresh() {
       try { renderStatus(await api('/api/v1/tidio')); }
@@ -539,6 +619,7 @@
 
     form.addEventListener('submit', async event => {
       event.preventDefault();
+      authDismissed = false;
       errorBox.hidden = true;
       connectButton.disabled = true;
       connectButton.textContent = 'Connecting…';

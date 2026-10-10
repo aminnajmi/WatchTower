@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import base64
 import hashlib
 import logging
 import json
@@ -55,6 +56,12 @@ class TidioMonitor:
         page.on("console", lambda message: logger.warning("Tidio browser console error type=%s", message.type) if message.type == "error" else None)
         page.on("pageerror", lambda error: logger.warning("Tidio browser page error type=%s", type(error).__name__))
         page.on("crash", lambda: logger.error("Tidio Chromium page crashed"))
+
+    @property
+    def authentication_interaction_available(self) -> bool:
+        return self._snapshot.status == "authentication_required" and bool(
+            self._page and not self._page.is_closed()
+        )
 
     @staticmethod
     def _log_request_failure(request) -> None:
@@ -117,10 +124,74 @@ class TidioMonitor:
                 verification = "verification" in str(exc).lower()
                 status = "authentication_required" if verification else "authentication_failed"
                 await self._save_credentials(username, password, status, type(exc).__name__)
-                await self._set_enabled(False)
+                # Keep auth-required connections enabled so startup restore can
+                # reopen the browser and present the challenge after a restart.
+                await self._set_enabled(verification)
                 self._snapshot = TidioSnapshot(False, status, error=("Authentication Required: complete Tidio verification, then reconnect" if verification else self._public_error(exc)))
-                await self._close_browser()
+                if not verification:
+                    await self._close_browser()
                 return self._snapshot
+
+    async def authentication_screenshot(self) -> str:
+        if not self.authentication_interaction_available or not self._page:
+            raise RuntimeError("No interactive Tidio verification session is active")
+        return base64.b64encode(await self._page.screenshot(type="jpeg", quality=65)).decode("ascii")
+
+    async def authentication_action(
+        self, action: str, *, x: float | None = None, y: float | None = None,
+        text: str | None = None, key: str | None = None, delta_y: float | None = None,
+    ) -> None:
+        async with self._lock:
+            if not self.authentication_interaction_available or not self._page:
+                raise RuntimeError("No interactive Tidio verification session is active")
+            page = self._page
+            if action == "click":
+                if x is None or y is None or not (0 <= x <= 1440 and 0 <= y <= 1000):
+                    raise ValueError("Click coordinates are outside the Tidio browser view")
+                await page.mouse.click(x, y)
+            elif action == "type":
+                if not text or len(text) > 64:
+                    raise ValueError("Text must contain between 1 and 64 characters")
+                await page.keyboard.type(text, delay=40)
+            elif action == "key":
+                if key not in {"Enter", "Tab", "Backspace", "Space", "Escape", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"}:
+                    raise ValueError("Unsupported keyboard key")
+                await page.keyboard.press(key)
+            elif action == "wheel":
+                if delta_y is None or not (-600 <= delta_y <= 600):
+                    raise ValueError("Scroll amount is outside the permitted range")
+                await page.mouse.wheel(0, delta_y)
+            else:
+                raise ValueError("Unsupported browser action")
+
+    async def finish_authentication(self) -> TidioSnapshot:
+        async with self._lock:
+            if not self.authentication_interaction_available or not self._page:
+                raise RuntimeError("No interactive Tidio verification session is active")
+            await self._open_inbox()
+            if "/panel/login" in urlparse(self._page.url).path:
+                self._snapshot = TidioSnapshot(False, "authentication_required", error="Authentication Required: finish Tidio verification in the browser view")
+                return self._snapshot
+            body = (await self._page.locator("body").inner_text(timeout=10_000)).lower()
+            if "unassigned" not in body:
+                self._snapshot = TidioSnapshot(False, "authentication_required", error="Tidio verification is not complete; the inbox has not loaded")
+                return self._snapshot
+            db = SessionLocal()
+            try:
+                row = db.get(TidioConnection, 1)
+                if not row or not row.username or not row.password_encrypted:
+                    raise RuntimeError("Stored Tidio credentials are unavailable")
+                username = row.username
+                password = self.decrypt_password(row.password_encrypted)
+            finally:
+                db.close()
+            now = datetime.utcnow()
+            await self._save_credentials(username, password, "connected", None)
+            await self._set_enabled(True)
+            await self._save_session()
+            self._snapshot = TidioSnapshot(True, "connected", last_checked_at=now)
+            self._start_monitor_task()
+            return self._snapshot
 
     async def shutdown(self) -> None:
         self._stop_monitor_task()
@@ -131,6 +202,10 @@ class TidioMonitor:
         async with self._lock:
             self._stop_monitor_task()
             await self._close_browser()
+            try:
+                self._session_path.unlink(missing_ok=True)
+            except OSError as exc:
+                logger.warning("Tidio saved browser session could not be removed type=%s", type(exc).__name__)
             db = SessionLocal()
             try:
                 row = db.get(TidioConnection, 1)
@@ -168,7 +243,7 @@ class TidioMonitor:
             self._playwright = await async_playwright().start()
         if self._browser is None:
             self._browser = await self._playwright.chromium.launch(
-                headless=True,
+                headless=False,
                 ignore_default_args=["--disable-dev-shm-usage"],
             )
         storage_state = None
@@ -232,9 +307,9 @@ class TidioMonitor:
         except Exception:
             pass
         if "/panel/login" in urlparse(page.url).path:
-            body = (await page.locator("body").inner_text()).lower()
-            if any(term in body for term in ("recaptcha", "captcha", "two-factor", "verification", "authentication required", "verify you are human")):
+            if await self._verification_required():
                 raise RuntimeError("Tidio requires additional browser verification")
+            body = (await page.locator("body").inner_text()).lower()
             if any(term in body for term in ("incorrect password", "invalid credentials", "email or password is incorrect", "wrong password")):
                 raise RuntimeError("Tidio rejected the supplied credentials")
             raise RuntimeError("Tidio sign-in did not complete; credentials were not confirmed")
@@ -281,7 +356,7 @@ class TidioMonitor:
                 ))
             except Exception:
                 pass
-        if any(term in body_text for term in ("recaptcha", "captcha", "two-factor", "verification", "verify your identity")):
+        if await self._verification_required(body_text):
             raise RuntimeError("Tidio requires additional browser verification")
         try:
             ready_state = await self._page.evaluate("() => document.readyState")
@@ -293,6 +368,23 @@ class TidioMonitor:
             sorted(set(frame_hosts))[:8], sorted(set(input_types))[:8],
         )
         raise RuntimeError(fallback)
+
+    async def _verification_required(self, existing_text: str = "") -> bool:
+        assert self._page is not None
+        markers = ("recaptcha", "captcha", "two-factor", "verification", "verify your identity", "verify you are human")
+        if any(marker in existing_text for marker in markers):
+            return True
+        for frame in self._page.frames:
+            frame_url = frame.url.lower()
+            if "recaptcha" in frame_url or "challenge" in frame_url:
+                return True
+            try:
+                text = (await frame.locator("body").inner_text(timeout=1_000)).lower()
+            except Exception:
+                continue
+            if any(marker in text for marker in markers):
+                return True
+        return False
 
     async def _save_session(self) -> None:
         if not self._context:

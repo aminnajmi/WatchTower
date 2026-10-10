@@ -10,6 +10,8 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt \
     && python -m playwright install --with-deps chromium \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends xvfb xauth \
     && rm -rf /var/lib/apt/lists/*
 
 COPY app ./app
@@ -41,4 +43,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
   CMD python -c "import os,urllib.request; host=os.environ.get('ALLOWED_HOSTS','127.0.0.1').split(',')[0].strip(); paths=('/health','/static/css/app.css','/static/js/app.js','/static/watchtower.svg'); [urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:8000'+path,headers={'Host':host}),timeout=3).read() for path in paths]" || exit 1
 
 # Keep one process: each Uvicorn worker would create its own APScheduler.
-CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1 --no-access-log --proxy-headers --forwarded-allow-ips \"${FORWARDED_ALLOW_IPS:-127.0.0.1}\""]
+CMD ["sh", "-c", "exec xvfb-run -a -s '-screen 0 1600x1200x24' uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1 --no-access-log --proxy-headers --forwarded-allow-ips \"${FORWARDED_ALLOW_IPS:-127.0.0.1}\""]

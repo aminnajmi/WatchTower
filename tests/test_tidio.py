@@ -56,3 +56,31 @@ def test_tidio_verification_error_surfaces_authentication_required(monkeypatch):
     assert snapshot.connected is False
     assert snapshot.status == "authentication_required"
     assert snapshot.error.startswith("Authentication Required:")
+
+
+def test_tidio_keeps_browser_open_for_manual_verification(monkeypatch):
+    monitor = TidioMonitor()
+
+    class Page:
+        @staticmethod
+        def is_closed():
+            return False
+
+    async def fail_login(*_args):
+        raise RuntimeError("Tidio requires additional browser verification")
+
+    async def noop(*_args):
+        return None
+
+    close_browser = AsyncMock()
+    monitor._page = Page()
+    monkeypatch.setattr(monitor, "_close_browser", close_browser)
+    monkeypatch.setattr(monitor, "_ensure_browser", noop)
+    monkeypatch.setattr(monitor, "_login", fail_login)
+    monkeypatch.setattr(monitor, "_save_credentials", noop)
+    monkeypatch.setattr(monitor, "_set_enabled", noop)
+
+    snapshot = asyncio.run(monitor.connect("admin@example.com", "password"))
+    assert snapshot.status == "authentication_required"
+    assert monitor.authentication_interaction_available
+    assert close_browser.await_count == 1  # Startup cleanup only; keep challenge browser open.

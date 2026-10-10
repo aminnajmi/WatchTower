@@ -29,10 +29,26 @@
     <div class="settings-row"><div><strong>Last check</strong><span>Most recent successful check</span></div><strong id="tidio-last-check">—</strong></div>
     <div class="settings-row"><div><strong>Polling interval</strong><span>Server-side monitoring</span></div><strong>3 seconds</strong></div>
     <div class="settings-row"><div><strong>Last error</strong><span>Authentication/session errors</span></div><strong id="tidio-last-error">—</strong></div>
+    <button class="button button-primary" id="tidio-auth-open" type="button" hidden>Complete Tidio verification</button>
   </article>
 </section>
 
+<dialog id="tidio-auth-dialog" class="user-dialog tidio-auth-dialog" aria-labelledby="tidio-auth-title">
+  <div class="panel-heading"><div><h2 id="tidio-auth-title">Authentication Required</h2><p>Complete Tidio’s CAPTCHA or verification in this secure admin-only browser view.</p></div><button class="icon-button" id="tidio-auth-close" type="button" aria-label="Close">×</button></div>
+  <p id="tidio-auth-message" class="form-error" role="status">Use the browser view to complete verification.</p>
+  <div class="tidio-auth-screen-wrap"><img id="tidio-auth-screen" alt="Tidio verification browser screen" width="1440" height="1000"></div>
+  <div class="tidio-auth-controls">
+    <label for="tidio-auth-text">Verification text, if requested</label>
+    <input id="tidio-auth-text" type="text" maxlength="64" autocomplete="one-time-code">
+    <button class="button button-subtle" id="tidio-auth-scroll-up" type="button">Scroll up</button>
+    <button class="button button-subtle" id="tidio-auth-scroll-down" type="button">Scroll down</button>
+    <button class="button button-subtle" id="tidio-auth-send-text" type="button">Type into Tidio</button>
+    <button class="button button-subtle" id="tidio-auth-enter" type="button">Press Enter</button>
+    <button class="button button-primary" id="tidio-auth-finish" type="button">Check connection</button>
+  </div>
+</dialog>
+
 <section class="panel settings-wide tidio-note-panel">
-  <div class="panel-heading"><div><h2>Automatic reconnect</h2><p>If the Tidio browser session expires, WatchTower automatically signs in again using the saved encrypted credentials. Manual action is only required if Tidio rejects the credentials or requires an additional verification step.</p></div></div>
+  <div class="panel-heading"><div><h2>Session recovery</h2><p>WatchTower reuses the encrypted browser session and reconnects with the saved encrypted credentials. If Tidio requires human verification, an administrator can complete it in the secure browser view.</p></div></div>
 </section>
 {% endblock %}
