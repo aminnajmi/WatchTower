@@ -3,11 +3,12 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import logging
+import json
+import os
 import re
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-import shutil
 from urllib.parse import urlparse
 
 from cryptography.fernet import Fernet, InvalidToken
@@ -42,6 +43,24 @@ class TidioMonitor:
         self._stop_event = asyncio.Event()
         self._snapshot = TidioSnapshot(False, "not_configured")
         self._last_unassigned_ids: set[str] = set()
+        self._retrying = False
+
+    @property
+    def _session_path(self) -> Path:
+        return Path(os.environ.get("TIDIO_SESSION_PATH", "/app/data/tidio-session.enc"))
+
+    def _diagnose_page(self, page: Page) -> None:
+        page.on("requestfailed", lambda request: self._log_request_failure(request))
+        page.on("console", lambda message: logger.warning("Tidio browser console error type=%s", message.type) if message.type == "error" else None)
+        page.on("pageerror", lambda error: logger.warning("Tidio browser page error type=%s", type(error).__name__))
+        page.on("crash", lambda: logger.error("Tidio Chromium page crashed"))
+
+    @staticmethod
+    def _log_request_failure(request) -> None:
+        parsed = urlparse(request.url)
+        host = parsed.hostname or "unknown"
+        kind = "recaptcha" if "recaptcha" in host or "recaptcha" in parsed.path else "request"
+        logger.warning("Tidio browser %s request failed host=%s resource=%s error=%s", kind, host, request.resource_type, (request.failure or "unknown")[:160])
 
     @property
     def snapshot(self) -> TidioSnapshot:
@@ -81,9 +100,11 @@ class TidioMonitor:
                 return self._snapshot
             except Exception as exc:
                 logger.warning("Tidio login failed (%s)", type(exc).__name__)
-                await self._save_credentials(username, password, "authentication_failed", type(exc).__name__)
+                verification = "verification" in str(exc).lower()
+                status = "authentication_required" if verification else "authentication_failed"
+                await self._save_credentials(username, password, status, type(exc).__name__)
                 await self._set_enabled(False)
-                self._snapshot = TidioSnapshot(False, "authentication_failed", error=self._public_error(exc))
+                self._snapshot = TidioSnapshot(False, status, error=("Authentication Required: complete Tidio verification, then reconnect" if verification else self._public_error(exc)))
                 await self._close_browser()
                 return self._snapshot
 
@@ -132,24 +153,25 @@ class TidioMonitor:
         if self._playwright is None:
             self._playwright = await async_playwright().start()
         if self._browser is None:
-            launch_kwargs = {
-                "headless": True,
-                "args": ["--disable-dev-shm-usage", "--no-sandbox"],
-            }
-            system_chromium = shutil.which("chromium") or shutil.which("chromium-browser") or shutil.which("google-chrome")
-            if system_chromium:
-                launch_kwargs["executable_path"] = system_chromium
-            self._browser = await self._playwright.chromium.launch(**launch_kwargs)
-        self._context = await self._browser.new_context(
-            viewport={"width": 1440, "height": 1000},
-            locale="en-US",
-        )
+            self._browser = await self._playwright.chromium.launch(headless=True, args=["--disable-dev-shm-usage"])
+        storage_state = None
+        try:
+            if self._session_path.is_file():
+                storage_state = json.loads(self._fernet().decrypt(self._session_path.read_bytes()))
+        except Exception as exc:
+            logger.warning("Tidio saved browser session unavailable type=%s", type(exc).__name__)
+        self._context = await self._browser.new_context(viewport={"width": 1440, "height": 1000}, locale="en-US", storage_state=storage_state)
         self._page = await self._context.new_page()
+        self._diagnose_page(self._page)
 
     async def _login(self, username: str, password: str) -> None:
         assert self._page is not None
         page = self._page
         await page.goto(TIDIO_LOGIN_URL, wait_until="domcontentloaded", timeout=30_000)
+        if "/panel/login" not in urlparse(page.url).path:
+            await self._open_inbox()
+            await self._save_session()
+            return
         await page.locator('input[type="email"]').first.fill(username)
         await page.locator('input[type="password"]').first.fill(password)
         await page.get_by_role("button", name=re.compile(r"log in", re.I)).first.click()
@@ -160,10 +182,22 @@ class TidioMonitor:
             pass
         if "/panel/login" in urlparse(page.url).path:
             body = (await page.locator("body").inner_text()).lower()
-            if "recaptcha" in body or "two-factor" in body or "verification" in body:
+            if "recaptcha" in body or "two-factor" in body or "verification" in body or "authentication required" in body:
                 raise RuntimeError("Tidio requires additional browser verification")
             raise RuntimeError("Tidio rejected the supplied credentials")
         await self._open_inbox()
+        await self._save_session()
+
+    async def _save_session(self) -> None:
+        if not self._context:
+            return
+        try:
+            self._session_path.parent.mkdir(parents=True, exist_ok=True)
+            encrypted = self._fernet().encrypt(json.dumps(await self._context.storage_state()).encode("utf-8"))
+            self._session_path.write_bytes(encrypted)
+            self._session_path.chmod(0o600)
+        except Exception as exc:
+            logger.warning("Tidio browser session could not be persisted type=%s", type(exc).__name__)
 
     async def _open_inbox(self) -> None:
         assert self._page is not None
@@ -197,7 +231,12 @@ class TidioMonitor:
             except Exception as exc:
                 logger.warning("Tidio monitor check failed (%s)", type(exc).__name__)
                 self._snapshot = TidioSnapshot(False, "session_expired", error=self._public_error(exc))
-                await self._reconnect()
+                if not self._retrying:
+                    self._retrying = True
+                    try:
+                        await self._reconnect()
+                    finally:
+                        self._retrying = False
             try:
                 await asyncio.wait_for(self._stop_event.wait(), timeout=POLL_SECONDS)
             except asyncio.TimeoutError:
@@ -232,7 +271,13 @@ class TidioMonitor:
             except Exception as exc:
                 logger.warning("Tidio reconnect failed (%s)", type(exc).__name__)
                 await self._save_credentials(username, password, "reconnecting", type(exc).__name__)
+                if "verification" in str(exc).lower():
+                    self._snapshot = TidioSnapshot(False, "authentication_required", error="Authentication Required: complete Tidio verification, then reconnect")
+                    await self._save_credentials(username, password, "authentication_required", "additional verification required")
+                    self._stop_event.set()
+                    return
         self._snapshot = TidioSnapshot(False, "authentication_failed", error="Tidio session could not be restored")
+        self._stop_event.set()
 
     async def _check_once(self) -> None:
         if not self._page or self._page.is_closed():
@@ -345,6 +390,7 @@ class TidioMonitor:
             except Exception:
                 pass
         self._playwright = None
+        self._retrying = False
 
     @staticmethod
     def _public_error(exc: Exception) -> str:

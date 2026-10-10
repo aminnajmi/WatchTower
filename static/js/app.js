@@ -513,11 +513,11 @@
 
     const statusLabel = status => ({
       connected: 'Connected', connecting: 'Connecting…', reconnecting: 'Reconnecting…',
-      authentication_failed: 'Authentication failed', session_expired: 'Session expired',
+      authentication_failed: 'Authentication failed', authentication_required: 'Authentication Required', session_expired: 'Session expired',
       disconnected: 'Disconnected', not_configured: 'Not configured', credentials_unavailable: 'Credentials unavailable'
     }[status] || status || 'Unknown');
 
-    const statusKind = status => status === 'connected' ? 'good' : (['authentication_failed', 'session_expired'].includes(status) ? 'bad' : 'unknown');
+    const statusKind = status => status === 'connected' ? 'good' : (['authentication_failed', 'authentication_required', 'session_expired'].includes(status) ? 'bad' : 'unknown');
 
     function renderStatus(data) {
       const label = statusLabel(data.status);
