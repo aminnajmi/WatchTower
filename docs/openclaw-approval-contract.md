@@ -1,12 +1,13 @@
 # OpenClaw task approval contract
 
-WatchTower approves and authorizes tasks. It never runs them. OpenClaw remains
-responsible for fetching, verifying, and executing an approved task.
+WatchTower approves and authorizes tasks. It never executes them. The contract
+below matches `/opt/watchtower-approval/execution_core.py` supplied for review.
 
-## Create a request
+## Create and retrieve an approval
 
-Use the existing authenticated OpenClaw notification endpoint. The API key is
-sent as a bearer token; do not send a client-computed digest or decision fields.
+Create through the existing authenticated OpenClaw notification endpoint. The
+server ignores display prose and metadata for task-bound requests and builds a
+safe human-readable notification from the specification.
 
 ```http
 POST /api/v1/notifications
@@ -17,118 +18,108 @@ Content-Type: application/json
 ```json
 {
   "source": "openclaw",
-  "title": "Inspect the public website",
-  "message": "Review the public pages within the requested scope.",
-  "severity": "warning",
+  "title": "Inspect website",
+  "message": "Display-only agent text",
   "requires_approval": true,
-  "task_specification": {
-    "schema_version": 1,
+  "task_spec": {
+    "version": 1,
     "task_type": "public_website_inspection",
-    "target": "https://operavps.com",
-    "parameters": {"scope": "public_pages", "max_pages": 5}
+    "url": "https://example.org/"
   }
 }
 ```
 
-Successful task-bound responses contain the stored specification,
-`task_schema_version`, `task_spec_sha256`, and a stable `action_id`. The
-approval endpoint remains `GET /api/v1/notifications/{id}/approval`; it returns
-the approval state and, for bound tasks, the exact specification and digest.
-The endpoint is authenticated with the same OpenClaw key that created the
-request (credential fingerprint ownership).
+`task_specification` is accepted as a creation alias. Both notification
+serialization and the approval endpoint expose `task_spec` (the name required
+by `execution_core.verify_approval`) and `task_specification` (the original
+WatchTower proposal's name) with identical stored values. The approval endpoint
+is `GET /api/v1/notifications/{notification_id}/approval` and requires the same
+OpenClaw API key that created the request.
 
-Legacy approval requests keep their prior response shape. Missing task binding
-means the response cannot authorize execution. A task-bound request is pending
-until an authenticated human approves or denies it. Decisions are one-way and
-atomic; expired requests cannot be approved. Human identity is derived from
-WatchTower JWT authentication and is never accepted from the request body.
+Task-bound approval responses contain `notification_id`, `action_id`,
+`requires_approval`, `approval_status`, `approval_expires_at`, `task_spec`, and
+`task_spec_sha256`. The task specification and digest are returned for pending,
+approved, and denied decisions, including after the expiry timestamp. The
+executor must reject non-approved or expired results. WatchTower rejects
+approval decisions after expiry. `action_id` is the specification digest, so a
+different specification gets a different action identity. Legacy approvals
+remain readable but have no task binding and can never authorize execution.
 
 ## Task specification v1
 
-Only `public_website_inspection` is supported. Fields are strict and unknown
-fields are rejected:
+The accepted object has exactly these fields; unknown fields are rejected:
 
-- `schema_version`: integer `1`
-- `task_type`: string `public_website_inspection`
-- `target`: public HTTP or HTTPS URL; credentials, query strings, fragments,
-  localhost/internal names, private/reserved IP literals, invalid or ambiguous
-  path encodings, credential-like path components, and unsupported schemes are rejected
-- `parameters.scope`: exactly `public_pages`
-- `parameters.max_pages`: integer from 1 through 20 (default 5)
+```json
+{"version":1,"task_type":"public_website_inspection","url":"https://example.org/"}
+```
 
-The server lowercases the scheme and hostname, converts internationalized
-hostnames to IDNA ASCII, removes a trailing hostname dot and default port,
-ensures an empty path becomes `/`, and uppercases valid percent-escape hex
-digits in the path. The response contains this normalized target.
+This is exactly the shape parsed by OpenClaw's `TaskSpec.parse`. Only HTTPS on
+port 443/default port is accepted. URLs cannot contain credentials, a non-empty
+query or fragment, controls, or a backslash (empty `?`/`#` delimiters are
+stripped during normalization). The core also accepts an empty `@` userinfo
+delimiter and removes it during normalization; non-empty credentials are
+rejected. Hostnames are converted to lowercase IDNA
+ASCII, lose a trailing dot, must be fully qualified and label-valid, and cannot
+be IP literals. The path is preserved, or becomes `/` when empty. DNS answers,
+redirects, and egress safety remain the executor's responsibility.
 
 ## Canonical JSON and digest
 
-The digest is lowercase hexadecimal SHA-256 of the UTF-8 encoding of canonical
-JSON for the complete normalized specification (including defaulted fields).
-Canonical JSON uses lexicographically sorted object keys, no insignificant
-whitespace, UTF-8 characters without ASCII escaping, and no NaN/Infinity values.
-Arrays retain order. V1 contains only fixed ASCII keys, fixed ASCII enum values,
-one normalized URL string, and integer parameters, avoiding cross-language
-number formatting ambiguity.
+Canonicalization matches `TaskSpec.canonical_json()` in the supplied execution
+core: serialize the three-field object with ASCII escapes enabled, keys sorted
+lexicographically, compact `,` and `:` separators, and no extra fields; encode
+that string as UTF-8 and calculate lowercase hexadecimal SHA-256. The normalized
+URL and all task fields stored by WatchTower are the bytes covered by the hash.
 
 Python reference:
 
 ```python
-json.dumps(spec, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
+json.dumps(spec, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
 ```
 
-JavaScript reference for this fixed v1 shape (sorting keys recursively):
+JavaScript equivalent (including Python-compatible ASCII escaping):
 
 ```js
+function quoteAscii(value) {
+  return JSON.stringify(value).replace(/[^\x00-\x7f]/g, c =>
+    `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`);
+}
 function canonical(value) {
   if (Array.isArray(value)) return `[${value.map(canonical).join(',')}]`;
   if (value && typeof value === 'object') {
-    return `{${Object.keys(value).sort().map(k => `${JSON.stringify(k)}:${canonical(value[k])}`).join(',')}}`;
+    return `{${Object.keys(value).sort().map(k => `${quoteAscii(k)}:${canonical(value[k])}`).join(',')}}`;
   }
-  return JSON.stringify(value);
+  return typeof value === 'string' ? quoteAscii(value) : JSON.stringify(value);
 }
-const bytes = new TextEncoder().encode(canonical(spec));
+const bytes = new TextEncoder().encode(canonical(taskSpec));
 const digest = [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))]
   .map(b => b.toString(16).padStart(2, '0')).join('');
 ```
 
-OpenClaw must independently validate the schema, canonicalize the returned
-specification, compare the computed digest with `task_spec_sha256`, require
-`approval_status === "approved"`, and enforce the returned expiry before
-execution. Treat title, message, metadata, and other agent-authored descriptive
-text as display-only; only the versioned specification defines the operation.
-Keep OpenClaw's existing atomic at-most-once claim behavior.
+OpenClaw should pass the returned response to its existing `verify_approval`,
+then retain its atomic at-most-once execution claim. WatchTower's action ID,
+stored specification, and digest are all bound to the same canonical object.
 
-The OpenClaw `execution_core.py` mentioned in the task was not available in this
-workspace, so byte-for-byte compatibility with that implementation is
-unverified. Compare its validator and canonicalizer against this contract
-before enabling execution.
+## Executor network safeguards
 
-## Network safety for the executor
-
-URL validation at approval time cannot protect a later connection from DNS
-rebinding, a changed DNS answer, redirects, proxies, or a compromised public
-host. OpenClaw must resolve immediately before each connection, reject every
-non-global resolved address (including IPv4-mapped IPv6), connect only to the
-validated address while preserving TLS hostname verification, revalidate each
-redirect and limit redirect count, and block private, loopback, link-local,
-multicast, reserved, and metadata-service ranges at the network layer. Disable
-environment-provided proxies unless explicitly controlled. Do not fetch URLs
-from descriptive fields.
+Approval-time URL validation does not prevent DNS rebinding or unsafe redirects.
+Before each connection, the executor must reject non-public resolved addresses,
+connect to the validated address while preserving TLS hostname verification,
+revalidate every redirect, limit redirects, and block private, loopback,
+link-local, multicast, reserved, and metadata-service ranges at the network
+layer. Disable uncontrolled proxies and never fetch URLs from display text.
 
 ## Deployment and rollback
 
-1. Back up the SQLite database before upgrading.
-2. Deploy the application build; startup applies additive nullable columns to
-   `notifications`, preserving all existing rows.
-3. Confirm the approval API returns a digest for a newly created request and
-   no task binding for legacy rows. Keep OpenClaw execution disabled until its
-   canonicalizer and network controls are verified.
-4. Roll back by deploying the prior application version. The added columns are
-   nullable and are safe for the prior version to ignore; do not drop them or
-   restore an old database over newer approvals. Restore the backup only if the
-   database itself must be recovered, accepting that approvals created after
-   the backup will be lost.
+1. Back up SQLite before upgrading.
+2. Deploy the application; startup adds nullable task-binding columns without
+   rebuilding the notifications table or changing historical rows.
+3. Verify a newly created task's `task_spec`, action ID, and digest with the
+   supplied `TaskSpec.parse`, `canonical_json`, and `verify_approval` code.
+   Keep production execution disabled until that independent verification and
+   the executor's network controls pass.
+4. Roll back by deploying the previous application version. It can ignore the
+   nullable columns; do not drop them or restore an old backup over newer
+   approvals. Restoring the backup loses approvals created after the backup.
 
-Example request and response details are covered above. Production deployment
-is intentionally not performed by this change.
+No production deployment or execution enablement was performed.

@@ -30,9 +30,9 @@
     "semantic_hash": "b0aee989de68983c7c93ec7d9011f45e"
   },
   "app/main.py": {
-    "mtime": 1791657062.4588685,
-    "seen": 1791657099.7688372,
-    "ast_hash": "eca4cb640abdba1fda1d1942320274ea",
+    "mtime": 1791657631.4202106,
+    "seen": 1791657780.153599,
+    "ast_hash": "8b5e90707569dd58cee84b22b8864d2a",
     "semantic_hash": ""
   },
   "app/models.py": {
@@ -132,9 +132,9 @@
     "semantic_hash": ""
   },
   "app/schemas.py": {
-    "mtime": 1791656645.6093774,
-    "seen": 1791656866.583333,
-    "ast_hash": "acba4a51b71bd4e785a3589d2d20344d",
+    "mtime": 1791657631.2934566,
+    "seen": 1791657780.15363,
+    "ast_hash": "9ac3840ecfb65e9b0c3b73d2a91c4b8e",
     "semantic_hash": ""
   },
   "app/service.py": {
@@ -240,9 +240,9 @@
     "semantic_hash": ""
   },
   "static/js/app.js": {
-    "mtime": 1791656949.1343713,
-    "seen": 1791656953.160104,
-    "ast_hash": "d2c7d9377ed8caab0b2b97f6298ff35b",
+    "mtime": 1791657582.7113345,
+    "seen": 1791657780.153638,
+    "ast_hash": "f92e7d6189721e65d7068511980cf112",
     "semantic_hash": ""
   },
   "tests/test_startup.py": {
@@ -372,21 +372,39 @@
     "semantic_hash": ""
   },
   "tests/test_notifications_center.py": {
-    "mtime": 1791657184.767255,
-    "seen": 1791657245.200929,
-    "ast_hash": "cea30e0b47ddefc55d5ed990cd57550f",
+    "mtime": 1791658088.4581077,
+    "seen": 1791658201.756855,
+    "ast_hash": "582d70877b4a5b6e3099db0da72157b5",
     "semantic_hash": ""
   },
   "app/task_spec.py": {
-    "mtime": 1791657088.6931047,
-    "seen": 1791657099.7688699,
-    "ast_hash": "a7b0b7cc860fc52c7c54fdbeb96915cd",
+    "mtime": 1791658232.1865132,
+    "seen": 1791658284.725447,
+    "ast_hash": "9ac40a732f0e90e2c17cf9ba20099e4e",
     "semantic_hash": ""
   },
   "docs/openclaw-approval-contract.md": {
-    "mtime": 1791657095.8298717,
-    "seen": 1791657099.7689118,
-    "ast_hash": "09146c407c3a614433079e3dd85fb0ea",
+    "mtime": 1791658232.7859962,
+    "seen": 1791658284.725494,
+    "ast_hash": "78823083854b2d1456651410cc00973b",
+    "semantic_hash": ""
+  },
+  "tests/openclaw_core_reference.py": {
+    "mtime": 1791658088.3426216,
+    "seen": 1791658201.7568488,
+    "ast_hash": "fa3b643b0842b69419a592d29da01cdb",
+    "semantic_hash": ""
+  },
+  "tests/test_openclaw_task_compat.py": {
+    "mtime": 1791658051.9026332,
+    "seen": 1791658201.756856,
+    "ast_hash": "ac507a8f17064342f0a01e0af28247b8",
+    "semantic_hash": ""
+  },
+  "tests/vectors/openclaw_task_spec.json": {
+    "mtime": 1791658232.2994153,
+    "seen": 1791658284.725472,
+    "ast_hash": "0e0c7267b91e8a3ef41e7b799b051969",
     "semantic_hash": ""
   }
 }

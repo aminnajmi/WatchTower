@@ -1,34 +1,19 @@
-"""Versioned, deliberately small task language for external execution."""
+"""Task specification matching OpenClaw's fail-closed execution core."""
 import hashlib
-import ipaddress
 import json
 import re
 from urllib.parse import urlsplit, urlunsplit
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, field_validator
-
-
-class InspectionParameters(BaseModel):
-    model_config = ConfigDict(extra="forbid", strict=True)
-    scope: str = "public_pages"
-    max_pages: StrictInt = Field(default=5, ge=1, le=20)
-
-    @field_validator("scope")
-    @classmethod
-    def supported_scope(cls, value: str) -> str:
-        if value != "public_pages":
-            raise ValueError("Only public_pages scope is supported")
-        return value
+from pydantic import BaseModel, ConfigDict, StrictInt, field_validator
 
 
 class TaskSpecification(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
-    schema_version: StrictInt = 1
-    task_type: str = "public_website_inspection"
-    target: str
-    parameters: InspectionParameters = Field(default_factory=InspectionParameters)
+    version: StrictInt
+    task_type: str
+    url: str
 
-    @field_validator("schema_version")
+    @field_validator("version")
     @classmethod
     def supported_version(cls, value: int) -> int:
         if value != 1:
@@ -42,71 +27,51 @@ class TaskSpecification(BaseModel):
             raise ValueError("Unsupported task type")
         return value
 
-    @field_validator("target")
+    @field_validator("url")
     @classmethod
-    def normalize_public_target(cls, value: str) -> str:
-        if not isinstance(value, str) or not value or value != value.strip():
-            raise ValueError("Target must be a normalized HTTP or HTTPS URL")
-        if any(ord(ch) < 0x20 or ord(ch) == 0x7f for ch in value) or "\\" in value:
-            raise ValueError("Target contains forbidden characters")
-        if re.search(r"%(?![0-9A-Fa-f]{2})", value):
-            raise ValueError("Target contains an invalid percent encoding")
-        if "?" in value or "#" in value:
-            raise ValueError("Target query strings and fragments are not supported")
+    def normalize_public_url(cls, value: str) -> str:
+        if not isinstance(value, str) or not value or len(value) > 2048:
+            raise ValueError("Invalid URL")
         try:
-            parsed = urlsplit(value)
-            port = parsed.port
+            parts = urlsplit(value)
+            host = parts.hostname
+            port = parts.port
         except ValueError as exc:
-            raise ValueError("Target URL is malformed") from exc
-        scheme = parsed.scheme.lower()
-        if scheme not in {"http", "https"} or not parsed.hostname:
-            raise ValueError("Target must use HTTP or HTTPS and include a host")
-        if parsed.username is not None or parsed.password is not None or "@" in parsed.netloc:
-            raise ValueError("Target credentials are forbidden")
-        if parsed.fragment:
-            raise ValueError("Target fragments are forbidden")
-        # Query strings can carry access tokens and are not needed for a public
-        # page crawl. Encoded separators/dots are rejected to avoid parser drift.
-        if parsed.query:
-            raise ValueError("Target query strings are not supported")
-        if re.search(r"%(?:25|2f|5c|2e|00|0[0-9a-f]|1[0-9a-f]|7f)", parsed.path, re.IGNORECASE):
-            raise ValueError("Target contains an ambiguous encoded path")
-        if re.search(r"(?:^|/)(?:access[_-]?token|api[_-]?key|authorization|password|secret|session|token)(?:/|=|$)", parsed.path, re.IGNORECASE):
-            raise ValueError("Target path appears to contain credential material")
-        host = parsed.hostname.rstrip(".").lower()
-        if not host:
-            raise ValueError("Target host is invalid")
+            raise ValueError("Invalid URL") from exc
+        if (
+            parts.scheme.lower() != "https"
+            or not host
+            or parts.username
+            or parts.password
+            or port not in (None, 443)
+            or parts.query
+            or parts.fragment
+        ):
+            raise ValueError("Only credential-free HTTPS URLs on port 443 without query or fragment are allowed")
         try:
-            ip = ipaddress.ip_address(host)
-        except ValueError:
-            try:
-                host = host.encode("idna").decode("ascii")
-            except UnicodeError as exc:
-                raise ValueError("Target host is invalid") from exc
-            if host in {"localhost", "localhost.localdomain"} or host.endswith((".localhost", ".local", ".internal")):
-                raise ValueError("Local and internal targets are forbidden")
-            if re.fullmatch(r"(?:[0-9]+\.)*[0-9]+", host) or host.startswith("0x"):
-                raise ValueError("Non-canonical numeric IP targets are forbidden")
-        else:
-            if not ip.is_global:
-                raise ValueError("Private and reserved IP targets are forbidden")
-            host = f"[{host}]" if ip.version == 6 else host
-        if port is not None and not 1 <= port <= 65535:
-            raise ValueError("Target port is invalid")
-        netloc = host
-        if port is not None and not (scheme == "http" and port == 80 or scheme == "https" and port == 443):
-            netloc += f":{port}"
-        path = parsed.path or "/"
-        # Keep path bytes stable, but normalize percent escape hex digits.
-        path = re.sub(r"%[0-9a-fA-F]{2}", lambda match: match.group(0).upper(), path)
-        return urlunsplit((scheme, netloc, path, "", ""))
+            host = host.rstrip(".").encode("idna").decode("ascii").lower()
+        except UnicodeError as exc:
+            raise ValueError("Invalid hostname") from exc
+        if "." not in host or host in {"localhost", "localhost.localdomain"}:
+            raise ValueError("A public fully-qualified hostname is required")
+        if ":" in host or all(char in "0123456789." for char in host):
+            raise ValueError("IP literal targets are not permitted")
+        if len(host) > 253 or any(
+            not re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?", label)
+            for label in host.split(".")
+        ):
+            raise ValueError("Invalid hostname")
+        if any(ord(char) < 0x20 or ord(char) == 0x7F or char == "\\" for char in value):
+            raise ValueError("URL contains disallowed characters")
+        path = parts.path or "/"
+        return urlunsplit(("https", host, path, "", ""))
 
 
 def canonical_task_json(specification: TaskSpecification) -> str:
-    """UTF-8 JSON contract: compact separators, sorted keys, UTF-8 characters."""
+    """Match execution_core.TaskSpec.canonical_json exactly."""
     return json.dumps(
         specification.model_dump(mode="json"),
-        ensure_ascii=False,
+        ensure_ascii=True,
         sort_keys=True,
         separators=(",", ":"),
         allow_nan=False,

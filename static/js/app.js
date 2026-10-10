@@ -668,17 +668,18 @@
       : notification.requires_approval
         ? `<div class="notification-decision"><strong>${escapeHtml(notificationApprovalLabel(notification.approval_status))}</strong>${notification.approved_by ? ` by ${escapeHtml(notification.approved_by)}` : ''}${notification.denial_reason ? ` — ${escapeHtml(notification.denial_reason)}` : ''}</div>`
         : '';
-    const task = notification.task_specification && typeof notification.task_specification === 'object'
-      ? notification.task_specification : null;
+    const task = notification.task_spec && typeof notification.task_spec === 'object'
+      ? notification.task_spec
+      : notification.task_specification && typeof notification.task_specification === 'object'
+        ? notification.task_specification : null;
     const taskDetails = task ? `<section class="notification-task-details" aria-label="Approved task specification">
       <h3>${escapeHtml(notification.task_name || notification.title || 'Task')}</h3>
       <dl><dt>Task type</dt><dd>${escapeHtml(task.task_type || notification.task_type || 'Unknown')}</dd>
-      <dt>Exact target</dt><dd>${escapeHtml(task.target || '')}</dd>
-      <dt>Parameters and scope</dt><dd><pre>${escapeHtml(JSON.stringify(task.parameters || {}, null, 2))}</pre></dd>
+      <dt>Exact target</dt><dd>${escapeHtml(task.url || task.target || '')}</dd>
       <dt>Requesting agent</dt><dd>${escapeHtml(notification.created_by || 'OpenClaw')}</dd>
       <dt>Created</dt><dd>${escapeHtml(dateText(notification.created_at))}</dd>
       <dt>Expires</dt><dd>${escapeHtml(dateText(notification.approval_expires_at))}</dd>
-      <dt>Schema version</dt><dd>${escapeHtml(String(task.schema_version || notification.task_schema_version || ''))}</dd>
+      <dt>Schema version</dt><dd>${escapeHtml(String(task.version || task.schema_version || notification.task_schema_version || ''))}</dd>
       <dt>Task SHA-256</dt><dd><code>${escapeHtml(notification.task_spec_sha256 || '')}</code></dd>
       ${notification.approved_by ? `<dt>Decision</dt><dd>${escapeHtml(notification.approved_by)} · ${escapeHtml(dateText(notification.approved_at))}</dd>` : ''}</dl>
     </section>` : '';

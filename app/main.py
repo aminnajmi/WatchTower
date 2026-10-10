@@ -550,6 +550,7 @@ def _serialize_notification(notification: Notification) -> dict:
         "task_schema_version": notification.task_schema_version,
         "task_type": notification.task_type,
         "task_specification": json.loads(notification.task_specification) if notification.task_specification else None,
+        "task_spec": json.loads(notification.task_specification) if notification.task_specification else None,
         "task_spec_sha256": notification.task_spec_sha256,
         "created_by": notification.created_by,
         "approved_by": notification.approved_by,
@@ -635,7 +636,7 @@ def _task_binding_is_valid(notification: Notification) -> bool:
         return False
     return (
         canonical == notification.task_specification
-        and notification.task_schema_version == spec.schema_version
+        and notification.task_schema_version == spec.version
         and notification.task_type == spec.task_type
         and notification.action_id is not None
         and hmac.compare_digest(notification.task_spec_sha256, digest)
@@ -675,7 +676,7 @@ def create_openclaw_notification(payload: NotificationCreate, authorization: str
             task_fields = {
                 "task_specification": canonical,
                 "task_spec_sha256": task_digest(canonical),
-                "task_schema_version": payload.task_specification.schema_version,
+                "task_schema_version": payload.task_specification.version,
                 "task_type": payload.task_specification.task_type,
                 "created_by": f"openclaw:{approval_owner_hash}",
             }
@@ -686,7 +687,7 @@ def create_openclaw_notification(payload: NotificationCreate, authorization: str
             # authorization record and human approval UI.
             notification_values.update({
                 "title": "Public website inspection",
-                "message": f"Inspect up to {payload.task_specification.parameters.max_pages} public pages.",
+                "message": "Inspect the approved public website.",
                 "recipient": "all_human_agents",
                 "status": "new",
                 "severity": "warning",
@@ -825,10 +826,10 @@ def get_openclaw_approval_decision(
             raise HTTPException(status_code=404, detail="Approval request not found")
         if action_id is not None and not hmac.compare_digest(notification.action_id, action_id):
             raise HTTPException(status_code=404, detail="Approval request not found")
-        if notification.approval_expires_at <= datetime.utcnow():
-            if notification.task_specification:
-                logger.info("approval_task_expired notification_id=%s task_sha256=%s", notification.id, notification.task_spec_sha256)
+        if notification.approval_expires_at <= datetime.utcnow() and not notification.task_specification:
             raise HTTPException(status_code=410, detail="Approval request has expired")
+        if notification.approval_expires_at <= datetime.utcnow() and notification.task_specification:
+            logger.info("approval_task_expired notification_id=%s task_sha256=%s", notification.id, notification.task_spec_sha256)
         if notification.approval_status not in {"pending", "approved", "denied"}:
             raise HTTPException(status_code=409, detail="Approval decision is unavailable")
         if not _task_binding_is_valid(notification):
@@ -851,6 +852,7 @@ def get_openclaw_approval_decision(
                 raise HTTPException(status_code=409, detail="Task specification integrity check failed")
             result.update({
                 "task_schema_version": notification.task_schema_version,
+                "task_spec": stored_spec.model_dump(mode="json"),
                 "task_specification": stored_spec.model_dump(mode="json"),
                 "task_spec_sha256": digest,
             })

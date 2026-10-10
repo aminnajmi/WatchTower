@@ -1,6 +1,6 @@
 from datetime import datetime
 import re
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator, model_validator
 from .task_spec import TaskSpecification
 
 
@@ -138,7 +138,10 @@ class NotificationCreate(BaseModel):
     metadata: dict = Field(default_factory=dict)
     completed_at: datetime | None = None
     external_url: str | None = Field(default=None, max_length=2000)
-    task_specification: TaskSpecification | None = None
+    task_specification: TaskSpecification | None = Field(
+        default=None,
+        validation_alias=AliasChoices("task_spec", "task_specification"),
+    )
 
     @field_validator("source", "recipient", "status", "severity")
     @classmethod

@@ -1,0 +1,48 @@
+{
+  "valid": [
+    {
+      "input": {"version": 1, "task_type": "public_website_inspection", "url": "https://example.org"},
+      "task_spec": {"version": 1, "task_type": "public_website_inspection", "url": "https://example.org/"},
+      "canonical_json": "{\"task_type\":\"public_website_inspection\",\"url\":\"https://example.org/\",\"version\":1}",
+      "sha256": "31fe3d1ec20b580569645be259e62af4daeb3ef317ea006862b978d46cbd330f"
+    },
+    {
+      "input": {"version": 1, "task_type": "public_website_inspection", "url": "HTTPS://EXAMPLE.ORG.:443/a%2fb"},
+      "task_spec": {"version": 1, "task_type": "public_website_inspection", "url": "https://example.org/a%2fb"},
+      "canonical_json": "{\"task_type\":\"public_website_inspection\",\"url\":\"https://example.org/a%2fb\",\"version\":1}",
+      "sha256": "cf279114e5578c0203dc27be13d78b6dc785e045a077ebb3d7ff574c7c3db6bf"
+    },
+    {
+      "input": {"version": 1, "task_type": "public_website_inspection", "url": "https://bücher.example/café"},
+      "task_spec": {"version": 1, "task_type": "public_website_inspection", "url": "https://xn--bcher-kva.example/café"},
+      "canonical_json": "{\"task_type\":\"public_website_inspection\",\"url\":\"https://xn--bcher-kva.example/caf\\u00e9\",\"version\":1}",
+      "sha256": "daf641291803359df76f75fe809d63a7fe07b671529f5e46ee46e3876cd6a2d0"
+    },
+    {
+      "input": {"version": 1, "task_type": "public_website_inspection", "url": "https://example.org/?#"},
+      "task_spec": {"version": 1, "task_type": "public_website_inspection", "url": "https://example.org/"},
+      "canonical_json": "{\"task_type\":\"public_website_inspection\",\"url\":\"https://example.org/\",\"version\":1}",
+      "sha256": "31fe3d1ec20b580569645be259e62af4daeb3ef317ea006862b978d46cbd330f"
+    },
+    {
+      "input": {"version": 1, "task_type": "public_website_inspection", "url": "https://@example.org/"},
+      "task_spec": {"version": 1, "task_type": "public_website_inspection", "url": "https://example.org/"},
+      "canonical_json": "{\"task_type\":\"public_website_inspection\",\"url\":\"https://example.org/\",\"version\":1}",
+      "sha256": "31fe3d1ec20b580569645be259e62af4daeb3ef317ea006862b978d46cbd330f"
+    }
+  ],
+  "invalid": [
+    {},
+    {"version": 1, "task_type": "public_website_inspection", "url": "https://example.org/", "parameters": {}},
+    {"version": 2, "task_type": "public_website_inspection", "url": "https://example.org/"},
+    {"version": 1, "task_type": "shell", "url": "https://example.org/"},
+    {"version": 1, "task_type": "public_website_inspection", "url": "http://example.org/"},
+    {"version": 1, "task_type": "public_website_inspection", "url": "https://93.184.216.34/"},
+    {"version": 1, "task_type": "public_website_inspection", "url": "https://example.org:444/"},
+    {"version": 1, "task_type": "public_website_inspection", "url": "https://user:pass@example.org/"},
+    {"version": 1, "task_type": "public_website_inspection", "url": "https://example.org/?key=x"},
+    {"version": 1, "task_type": "public_website_inspection", "url": "https://example.org/#fragment"},
+    {"task_type": "public_website_inspection", "url": "https://example.org/"}
+  ],
+  "source": "SHA-256 and normalized outputs produced with the supplied OpenClaw execution_core.py TaskSpec.parse/canonical_json/digest implementation."
+}
