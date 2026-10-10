@@ -176,6 +176,8 @@ class TidioMonitor:
             'input[type="email"]', 'input[autocomplete="username"]',
             'input[name*="email" i]', 'input[name*="user" i]',
             'input[type="text"]', 'input:not([type])',
+            '[role="textbox"]', '[contenteditable="true"]', 'textarea',
+            'input:not([type="hidden"])',
         ))
         if email is None:
             await self._raise_login_page_state("Tidio username field was not found")
@@ -204,13 +206,14 @@ class TidioMonitor:
 
     async def _find_visible_input(self, selectors: tuple[str, ...], timeout_ms: int = 2_000):
         assert self._page is not None
-        for selector in selectors:
-            locator = self._page.locator(selector)
-            try:
-                await locator.first.wait_for(state="visible", timeout=timeout_ms)
-                return locator.first
-            except Exception:
-                continue
+        for frame in self._page.frames:
+            for selector in selectors:
+                locator = frame.locator(selector)
+                try:
+                    await locator.first.wait_for(state="visible", timeout=timeout_ms)
+                    return locator.first
+                except Exception:
+                    continue
         return None
 
     async def _click_login_action(self) -> None:
@@ -226,13 +229,24 @@ class TidioMonitor:
 
     async def _raise_login_page_state(self, fallback: str) -> None:
         assert self._page is not None
-        try:
-            body = (await self._page.locator("body").inner_text(timeout=3_000)).lower()
-        except Exception:
-            body = ""
-        if any(term in body for term in ("recaptcha", "captcha", "two-factor", "verification", "verify your identity")):
+        body_text = ""
+        frame_hosts = []
+        input_types = []
+        for frame in self._page.frames:
+            frame_hosts.append(urlparse(frame.url).hostname or "about:blank")
+            try:
+                body_text += " " + (await frame.locator("body").inner_text(timeout=1_000)).lower()
+            except Exception:
+                pass
+            try:
+                input_types.extend(await frame.locator("input").evaluate_all(
+                    "nodes => nodes.map(node => (node.getAttribute('type') || 'text').toLowerCase())"
+                ))
+            except Exception:
+                pass
+        if any(term in body_text for term in ("recaptcha", "captcha", "two-factor", "verification", "verify your identity")):
             raise RuntimeError("Tidio requires additional browser verification")
-        logger.warning("Tidio login form unavailable path=%s", urlparse(self._page.url).path[:100])
+        logger.warning("Tidio login form unavailable frame_hosts=%s input_types=%s", sorted(set(frame_hosts))[:8], sorted(set(input_types))[:8])
         raise RuntimeError(fallback)
 
     async def _save_session(self) -> None:
