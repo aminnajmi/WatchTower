@@ -85,9 +85,11 @@ class NotificationCenterTests(unittest.TestCase):
         self.assertIn("await loadNotifications({ silent: true })", script)
         self.assertIn("result.unread_count", script)
         self.assertIn("notification-task-details", script)
-        self.assertIn("Exact target", script)
-        self.assertIn("task_spec_sha256", script)
-        self.assertIn("escapeHtml(task.url || task.target", script)
+        self.assertIn("Target website", script)
+        self.assertIn("notification-target-link", script)
+        render_function = script.split("function renderNotification(notification) {", 1)[1].split("\n  async function initializeNotificationCenter", 1)[0]
+        for hidden_field in ("task_spec_sha256", "task_schema_version", "action_id", "created_by", "Task type", "task.version"):
+            self.assertNotIn(hidden_field, render_function)
         self.assertNotIn("initializeNotificationTest", script)
         self.assertEqual(script.count("api('/api/v1/notifications/test'"), 1)
 
@@ -190,6 +192,13 @@ class NotificationCenterTests(unittest.TestCase):
         self.assertEqual(notification["action_id"], expected_digest)
         self.assertEqual(notification["task_schema_version"], 1)
         self.assertTrue(notification["created_by"].startswith("openclaw:"))
+        self.assertEqual(notification["title"], "Approval Required: OperaVPS Website Inspection")
+        self.assertEqual(
+            notification["message"],
+            "Support Agent requests human authorization to open the OperaVPS website and inspect its public pages using browser automation. "
+            "Public pages only; no logins, ticket submissions, order modifications, or account actions. "
+            "Task will not begin until approval is verified.",
+        )
 
         decision_url = f"/api/v1/notifications/{notification['id']}/approval"
         approval = self.client.get(decision_url, headers=headers)
@@ -197,6 +206,8 @@ class NotificationCenterTests(unittest.TestCase):
         self.assertEqual(approval.json()["task_spec_sha256"], expected_digest)
         self.assertEqual(approval.json()["task_specification"], expected_spec)
         self.assertEqual(approval.json()["task_spec"], expected_spec)
+        self.assertEqual(approval.json()["action_id"], expected_digest)
+        self.assertEqual(approval.json()["task_schema_version"], 1)
         self.assertEqual(self.client.put(f"/api/v1/notifications/{notification['id']}", headers=self.admin_headers, json={"task_specification": {}}).status_code, 405)
 
         unicode_spec = {"version": 1, "task_type": "public_website_inspection", "url": "https://example.org/café"}
@@ -207,6 +218,8 @@ class NotificationCenterTests(unittest.TestCase):
         self.assertEqual(unicode_created.status_code, 201, unicode_created.text)
         unicode_canonical = json.dumps(unicode_spec, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
         self.assertEqual(unicode_created.json()["task_spec_sha256"], hashlib.sha256(unicode_canonical.encode("utf-8")).hexdigest())
+        self.assertEqual(unicode_created.json()["title"], "Approval Required: Example Website Inspection")
+        self.assertIn("open the Example website", unicode_created.json()["message"])
 
         approved = self.client.post(f"/api/v1/notifications/{notification['id']}/approve", headers=self.user_headers)
         self.assertEqual(approved.status_code, 200, approved.text)

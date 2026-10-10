@@ -30,9 +30,9 @@
     "semantic_hash": "b0aee989de68983c7c93ec7d9011f45e"
   },
   "app/main.py": {
-    "mtime": 1791657631.4202106,
-    "seen": 1791657780.153599,
-    "ast_hash": "8b5e90707569dd58cee84b22b8864d2a",
+    "mtime": 1791662318.7132266,
+    "seen": 1791662339.21397,
+    "ast_hash": "e84cf5ccaaae024e1ec86f4c9a94bee3",
     "semantic_hash": ""
   },
   "app/models.py": {
@@ -240,9 +240,9 @@
     "semantic_hash": ""
   },
   "static/js/app.js": {
-    "mtime": 1791657582.7113345,
-    "seen": 1791657780.153638,
-    "ast_hash": "f92e7d6189721e65d7068511980cf112",
+    "mtime": 1791662292.1381533,
+    "seen": 1791662339.214008,
+    "ast_hash": "e167719ccf7855aa9fb3110f5cebc6c0",
     "semantic_hash": ""
   },
   "tests/test_startup.py": {
@@ -372,9 +372,9 @@
     "semantic_hash": ""
   },
   "tests/test_notifications_center.py": {
-    "mtime": 1791658088.4581077,
-    "seen": 1791658201.756855,
-    "ast_hash": "582d70877b4a5b6e3099db0da72157b5",
+    "mtime": 1791662321.795376,
+    "seen": 1791662339.214014,
+    "ast_hash": "f6727fcae0aa5257365527677c2f721e",
     "semantic_hash": ""
   },
   "app/task_spec.py": {

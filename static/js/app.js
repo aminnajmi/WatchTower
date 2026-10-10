@@ -652,9 +652,14 @@
 
   function renderNotification(notification) {
     const metadata = notification.metadata && typeof notification.metadata === 'object' ? notification.metadata : {};
+    const task = notification.task_spec && typeof notification.task_spec === 'object'
+      ? notification.task_spec
+      : notification.task_specification && typeof notification.task_specification === 'object'
+        ? notification.task_specification : null;
+    const taskBound = Boolean(task && task.task_type === 'public_website_inspection');
     const chips = [];
-    if (notification.task_name) chips.push(`<span class="notification-chip">Task: ${escapeHtml(notification.task_name)}</span>`);
-    if (notification.task_id) chips.push(`<span class="notification-chip">Task ID: ${escapeHtml(notification.task_id)}</span>`);
+    if (!taskBound && notification.task_name) chips.push(`<span class="notification-chip">Task: ${escapeHtml(notification.task_name)}</span>`);
+    if (!taskBound && notification.task_id) chips.push(`<span class="notification-chip">Task ID: ${escapeHtml(notification.task_id)}</span>`);
     chips.push(`<span class="notification-chip">${escapeHtml(notificationSeverityLabel(notification.severity))}</span>`);
     chips.push(`<span class="notification-chip">${escapeHtml(notification.status || 'new')}</span>`);
     if (notification.requires_approval) chips.push(`<span class="notification-chip notification-approval-${escapeHtml(notification.approval_status || 'pending')}">${escapeHtml(notificationApprovalLabel(notification.approval_status))}</span>`);
@@ -668,20 +673,9 @@
       : notification.requires_approval
         ? `<div class="notification-decision"><strong>${escapeHtml(notificationApprovalLabel(notification.approval_status))}</strong>${notification.approved_by ? ` by ${escapeHtml(notification.approved_by)}` : ''}${notification.denial_reason ? ` — ${escapeHtml(notification.denial_reason)}` : ''}</div>`
         : '';
-    const task = notification.task_spec && typeof notification.task_spec === 'object'
-      ? notification.task_spec
-      : notification.task_specification && typeof notification.task_specification === 'object'
-        ? notification.task_specification : null;
-    const taskDetails = task ? `<section class="notification-task-details" aria-label="Approved task specification">
-      <h3>${escapeHtml(notification.task_name || notification.title || 'Task')}</h3>
-      <dl><dt>Task type</dt><dd>${escapeHtml(task.task_type || notification.task_type || 'Unknown')}</dd>
-      <dt>Exact target</dt><dd>${escapeHtml(task.url || task.target || '')}</dd>
-      <dt>Requesting agent</dt><dd>${escapeHtml(notification.created_by || 'OpenClaw')}</dd>
-      <dt>Created</dt><dd>${escapeHtml(dateText(notification.created_at))}</dd>
-      <dt>Expires</dt><dd>${escapeHtml(dateText(notification.approval_expires_at))}</dd>
-      <dt>Schema version</dt><dd>${escapeHtml(String(task.version || task.schema_version || notification.task_schema_version || ''))}</dd>
-      <dt>Task SHA-256</dt><dd><code>${escapeHtml(notification.task_spec_sha256 || '')}</code></dd>
-      ${notification.approved_by ? `<dt>Decision</dt><dd>${escapeHtml(notification.approved_by)} · ${escapeHtml(dateText(notification.approved_at))}</dd>` : ''}</dl>
+    const taskDetails = taskBound ? `<section class="notification-task-details" aria-label="Website inspection target">
+      <span class="notification-target-label">Target website</span>
+      <a class="notification-target-link" href="${escapeHtml(task.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(task.url)}</a>
     </section>` : '';
 
     return `<article class="notification-card severity-${escapeHtml(notification.severity || 'info')} ${notification.requires_approval && notification.approval_status === 'pending' ? 'requires-approval' : ''}">

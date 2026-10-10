@@ -3,8 +3,10 @@ import hashlib
 import hmac
 import logging
 import json
+import re
 from pathlib import Path
 from threading import Lock
+from urllib.parse import urlsplit
 
 from contextlib import asynccontextmanager
 
@@ -644,6 +646,21 @@ def _task_binding_is_valid(notification: Notification) -> bool:
     )
 
 
+def _task_notification_copy(specification: TaskSpecification) -> tuple[str, str]:
+    """Create approval UI copy from the validated task, never agent prose."""
+    host = urlsplit(specification.url).hostname or "website"
+    if host == "operavps.com":
+        website_name = "OperaVPS"
+    else:
+        label = host.removeprefix("www.").split(".", 1)[0]
+        website_name = " ".join(part.capitalize() for part in re.split(r"[-_]", label) if part) or host
+    title = f"Approval Required: {website_name} Website Inspection"
+    message = (
+        f"Support Agent requests human authorization to open the {website_name} website and inspect its public pages using browser automation. "
+        "Public pages only; no logins, ticket submissions, order modifications, or account actions. "
+        "Task will not begin until approval is verified."
+    )
+    return title, message
 @app.post("/api/v1/notifications", status_code=201)
 def create_openclaw_notification(payload: NotificationCreate, authorization: str | None = Header(default=None)):
     if not _openclaw_authorized(authorization):
@@ -685,9 +702,10 @@ def create_openclaw_notification(payload: NotificationCreate, authorization: str
         if payload.task_specification is not None:
             # Keep agent-authored prose and metadata out of the executable
             # authorization record and human approval UI.
+            display_title, display_message = _task_notification_copy(payload.task_specification)
             notification_values.update({
-                "title": "Public website inspection",
-                "message": "Inspect the approved public website.",
+                "title": display_title,
+                "message": display_message,
                 "recipient": "all_human_agents",
                 "status": "new",
                 "severity": "warning",
