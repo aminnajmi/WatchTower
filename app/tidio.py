@@ -51,6 +51,7 @@ class TidioMonitor:
 
     def _diagnose_page(self, page: Page) -> None:
         page.on("requestfailed", lambda request: self._log_request_failure(request))
+        page.on("response", lambda response: self._log_browser_response(response))
         page.on("console", lambda message: logger.warning("Tidio browser console error type=%s", message.type) if message.type == "error" else None)
         page.on("pageerror", lambda error: logger.warning("Tidio browser page error type=%s", type(error).__name__))
         page.on("crash", lambda: logger.error("Tidio Chromium page crashed"))
@@ -61,6 +62,19 @@ class TidioMonitor:
         host = parsed.hostname or "unknown"
         kind = "recaptcha" if "recaptcha" in host or "recaptcha" in parsed.path else "request"
         logger.warning("Tidio browser %s request failed host=%s resource=%s error=%s", kind, host, request.resource_type, (request.failure or "unknown")[:160])
+
+    @staticmethod
+    def _log_browser_response(response) -> None:
+        parsed = urlparse(response.url)
+        if parsed.hostname not in {"code.tidio.co", "www.google.com", "www.recaptcha.net"}:
+            return
+        headers = response.headers
+        content_type = headers.get("content-type", "unknown").split(";", 1)[0][:80]
+        nosniff = headers.get("x-content-type-options", "absent")[:40]
+        logger.warning(
+            "Tidio browser resource response host=%s resource=%s status=%s content_type=%s nosniff=%s",
+            parsed.hostname, response.request.resource_type, response.status, content_type, nosniff,
+        )
 
     @property
     def snapshot(self) -> TidioSnapshot:
@@ -219,9 +233,11 @@ class TidioMonitor:
             pass
         if "/panel/login" in urlparse(page.url).path:
             body = (await page.locator("body").inner_text()).lower()
-            if "recaptcha" in body or "two-factor" in body or "verification" in body or "authentication required" in body:
+            if any(term in body for term in ("recaptcha", "captcha", "two-factor", "verification", "authentication required", "verify you are human")):
                 raise RuntimeError("Tidio requires additional browser verification")
-            raise RuntimeError("Tidio rejected the supplied credentials")
+            if any(term in body for term in ("incorrect password", "invalid credentials", "email or password is incorrect", "wrong password")):
+                raise RuntimeError("Tidio rejected the supplied credentials")
+            raise RuntimeError("Tidio sign-in did not complete; credentials were not confirmed")
         await self._open_inbox()
         await self._save_session()
 
