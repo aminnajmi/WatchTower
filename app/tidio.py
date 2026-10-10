@@ -19,7 +19,7 @@ from .models import SessionLocal, TidioConnection
 
 logger = logging.getLogger(__name__)
 
-TIDIO_LOGIN_URL = "https://www.tidio.com/panel/login"
+TIDIO_INBOX_URL = "https://www.tidio.com/panel/inbox/operators/conversations/allOperators"
 POLL_SECONDS = 3
 
 
@@ -167,18 +167,31 @@ class TidioMonitor:
     async def _login(self, username: str, password: str) -> None:
         assert self._page is not None
         page = self._page
-        await page.goto(TIDIO_LOGIN_URL, wait_until="domcontentloaded", timeout=30_000)
-        if "/panel/login" not in urlparse(page.url).path:
-            await self._open_inbox()
-            await self._save_session()
-            return
-        email = await self._find_visible_input((
-            'input[type="email"]', 'input[autocomplete="username"]',
-            'input[name*="email" i]', 'input[name*="user" i]',
-            'input[type="text"]', 'input:not([type])',
-            '[role="textbox"]', '[contenteditable="true"]', 'textarea',
-            'input:not([type="hidden"])',
-        ))
+        await page.goto(TIDIO_INBOX_URL, wait_until="domcontentloaded", timeout=30_000)
+        current_path = urlparse(page.url).path
+        if "/panel/login" not in current_path:
+            email = await self._find_visible_input((
+                'input[type="email"]', 'input[autocomplete="username"]',
+                'input[name*="email" i]', 'input[name*="user" i]',
+                'input[type="text"]', 'input:not([type])',
+                '[role="textbox"]', '[contenteditable="true"]', 'textarea',
+                'input:not([type="hidden"])',
+            ), timeout_ms=500)
+            body = (await page.locator("body").inner_text(timeout=3_000)).lower()
+            if email is None and "unassigned" in body:
+                await self._open_inbox()
+                await self._save_session()
+                return
+            if email is None:
+                await self._raise_login_page_state("Tidio did not show an authenticated inbox or login form")
+        else:
+            email = await self._find_visible_input((
+                'input[type="email"]', 'input[autocomplete="username"]',
+                'input[name*="email" i]', 'input[name*="user" i]',
+                'input[type="text"]', 'input:not([type])',
+                '[role="textbox"]', '[contenteditable="true"]', 'textarea',
+                'input:not([type="hidden"])',
+            ))
         if email is None:
             await self._raise_login_page_state("Tidio username field was not found")
         await email.fill(username)
@@ -264,14 +277,9 @@ class TidioMonitor:
         assert self._page is not None
         page = self._page
         try:
-            inbox = page.get_by_text("Inbox", exact=True).first
-            if await inbox.is_visible(timeout=2_000):
-                await inbox.click()
-                await page.wait_for_timeout(500)
-        except Exception:
-            # The login destination may already be the Inbox. Monitoring will
-            # validate the presence of the Unassigned view on the next check.
-            pass
+            await page.goto(TIDIO_INBOX_URL, wait_until="domcontentloaded", timeout=30_000)
+        except Exception as exc:
+            logger.warning("Tidio inbox navigation failed type=%s", type(exc).__name__)
 
     def _start_monitor_task(self) -> None:
         self._stop_monitor_task()
