@@ -34,6 +34,7 @@ from .auth import (
 from .config import settings
 from .models import init_db, SessionLocal, OSRelease, ReleaseHistory, ReleaseEvent, User, Notification
 from .schemas import UserCreate, UserUpdate, PasswordReset, PasswordChange, NotificationCreate
+from .task_spec import TaskSpecification, canonical_task_json, task_digest
 from .notifications.telegram import (
     send_test as send_telegram_test,
     send_support_sales_test as send_support_sales_telegram_test,
@@ -546,6 +547,11 @@ def _serialize_notification(notification: Notification) -> dict:
         "approval_status": notification.approval_status,
         "action_id": notification.action_id,
         "approval_expires_at": _utc_timestamp(notification.approval_expires_at),
+        "task_schema_version": notification.task_schema_version,
+        "task_type": notification.task_type,
+        "task_specification": json.loads(notification.task_specification) if notification.task_specification else None,
+        "task_spec_sha256": notification.task_spec_sha256,
+        "created_by": notification.created_by,
         "approved_by": notification.approved_by,
         "approved_at": _utc_timestamp(notification.approved_at),
         "denial_reason": notification.denial_reason,
@@ -573,6 +579,11 @@ def _validate_notification_payload(payload: NotificationCreate) -> None:
         raise HTTPException(status_code=422, detail="Approval requests must use pending approval status")
     if payload.approval_expires_at is not None and not payload.requires_approval:
         raise HTTPException(status_code=422, detail="Only approval requests may have an approval expiration")
+    if payload.task_specification is not None:
+        if not payload.requires_approval:
+            raise HTTPException(status_code=422, detail="Task specifications require human approval")
+        if payload.approval_status is not None:
+            raise HTTPException(status_code=422, detail="Task creation cannot include an approval decision")
     if len(json.dumps(payload.metadata, ensure_ascii=False)) > 10000:
         raise HTTPException(status_code=413, detail="Notification metadata is too large")
 
@@ -607,6 +618,31 @@ def _approval_action_id(payload: NotificationCreate) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
+def _task_binding_is_valid(notification: Notification) -> bool:
+    binding_values = (
+        notification.task_specification, notification.task_spec_sha256,
+        notification.task_schema_version, notification.task_type, notification.created_by,
+    )
+    if not any(value is not None for value in binding_values):
+        return True  # A legacy approval remains readable, but has no task authorization.
+    if not all(value is not None for value in binding_values):
+        return False
+    try:
+        spec = TaskSpecification.model_validate_json(notification.task_specification)
+        canonical = canonical_task_json(spec)
+        digest = task_digest(canonical)
+    except Exception:
+        return False
+    return (
+        canonical == notification.task_specification
+        and notification.task_schema_version == spec.schema_version
+        and notification.task_type == spec.task_type
+        and notification.action_id is not None
+        and hmac.compare_digest(notification.task_spec_sha256, digest)
+        and hmac.compare_digest(notification.action_id, digest)
+    )
+
+
 @app.post("/api/v1/notifications", status_code=201)
 def create_openclaw_notification(payload: NotificationCreate, authorization: str | None = Header(default=None)):
     if not _openclaw_authorized(authorization):
@@ -617,6 +653,7 @@ def create_openclaw_notification(payload: NotificationCreate, authorization: str
     action_id = None
     approval_expires_at = None
     approval_owner_hash = None
+    task_fields = {}
     if payload.requires_approval:
         now = datetime.now(timezone.utc).replace(tzinfo=None)
         approval_expires_at = payload.approval_expires_at
@@ -630,15 +667,47 @@ def create_openclaw_notification(payload: NotificationCreate, authorization: str
         approval_owner_hash = _openclaw_key_fingerprint(authorization)
         if approval_owner_hash is None:
             raise HTTPException(status_code=401, detail="Valid OpenClaw notification credentials required")
+        if payload.task_specification is not None:
+            canonical = canonical_task_json(payload.task_specification)
+            # Keep the existing action identifier tied to the immutable task
+            # for consumers that already use action_id as an approval binding.
+            action_id = task_digest(canonical)
+            task_fields = {
+                "task_specification": canonical,
+                "task_spec_sha256": task_digest(canonical),
+                "task_schema_version": payload.task_specification.schema_version,
+                "task_type": payload.task_specification.task_type,
+                "created_by": f"openclaw:{approval_owner_hash}",
+            }
     try:
+        notification_values = payload.model_dump(exclude={"approval_expires_at", "task_specification"})
+        if payload.task_specification is not None:
+            # Keep agent-authored prose and metadata out of the executable
+            # authorization record and human approval UI.
+            notification_values.update({
+                "title": "Public website inspection",
+                "message": f"Inspect up to {payload.task_specification.parameters.max_pages} public pages.",
+                "recipient": "all_human_agents",
+                "status": "new",
+                "severity": "warning",
+                "metadata": {},
+                "task_id": None,
+                "task_name": "Public website inspection",
+                "report_id": None,
+                "external_url": None,
+                "completed_at": None,
+            })
         notification = create_notification(
-            **payload.model_dump(exclude={"approval_expires_at"}),
+            **notification_values,
             action_id=action_id,
             approval_expires_at=approval_expires_at,
             approval_owner_hash=approval_owner_hash,
+            **task_fields,
         )
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
+    if task_fields:
+        logger.info("approval_task_created actor=%s notification_id=%s task_type=%s sha256=%s", task_fields["created_by"], notification.id, notification.task_type, notification.task_spec_sha256)
     return _serialize_notification(notification)
 
 
@@ -757,16 +826,35 @@ def get_openclaw_approval_decision(
         if action_id is not None and not hmac.compare_digest(notification.action_id, action_id):
             raise HTTPException(status_code=404, detail="Approval request not found")
         if notification.approval_expires_at <= datetime.utcnow():
+            if notification.task_specification:
+                logger.info("approval_task_expired notification_id=%s task_sha256=%s", notification.id, notification.task_spec_sha256)
             raise HTTPException(status_code=410, detail="Approval request has expired")
         if notification.approval_status not in {"pending", "approved", "denied"}:
             raise HTTPException(status_code=409, detail="Approval decision is unavailable")
-        return {
+        if not _task_binding_is_valid(notification):
+            raise HTTPException(status_code=409, detail="Task specification integrity check failed")
+        result = {
             "notification_id": notification.id,
             "requires_approval": True,
             "approval_status": notification.approval_status,
             "action_id": notification.action_id,
             "approval_expires_at": _utc_timestamp(notification.approval_expires_at),
         }
+        if notification.task_specification is not None:
+            try:
+                stored_spec = TaskSpecification.model_validate_json(notification.task_specification)
+                canonical = canonical_task_json(stored_spec)
+                digest = task_digest(canonical)
+            except Exception:
+                raise HTTPException(status_code=409, detail="Task specification is unavailable")
+            if canonical != notification.task_specification or not notification.task_spec_sha256 or not hmac.compare_digest(digest, notification.task_spec_sha256):
+                raise HTTPException(status_code=409, detail="Task specification integrity check failed")
+            result.update({
+                "task_schema_version": notification.task_schema_version,
+                "task_specification": stored_spec.model_dump(mode="json"),
+                "task_spec_sha256": digest,
+            })
+        return result
     finally:
         db.close()
 
@@ -790,6 +878,11 @@ def test_notification(current: Principal = Depends(require_admin)):
 def approve_notification(notification_id: int, current: Principal = Depends(authenticate_token)):
     db = SessionLocal()
     try:
+        if current.role not in {"admin", "user"}:
+            raise HTTPException(status_code=403, detail="Human approval role required")
+        existing = db.get(Notification, notification_id)
+        if existing is not None and not _task_binding_is_valid(existing):
+            raise HTTPException(status_code=409, detail="Task specification integrity check failed")
         now = datetime.utcnow()
         result = db.execute(
             update(Notification)
@@ -815,11 +908,15 @@ def approve_notification(notification_id: int, current: Principal = Depends(auth
             if not notification.requires_approval:
                 raise HTTPException(status_code=409, detail="This notification does not require approval")
             if notification.approval_expires_at is not None and notification.approval_expires_at <= now:
+                if notification.task_specification:
+                    logger.info("approval_task_expired notification_id=%s task_sha256=%s", notification.id, notification.task_spec_sha256)
                 raise HTTPException(status_code=410, detail="This approval request has expired")
             raise HTTPException(status_code=409, detail=f"Notification is already {notification.approval_status}")
         db.commit()
         notification = db.get(Notification, notification_id)
         logger.info("notification_decision actor=%s notification_id=%s decision=approved task_id=%s", current.username, notification.id, notification.task_id)
+        if notification.task_specification:
+            logger.info("approval_task_decision actor=%s notification_id=%s decision=approved task_sha256=%s", current.username, notification.id, notification.task_spec_sha256)
         return _serialize_notification(notification)
     finally:
         db.close()
@@ -839,6 +936,8 @@ def deny_notification(
         raise HTTPException(status_code=422, detail="Denial reason is too long")
     db = SessionLocal()
     try:
+        if current.role not in {"admin", "user"}:
+            raise HTTPException(status_code=403, detail="Human approval role required")
         now = datetime.utcnow()
         result = db.execute(
             update(Notification)
@@ -864,11 +963,15 @@ def deny_notification(
             if not notification.requires_approval:
                 raise HTTPException(status_code=409, detail="This notification does not require approval")
             if notification.approval_expires_at is not None and notification.approval_expires_at <= now:
+                if notification.task_specification:
+                    logger.info("approval_task_expired notification_id=%s task_sha256=%s", notification.id, notification.task_spec_sha256)
                 raise HTTPException(status_code=410, detail="This approval request has expired")
             raise HTTPException(status_code=409, detail=f"Notification is already {notification.approval_status}")
         db.commit()
         notification = db.get(Notification, notification_id)
         logger.info("notification_decision actor=%s notification_id=%s decision=denied task_id=%s", current.username, notification.id, notification.task_id)
+        if notification.task_specification:
+            logger.info("approval_task_decision actor=%s notification_id=%s decision=denied task_sha256=%s", current.username, notification.id, notification.task_spec_sha256)
         return _serialize_notification(notification)
     finally:
         db.close()

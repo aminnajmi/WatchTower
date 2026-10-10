@@ -1,4 +1,7 @@
 import os
+import hashlib
+import json
+from concurrent.futures import ThreadPoolExecutor
 import tempfile
 import unittest
 from datetime import datetime, timedelta, timezone
@@ -81,6 +84,10 @@ class NotificationCenterTests(unittest.TestCase):
         self.assertNotIn("notificationSoundEnabled", script)
         self.assertIn("await loadNotifications({ silent: true })", script)
         self.assertIn("result.unread_count", script)
+        self.assertIn("notification-task-details", script)
+        self.assertIn("Exact target", script)
+        self.assertIn("task_spec_sha256", script)
+        self.assertIn("escapeHtml(JSON.stringify(task.parameters", script)
         self.assertNotIn("initializeNotificationTest", script)
         self.assertEqual(script.count("api('/api/v1/notifications/test'"), 1)
 
@@ -157,6 +164,87 @@ class NotificationCenterTests(unittest.TestCase):
         response = self.client.get(f"/api/v1/notifications/{item['id']}", headers={"Authorization": "Bearer openclaw-test-key"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["approval_status"], "approved")
+
+    def test_task_bound_approval_is_canonical_immutable_and_verifiable(self):
+        headers = {"Authorization": "Bearer openclaw-test-key"}
+        body = {
+            "source": "openclaw", "title": "Inspect public site", "message": "Review pages",
+            "requires_approval": True,
+            "task_specification": {
+                "schema_version": 1, "task_type": "public_website_inspection",
+                "target": "HTTPS://OperaVPS.com:443", "parameters": {"scope": "public_pages", "max_pages": 5},
+            },
+        }
+        created = self.client.post("/api/v1/notifications", headers=headers, json=body)
+        self.assertEqual(created.status_code, 201, created.text)
+        notification = created.json()
+        expected_spec = {
+            "schema_version": 1, "task_type": "public_website_inspection",
+            "target": "https://operavps.com/", "parameters": {"scope": "public_pages", "max_pages": 5},
+        }
+        canonical = json.dumps(expected_spec, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        expected_digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+        self.assertEqual(notification["task_specification"], expected_spec)
+        self.assertEqual(notification["task_spec_sha256"], expected_digest)
+        self.assertEqual(notification["action_id"], expected_digest)
+        self.assertEqual(notification["task_schema_version"], 1)
+        self.assertTrue(notification["created_by"].startswith("openclaw:"))
+
+        decision_url = f"/api/v1/notifications/{notification['id']}/approval"
+        approval = self.client.get(decision_url, headers=headers)
+        self.assertEqual(approval.status_code, 200, approval.text)
+        self.assertEqual(approval.json()["task_spec_sha256"], expected_digest)
+        self.assertEqual(approval.json()["task_specification"], expected_spec)
+        self.assertEqual(self.client.put(f"/api/v1/notifications/{notification['id']}", headers=self.admin_headers, json={"task_specification": {}}).status_code, 405)
+
+        approved = self.client.post(f"/api/v1/notifications/{notification['id']}/approve", headers=self.user_headers)
+        self.assertEqual(approved.status_code, 200, approved.text)
+        self.assertEqual(approved.json()["approved_by"], "viewer")
+        self.assertIsNotNone(approved.json()["approved_at"])
+
+    def test_task_bound_creation_rejects_unsupported_or_unsafe_specs_and_client_decisions(self):
+        headers = {"Authorization": "Bearer openclaw-test-key"}
+        base = {"source": "openclaw", "title": "Inspect", "message": "Review", "requires_approval": True}
+        invalid_specs = [
+            {"schema_version": 1, "task_type": "shell", "target": "https://example.com", "parameters": {"scope": "public_pages", "max_pages": 5}},
+            {"schema_version": 1, "task_type": "public_website_inspection", "target": "https://user:secret@example.com", "parameters": {"scope": "public_pages", "max_pages": 5}},
+            {"schema_version": 1, "task_type": "public_website_inspection", "target": "http://127.0.0.1", "parameters": {"scope": "public_pages", "max_pages": 5}},
+            {"schema_version": 1, "task_type": "public_website_inspection", "target": "https://example.com/#fragment", "parameters": {"scope": "public_pages", "max_pages": 5}},
+            {"schema_version": 1, "task_type": "public_website_inspection", "target": "https://example.com", "parameters": {"scope": "public_pages", "max_pages": 5, "command": "whoami"}},
+        ]
+        for specification in invalid_specs:
+            response = self.client.post("/api/v1/notifications", headers=headers, json={**base, "task_specification": specification})
+            self.assertEqual(response.status_code, 422, response.text)
+        with_decision = self.client.post("/api/v1/notifications", headers=headers, json={
+            **base, "approval_status": "pending", "task_specification": invalid_specs[1],
+        })
+        self.assertEqual(with_decision.status_code, 422)
+
+    def test_task_binding_corruption_fails_closed(self):
+        created = self.client.post("/api/v1/notifications", headers={"Authorization": "Bearer openclaw-test-key"}, json={
+            "source": "openclaw", "title": "Inspect", "message": "Review", "requires_approval": True,
+            "task_specification": {"schema_version": 1, "task_type": "public_website_inspection", "target": "https://example.com"},
+        })
+        self.assertEqual(created.status_code, 201, created.text)
+        item = created.json()
+        with self.sessions.begin() as db:
+            row = db.get(models.Notification, item["id"])
+            row.task_specification = row.task_specification.replace("example.com", "other.example")
+        response = self.client.get(f"/api/v1/notifications/{item['id']}/approval", headers={"Authorization": "Bearer openclaw-test-key"})
+        self.assertEqual(response.status_code, 409)
+        approved = self.client.post(f"/api/v1/notifications/{item['id']}/approve", headers=self.user_headers)
+        self.assertEqual(approved.status_code, 409)
+
+    def test_concurrent_task_decisions_allow_only_one_transition(self):
+        created = self.client.post("/api/v1/notifications", headers={"Authorization": "Bearer openclaw-test-key"}, json={
+            "source": "openclaw", "title": "Inspect", "message": "Review", "requires_approval": True,
+            "task_specification": {"schema_version": 1, "task_type": "public_website_inspection", "target": "https://example.com"},
+        })
+        self.assertEqual(created.status_code, 201, created.text)
+        path = f"/api/v1/notifications/{created.json()['id']}/approve"
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            responses = list(pool.map(lambda _: self.client.post(path, headers=self.user_headers), range(2)))
+        self.assertEqual(sorted(response.status_code for response in responses), [200, 409])
 
     def test_openclaw_approval_decision_endpoint_is_key_owned_action_bound_and_read_only(self):
         headers = {"Authorization": "Bearer openclaw-test-key"}
@@ -327,7 +415,7 @@ class NotificationCenterTests(unittest.TestCase):
                 with legacy_engine.connect() as conn:
                     columns = {row["name"] for row in inspect(legacy_engine).get_columns("notifications")}
                     row = conn.exec_driver_sql("SELECT action_id, approval_expires_at, approval_owner_hash FROM notifications WHERE id = 1").one()
-                self.assertTrue({"action_id", "approval_expires_at", "approval_owner_hash"}.issubset(columns))
+                self.assertTrue({"action_id", "approval_expires_at", "approval_owner_hash", "task_specification", "task_spec_sha256", "task_schema_version", "task_type", "created_by"}.issubset(columns))
                 self.assertEqual(row, (None, None, None))
             finally:
                 legacy_engine.dispose()

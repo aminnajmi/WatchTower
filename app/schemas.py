@@ -1,6 +1,7 @@
 from datetime import datetime
 import re
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from .task_spec import TaskSpecification
 
 
 class UserCreate(BaseModel):
@@ -137,6 +138,7 @@ class NotificationCreate(BaseModel):
     metadata: dict = Field(default_factory=dict)
     completed_at: datetime | None = None
     external_url: str | None = Field(default=None, max_length=2000)
+    task_specification: TaskSpecification | None = None
 
     @field_validator("source", "recipient", "status", "severity")
     @classmethod

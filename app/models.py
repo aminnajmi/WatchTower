@@ -70,6 +70,13 @@ class Notification(Base):
     action_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
     approval_expires_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     approval_owner_hash: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    # Nullable task binding fields keep pre-existing notifications readable.
+    # A row with no specification is never an execution authorization.
+    task_specification: Mapped[str | None] = mapped_column(Text, nullable=True)
+    task_spec_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    task_schema_version: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    task_type: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    created_by: Mapped[str | None] = mapped_column(String(128), nullable=True)
     approved_by: Mapped[str | None] = mapped_column(String(32), nullable=True)
     approved_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     denial_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -129,6 +136,11 @@ def _migrate_notification_approval_fields(database_engine=engine):
         "action_id": "VARCHAR(64)",
         "approval_expires_at": "TIMESTAMP",
         "approval_owner_hash": "VARCHAR(64)",
+        "task_specification": "TEXT",
+        "task_spec_sha256": "VARCHAR(64)",
+        "task_schema_version": "INTEGER",
+        "task_type": "VARCHAR(80)",
+        "created_by": "VARCHAR(128)",
     }
     with database_engine.begin() as conn:
         for name, sql_type in migrations.items():

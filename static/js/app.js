@@ -647,7 +647,7 @@
   }
 
   function notificationApprovalLabel(status) {
-    return ({ pending: 'Pending approval', approved: 'Approved', denied: 'Denied', not_required: 'No approval required' }[status] || 'Unknown');
+    return ({ pending: 'Pending approval', approved: 'Approved', denied: 'Denied', expired: 'Expired', not_required: 'No approval required' }[status] || 'Unknown');
   }
 
   function renderNotification(notification) {
@@ -668,6 +668,20 @@
       : notification.requires_approval
         ? `<div class="notification-decision"><strong>${escapeHtml(notificationApprovalLabel(notification.approval_status))}</strong>${notification.approved_by ? ` by ${escapeHtml(notification.approved_by)}` : ''}${notification.denial_reason ? ` — ${escapeHtml(notification.denial_reason)}` : ''}</div>`
         : '';
+    const task = notification.task_specification && typeof notification.task_specification === 'object'
+      ? notification.task_specification : null;
+    const taskDetails = task ? `<section class="notification-task-details" aria-label="Approved task specification">
+      <h3>${escapeHtml(notification.task_name || notification.title || 'Task')}</h3>
+      <dl><dt>Task type</dt><dd>${escapeHtml(task.task_type || notification.task_type || 'Unknown')}</dd>
+      <dt>Exact target</dt><dd>${escapeHtml(task.target || '')}</dd>
+      <dt>Parameters and scope</dt><dd><pre>${escapeHtml(JSON.stringify(task.parameters || {}, null, 2))}</pre></dd>
+      <dt>Requesting agent</dt><dd>${escapeHtml(notification.created_by || 'OpenClaw')}</dd>
+      <dt>Created</dt><dd>${escapeHtml(dateText(notification.created_at))}</dd>
+      <dt>Expires</dt><dd>${escapeHtml(dateText(notification.approval_expires_at))}</dd>
+      <dt>Schema version</dt><dd>${escapeHtml(String(task.schema_version || notification.task_schema_version || ''))}</dd>
+      <dt>Task SHA-256</dt><dd><code>${escapeHtml(notification.task_spec_sha256 || '')}</code></dd>
+      ${notification.approved_by ? `<dt>Decision</dt><dd>${escapeHtml(notification.approved_by)} · ${escapeHtml(dateText(notification.approved_at))}</dd>` : ''}</dl>
+    </section>` : '';
 
     return `<article class="notification-card severity-${escapeHtml(notification.severity || 'info')} ${notification.requires_approval && notification.approval_status === 'pending' ? 'requires-approval' : ''}">
       <div class="notification-card-header">
@@ -676,6 +690,7 @@
         <span class="muted small" title="${escapeHtml(dateText(notification.created_at))}">${escapeHtml(relativeTime(notification.created_at))}</span>
       </div>
       <p class="notification-message">${escapeHtml(notification.message)}</p>
+      ${taskDetails}
       ${chips.length ? `<div class="notification-meta">${chips.join('')}</div>` : ''}
       ${approvalActions}
       <div class="notification-card-footer"><span>${escapeHtml(dateText(notification.created_at))}</span>${notification.external_url ? `<a href="${escapeHtml(notification.external_url)}" target="_blank" rel="noopener noreferrer">View report ↗</a>` : ''}</div>
