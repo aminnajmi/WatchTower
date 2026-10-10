@@ -138,3 +138,17 @@ def test_tidio_inbox_render_wait_is_bounded():
 
     monitor._page = Page()
     assert asyncio.run(monitor._wait_for_inbox_content(timeout_ms=0)) is False
+
+
+def test_tidio_console_diagnostics_redact_error_text(caplog):
+    class Message:
+        type = "error"
+        text = "Uncaught TypeError: secret-token-value was rejected"
+        location = {"url": "https://code.tidio.co/app.js?token=secret", "lineNumber": 42}
+
+    TidioMonitor._log_console_error(Message())
+
+    assert "category=type_error" in caplog.text
+    assert "host=code.tidio.co" in caplog.text
+    assert "secret-token-value" not in caplog.text
+    assert "token=secret" not in caplog.text

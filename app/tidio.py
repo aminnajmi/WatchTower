@@ -53,9 +53,35 @@ class TidioMonitor:
     def _diagnose_page(self, page: Page) -> None:
         page.on("requestfailed", lambda request: self._log_request_failure(request))
         page.on("response", lambda response: self._log_browser_response(response))
-        page.on("console", lambda message: logger.warning("Tidio browser console error type=%s", message.type) if message.type == "error" else None)
+        page.on("console", self._log_console_error)
         page.on("pageerror", lambda error: logger.warning("Tidio browser page error type=%s", type(error).__name__))
         page.on("crash", lambda: logger.error("Tidio Chromium page crashed"))
+
+    @staticmethod
+    def _log_console_error(message) -> None:
+        if message.type != "error":
+            return
+        text = message.text.lower()
+        if "typeerror" in text:
+            category = "type_error"
+        elif "referenceerror" in text:
+            category = "reference_error"
+        elif "syntaxerror" in text:
+            category = "syntax_error"
+        elif "securityerror" in text:
+            category = "security_error"
+        elif "failed to load resource" in text:
+            category = "resource_load"
+        elif "net::err_" in text:
+            category = "network_error"
+        elif "unhandled promise" in text or "uncaught (in promise)" in text:
+            category = "promise_error"
+        else:
+            category = "script_error"
+        location = message.location or {}
+        host = urlparse(location.get("url", "")).hostname or "unknown"
+        line = location.get("lineNumber", 0)
+        logger.warning("Tidio browser console error category=%s host=%s line=%s", category, host, line)
 
     @property
     def authentication_interaction_available(self) -> bool:
