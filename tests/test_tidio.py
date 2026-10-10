@@ -84,3 +84,57 @@ def test_tidio_keeps_browser_open_for_manual_verification(monkeypatch):
     assert snapshot.status == "authentication_required"
     assert monitor.authentication_interaction_available
     assert close_browser.await_count == 1  # Startup cleanup only; keep challenge browser open.
+
+
+def test_tidio_waits_for_inbox_client_render():
+    monitor = TidioMonitor()
+
+    class Body:
+        reads = 0
+
+        async def inner_text(self, timeout):
+            self.reads += 1
+            return "Unassigned" if self.reads > 1 else "Tidio"
+
+    class Page:
+        url = "https://www.tidio.com/panel/inbox/operators/conversations/allOperators"
+
+        def __init__(self):
+            self.body = Body()
+
+        @staticmethod
+        def is_closed():
+            return False
+
+        def locator(self, _selector):
+            return self.body
+
+        @staticmethod
+        async def wait_for_timeout(_timeout):
+            await asyncio.sleep(0)
+
+    monitor._page = Page()
+    assert asyncio.run(monitor._wait_for_inbox_content(timeout_ms=1_000)) is True
+
+
+def test_tidio_inbox_render_wait_is_bounded():
+    monitor = TidioMonitor()
+
+    class Body:
+        @staticmethod
+        async def inner_text(timeout):
+            return "Tidio"
+
+    class Page:
+        url = "https://www.tidio.com/panel/inbox/operators/conversations/allOperators"
+
+        @staticmethod
+        def is_closed():
+            return False
+
+        @staticmethod
+        def locator(_selector):
+            return Body()
+
+    monitor._page = Page()
+    assert asyncio.run(monitor._wait_for_inbox_content(timeout_ms=0)) is False

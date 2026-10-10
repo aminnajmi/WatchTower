@@ -168,13 +168,17 @@ class TidioMonitor:
         async with self._lock:
             if not self.authentication_interaction_available or not self._page:
                 raise RuntimeError("No interactive Tidio verification session is active")
-            await self._open_inbox()
+            inbox_loaded = await self._open_inbox()
             if "/panel/login" in urlparse(self._page.url).path:
                 self._snapshot = TidioSnapshot(False, "authentication_required", error="Authentication Required: finish Tidio verification in the browser view")
                 return self._snapshot
-            body = (await self._page.locator("body").inner_text(timeout=10_000)).lower()
-            if "unassigned" not in body:
-                self._snapshot = TidioSnapshot(False, "authentication_required", error="Tidio verification is not complete; the inbox has not loaded")
+            if not inbox_loaded:
+                if await self._verification_required():
+                    error = "Authentication Required: finish Tidio verification in the browser view"
+                else:
+                    await self._log_inbox_not_rendered()
+                    error = "Tidio inbox has not rendered yet; review the browser diagnostics and try again"
+                self._snapshot = TidioSnapshot(False, "authentication_required", error=error)
                 return self._snapshot
             db = SessionLocal()
             try:
@@ -274,7 +278,8 @@ class TidioMonitor:
             ), timeout_ms=500)
             body = (await page.locator("body").inner_text(timeout=3_000)).lower()
             if email is None and "unassigned" in body:
-                await self._open_inbox()
+                if not await self._open_inbox():
+                    await self._raise_login_page_state("Tidio inbox did not render after restoring the session")
                 await self._save_session()
                 return
             if email is None:
@@ -313,7 +318,8 @@ class TidioMonitor:
             if any(term in body for term in ("incorrect password", "invalid credentials", "email or password is incorrect", "wrong password")):
                 raise RuntimeError("Tidio rejected the supplied credentials")
             raise RuntimeError("Tidio sign-in did not complete; credentials were not confirmed")
-        await self._open_inbox()
+        if not await self._open_inbox():
+            await self._raise_login_page_state("Tidio inbox did not render after sign-in")
         await self._save_session()
 
     async def _find_visible_input(self, selectors: tuple[str, ...], timeout_ms: int = 2_000):
@@ -397,13 +403,54 @@ class TidioMonitor:
         except Exception as exc:
             logger.warning("Tidio browser session could not be persisted type=%s", type(exc).__name__)
 
-    async def _open_inbox(self) -> None:
+    async def _open_inbox(self) -> bool:
         assert self._page is not None
         page = self._page
         try:
             await page.goto(TIDIO_INBOX_URL, wait_until="domcontentloaded", timeout=30_000)
+            return await self._wait_for_inbox_content()
         except Exception as exc:
             logger.warning("Tidio inbox navigation failed type=%s", type(exc).__name__)
+            return False
+
+    async def _wait_for_inbox_content(self, timeout_ms: int = 15_000) -> bool:
+        """Allow Tidio's client-side inbox to hydrate without waiting for analytics idle."""
+        assert self._page is not None
+        deadline = asyncio.get_running_loop().time() + timeout_ms / 1000
+        while True:
+            if self._page.is_closed():
+                return False
+            remaining = deadline - asyncio.get_running_loop().time()
+            if remaining <= 0:
+                return False
+            try:
+                body = await self._page.locator("body").inner_text(timeout=max(1, min(500, int(remaining * 1000))))
+                if "unassigned" in body.lower():
+                    return True
+            except Exception:
+                pass
+            if "/panel/login" in urlparse(self._page.url).path:
+                return False
+            remaining = deadline - asyncio.get_running_loop().time()
+            if remaining <= 0:
+                return False
+            await self._page.wait_for_timeout(min(500, int(remaining * 1000)))
+
+    async def _log_inbox_not_rendered(self) -> None:
+        """Log page metadata only; never include page text, form values, or URLs with queries."""
+        assert self._page is not None
+        page = self._page
+        try:
+            ready_state = await page.evaluate("() => document.readyState")
+            body_chars = await page.locator("body").evaluate("node => (node.innerText || '').length")
+            has_login_input = await page.locator('input[type="password"], input[autocomplete="username"]').count() > 0
+        except Exception:
+            ready_state, body_chars, has_login_input = "unavailable", -1, False
+        frame_hosts = sorted({urlparse(frame.url).hostname or "about:blank" for frame in page.frames})[:8]
+        logger.warning(
+            "Tidio inbox did not render path=%s ready_state=%s body_chars=%s login_input=%s frame_hosts=%s",
+            urlparse(page.url).path[:100], ready_state, body_chars, has_login_input, frame_hosts,
+        )
 
     def _start_monitor_task(self) -> None:
         self._stop_monitor_task()
