@@ -94,19 +94,28 @@ class TidioMonitor:
         parsed = urlparse(request.url)
         host = parsed.hostname or "unknown"
         kind = "recaptcha" if "recaptcha" in host or "recaptcha" in parsed.path else "request"
-        logger.warning("Tidio browser %s request failed host=%s resource=%s error=%s", kind, host, request.resource_type, (request.failure or "unknown")[:160])
+        if kind == "recaptcha":
+            logger.warning(
+                "Tidio browser recaptcha request failed host=%s path=%s resource=%s error=%s",
+                host, parsed.path[:120], request.resource_type, (request.failure or "unknown")[:160],
+            )
+        else:
+            logger.warning("Tidio browser request request failed host=%s resource=%s error=%s", host, request.resource_type, (request.failure or "unknown")[:160])
 
     @staticmethod
     def _log_browser_response(response) -> None:
         parsed = urlparse(response.url)
-        if parsed.hostname not in {"code.tidio.co", "www.google.com", "www.recaptcha.net"}:
+        host = parsed.hostname or "unknown"
+        recaptcha_resource = "recaptcha" in host or "recaptcha" in parsed.path.lower()
+        if host != "code.tidio.co" and not recaptcha_resource:
             return
         headers = response.headers
         content_type = headers.get("content-type", "unknown").split(";", 1)[0][:80]
         nosniff = headers.get("x-content-type-options", "absent")[:40]
         logger.warning(
-            "Tidio browser resource response host=%s resource=%s status=%s content_type=%s nosniff=%s",
-            parsed.hostname, response.request.resource_type, response.status, content_type, nosniff,
+            "Tidio browser resource response host=%s path=%s resource=%s status=%s content_type=%s nosniff=%s",
+            host, parsed.path[:120] if recaptcha_resource else "redacted",
+            response.request.resource_type, response.status, content_type, nosniff,
         )
 
     @property

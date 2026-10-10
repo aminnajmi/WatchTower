@@ -124,17 +124,17 @@
       "source_location": "L18"
     },
     {
-      "id": "tests_test_deployment_health_deploymentworkflowsafetytests",
-      "label": "DeploymentWorkflowSafetyTests",
+      "id": "tests_test_users_usermanagementtests",
+      "label": "UserManagementTests",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 0,
       "community_name": "auth.py",
       "file_type": "code",
-      "norm_label": "deploymentworkflowsafetytests",
-      "source_file": "tests/test_deployment_health.py",
-      "source_location": "L180"
+      "norm_label": "usermanagementtests",
+      "source_file": "tests/test_users.py",
+      "source_location": "L16"
     },
     {
       "id": "tests_test_versioning_checkservicetests",
@@ -200,19 +200,6 @@
       "norm_label": "tidioconnectrequest",
       "source_file": "app/main.py",
       "source_location": "L890"
-    },
-    {
-      "id": "app_main_websessionrequest",
-      "label": "WebSessionRequest",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "main.py",
-      "file_type": "code",
-      "norm_label": "websessionrequest",
-      "source_file": "app/main.py",
-      "source_location": "L125"
     },
     {
       "id": "app_schemas_checkresult",
@@ -306,30 +293,17 @@
       "source_location": "L43"
     },
     {
-      "id": "app_config_settings",
-      "label": "Settings",
+      "id": "app_auth_principal",
+      "label": "Principal",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 15,
-      "community_name": "scheduler.py",
+      "community": 16,
+      "community_name": "Principal",
       "file_type": "code",
-      "norm_label": "settings",
-      "source_file": "app/config.py",
-      "source_location": "L4"
-    },
-    {
-      "id": "tests_test_production_config_productionconfigtests",
-      "label": "ProductionConfigTests",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "scheduler.py",
-      "file_type": "code",
-      "norm_label": "productionconfigtests",
-      "source_file": "tests/test_production_config.py",
-      "source_location": "L9"
+      "norm_label": "principal",
+      "source_file": "app/auth.py",
+      "source_location": "L29"
     },
     {
       "id": "app_models_user",
@@ -338,11 +312,24 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "User",
+      "community_name": "Principal",
       "file_type": "code",
       "norm_label": "user",
       "source_file": "app/models.py",
       "source_location": "L13"
+    },
+    {
+      "id": "tests_test_telegram_telegramtestendpointtests",
+      "label": "TelegramTestEndpointTests",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "Principal",
+      "file_type": "code",
+      "norm_label": "telegramtestendpointtests",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L291"
     },
     {
       "id": "app_models_notification",
@@ -356,19 +343,6 @@
       "norm_label": "notification",
       "source_file": "app/models.py",
       "source_location": "L58"
-    },
-    {
-      "id": "app_auth_principal",
-      "label": "Principal",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": "principal",
-      "source_file": "app/auth.py",
-      "source_location": "L29"
     },
     {
       "id": "tests_test_notifications_center_notificationcentertests",
@@ -408,32 +382,6 @@
       "norm_label": "supportsalestelegramendpointtests",
       "source_file": "tests/test_telegram.py",
       "source_location": "L395"
-    },
-    {
-      "id": "tests_test_telegram_telegramtestendpointtests",
-      "label": "TelegramTestEndpointTests",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": "telegramtestendpointtests",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L291"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests",
-      "label": "UserManagementTests",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": "usermanagementtests",
-      "source_file": "tests/test_users.py",
-      "source_location": "L16"
     },
     {
       "id": "app_providers_almalinux_almalinuxprovider",
@@ -572,7 +520,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 20,
-      "community_name": "tidio.py",
+      "community_name": "test_tidio.py",
       "file_type": "code",
       "norm_label": "tidiosnapshot",
       "source_file": "app/tidio.py",
@@ -585,37 +533,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 22,
-      "community_name": "._reconnect",
+      "community_name": ".connect",
       "file_type": "code",
       "norm_label": "tidioconnection",
       "source_file": "app/models.py",
       "source_location": "L86"
-    },
-    {
-      "id": "tests_test_scheduler_fakeprovider",
-      "label": "FakeProvider",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": "fakeprovider",
-      "source_file": "tests/test_scheduler.py",
-      "source_location": "L20"
-    },
-    {
-      "id": "tests_test_scheduler_schedulerexecutiontests",
-      "label": "SchedulerExecutionTests",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": "schedulerexecutiontests",
-      "source_file": "tests/test_scheduler.py",
-      "source_location": "L33"
     },
     {
       "id": "tests_test_web_webdashboardtests",
@@ -623,7 +545,7 @@
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 47,
+      "community": 23,
       "community_name": "WebDashboardTests",
       "file_type": "code",
       "norm_label": "webdashboardtests",
@@ -636,12 +558,90 @@
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 6,
+      "community": 4,
       "community_name": "TidioMonitor",
       "file_type": "code",
       "norm_label": "tidiomonitor",
       "source_file": "app/tidio.py",
       "source_location": "L36"
+    },
+    {
+      "id": "tests_test_scheduler_fakeprovider",
+      "label": "FakeProvider",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "SchedulerExecutionTests",
+      "file_type": "code",
+      "norm_label": "fakeprovider",
+      "source_file": "tests/test_scheduler.py",
+      "source_location": "L20"
+    },
+    {
+      "id": "tests_test_scheduler_schedulerexecutiontests",
+      "label": "SchedulerExecutionTests",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "SchedulerExecutionTests",
+      "file_type": "code",
+      "norm_label": "schedulerexecutiontests",
+      "source_file": "tests/test_scheduler.py",
+      "source_location": "L33"
+    },
+    {
+      "id": "app_config_settings",
+      "label": "Settings",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "ProductionConfigTests",
+      "file_type": "code",
+      "norm_label": "settings",
+      "source_file": "app/config.py",
+      "source_location": "L4"
+    },
+    {
+      "id": "tests_test_production_config_productionconfigtests",
+      "label": "ProductionConfigTests",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "ProductionConfigTests",
+      "file_type": "code",
+      "norm_label": "productionconfigtests",
+      "source_file": "tests/test_production_config.py",
+      "source_location": "L9"
+    },
+    {
+      "id": "app_main_websessionrequest",
+      "label": "WebSessionRequest",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 52,
+      "community_name": "authenticate_token",
+      "file_type": "code",
+      "norm_label": "websessionrequest",
+      "source_file": "app/main.py",
+      "source_location": "L125"
+    },
+    {
+      "id": "tests_test_deployment_health_deploymentworkflowsafetytests",
+      "label": "DeploymentWorkflowSafetyTests",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 53,
+      "community_name": "DeploymentWorkflowSafetyTests",
+      "file_type": "code",
+      "norm_label": "deploymentworkflowsafetytests",
+      "source_file": "tests/test_deployment_health.py",
+      "source_location": "L180"
     },
     {
       "id": "tests_test_deployment_health_deploymenthealthchecktests",
@@ -758,6 +758,18 @@
       "source_location": "L75"
     },
     {
+      "id": "app_auth_hash_user_password",
+      "label": "hash_user_password()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": "hash_user_password()",
+      "source_file": "app/auth.py",
+      "source_location": "L144"
+    },
+    {
       "id": "app_auth_verify_password",
       "label": "verify_password()",
       "_callable": true,
@@ -854,28 +866,64 @@
       "source_location": "L34"
     },
     {
-      "id": "tests_test_deployment_health_deploymentworkflowsafetytests_test_failure_notification_is_unconditional_and_does_not_mask_job_failure",
-      "label": ".test_failure_notification_is_unconditional_and_does_not_mask_job_failure()",
+      "id": "tests_test_users_usermanagementtests_setup",
+      "label": ".setUp()",
       "_callable": true,
       "_origin": "ast",
       "community": 0,
       "community_name": "auth.py",
       "file_type": "code",
-      "norm_label": ".test_failure_notification_is_unconditional_and_does_not_mask_job_failure()",
-      "source_file": "tests/test_deployment_health.py",
-      "source_location": "L181"
+      "norm_label": ".setup()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L17"
     },
     {
-      "id": "tests_test_deployment_health_deploymentworkflowsafetytests_test_workflow_never_prints_telegram_token_or_ssh_key",
-      "label": ".test_workflow_never_prints_telegram_token_or_ssh_key()",
+      "id": "tests_test_users_usermanagementtests_teardown",
+      "label": ".tearDown()",
       "_callable": true,
       "_origin": "ast",
       "community": 0,
       "community_name": "auth.py",
       "file_type": "code",
-      "norm_label": ".test_workflow_never_prints_telegram_token_or_ssh_key()",
-      "source_file": "tests/test_deployment_health.py",
-      "source_location": "L190"
+      "norm_label": ".teardown()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L45"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_test_admin_and_user_login_disabled_login_and_invalid_credentials",
+      "label": ".test_admin_and_user_login_disabled_login_and_invalid_credentials()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": ".test_admin_and_user_login_disabled_login_and_invalid_credentials()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L52"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_test_admin_only_routes_and_unauthenticated_rejection",
+      "label": ".test_admin_only_routes_and_unauthenticated_rejection()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": ".test_admin_only_routes_and_unauthenticated_rejection()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L66"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_test_bad_login_does_not_log_submitted_password",
+      "label": ".test_bad_login_does_not_log_submitted_password()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": ".test_bad_login_does_not_log_submitted_password()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L174"
     },
     {
       "id": "tests_test_users_usermanagementtests_test_existing_environment_admin_is_bootstrapped_without_replacing_release_data",
@@ -888,6 +936,30 @@
       "norm_label": ".test_existing_environment_admin_is_bootstrapped_without_replacing_release_data()",
       "source_file": "tests/test_users.py",
       "source_location": "L180"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_test_last_admin_and_self_protection",
+      "label": ".test_last_admin_and_self_protection()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": ".test_last_admin_and_self_protection()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L145"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_test_password_change_and_validation_errors_never_echo_password",
+      "label": ".test_password_change_and_validation_errors_never_echo_password()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": ".test_password_change_and_validation_errors_never_echo_password()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L159"
     },
     {
       "id": "tests_test_versioning_checkservicetests_test_provider_failures_are_included_in_results",
@@ -950,172 +1022,64 @@
       "source_location": "L21"
     },
     {
-      "id": "tests_test_web_webdashboardtests_test_html_form_fallback_posts_credentials_without_putting_them_in_url",
-      "label": ".test_html_form_fallback_posts_credentials_without_putting_them_in_url()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".test_html_form_fallback_posts_credentials_without_putting_them_in_url()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L124"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_http_credentials_create_httponly_cookie_and_authenticated_dashboard",
-      "label": ".test_http_credentials_create_httponly_cookie_and_authenticated_dashboard()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".test_http_credentials_create_httponly_cookie_and_authenticated_dashboard()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L92"
-    },
-    {
-      "id": "app_auth_verify_access_token",
-      "label": "verify_access_token()",
+      "id": "app_main_get_os",
+      "label": "get_os()",
       "_callable": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "main.py",
       "file_type": "code",
-      "norm_label": "verify_access_token()",
-      "source_file": "app/auth.py",
-      "source_location": "L96"
-    },
-    {
-      "id": "app_main_authenticate_login",
-      "label": "_authenticate_login()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "main.py",
-      "file_type": "code",
-      "norm_label": "_authenticate_login()",
+      "norm_label": "get_os()",
       "source_file": "app/main.py",
-      "source_location": "L176"
+      "source_location": "L398"
     },
     {
-      "id": "app_main_check",
-      "label": "check()",
+      "id": "app_main_health",
+      "label": "health()",
       "_callable": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "main.py",
       "file_type": "code",
-      "norm_label": "check()",
+      "norm_label": "health()",
       "source_file": "app/main.py",
-      "source_location": "L490"
+      "source_location": "L130"
     },
     {
-      "id": "app_main_create_web_session",
-      "label": "create_web_session()",
+      "id": "app_main_list_os",
+      "label": "list_os()",
       "_callable": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "main.py",
       "file_type": "code",
-      "norm_label": "create_web_session()",
+      "norm_label": "list_os()",
       "source_file": "app/main.py",
-      "source_location": "L259"
+      "source_location": "L388"
     },
     {
-      "id": "app_main_disable_user",
-      "label": "disable_user()",
+      "id": "app_main_providers",
+      "label": "providers()",
       "_callable": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "main.py",
       "file_type": "code",
-      "norm_label": "disable_user()",
+      "norm_label": "providers()",
       "source_file": "app/main.py",
-      "source_location": "L1243"
+      "source_location": "L988"
     },
     {
-      "id": "app_main_enable_user",
-      "label": "enable_user()",
+      "id": "app_main_serialize_os",
+      "label": "serialize_os()",
       "_callable": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "main.py",
       "file_type": "code",
-      "norm_label": "enable_user()",
+      "norm_label": "serialize_os()",
       "source_file": "app/main.py",
-      "source_location": "L1238"
-    },
-    {
-      "id": "app_main_login",
-      "label": "login()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "main.py",
-      "file_type": "code",
-      "norm_label": "login()",
-      "source_file": "app/main.py",
-      "source_location": "L143"
-    },
-    {
-      "id": "app_main_login_form",
-      "label": "login_form()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "main.py",
-      "file_type": "code",
-      "norm_label": "login_form()",
-      "source_file": "app/main.py",
-      "source_location": "L228"
-    },
-    {
-      "id": "app_main_logout",
-      "label": "logout()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "main.py",
-      "file_type": "code",
-      "norm_label": "logout()",
-      "source_file": "app/main.py",
-      "source_location": "L272"
-    },
-    {
-      "id": "app_main_set_session_cookie",
-      "label": "_set_session_cookie()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "main.py",
-      "file_type": "code",
-      "norm_label": "_set_session_cookie()",
-      "source_file": "app/main.py",
-      "source_location": "L245"
-    },
-    {
-      "id": "app_main_test_support_sales_telegram_notification",
-      "label": "test_support_sales_telegram_notification()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "main.py",
-      "file_type": "code",
-      "norm_label": "test_support_sales_telegram_notification()",
-      "source_file": "app/main.py",
-      "source_location": "L520"
-    },
-    {
-      "id": "app_main_test_telegram_notification",
-      "label": "test_telegram_notification()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "main.py",
-      "file_type": "code",
-      "norm_label": "test_telegram_notification()",
-      "source_file": "app/main.py",
-      "source_location": "L495"
+      "source_location": "L360"
     },
     {
       "id": "app_main_tidio_auth_action",
@@ -1140,6 +1104,18 @@
       "norm_label": "tidio_auth_finish()",
       "source_file": "app/main.py",
       "source_location": "L976"
+    },
+    {
+      "id": "app_main_tidio_auth_screen",
+      "label": "tidio_auth_screen()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "tidio_auth_screen()",
+      "source_file": "app/main.py",
+      "source_location": "L950"
     },
     {
       "id": "app_main_tidio_connect",
@@ -1370,18 +1346,6 @@
       "source_location": "L316"
     },
     {
-      "id": "app_main_health",
-      "label": "health()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "get",
-      "file_type": "code",
-      "norm_label": "health()",
-      "source_file": "app/main.py",
-      "source_location": "L130"
-    },
-    {
       "id": "app_main_home",
       "label": "home()",
       "_callable": true,
@@ -1454,18 +1418,6 @@
       "source_location": "L306"
     },
     {
-      "id": "app_main_providers",
-      "label": "providers()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "get",
-      "file_type": "code",
-      "norm_label": "providers()",
-      "source_file": "app/main.py",
-      "source_location": "L988"
-    },
-    {
       "id": "app_main_releases",
       "label": "releases()",
       "_callable": true,
@@ -1526,6 +1478,18 @@
       "source_location": "L202"
     },
     {
+      "id": "app_main_security_headers",
+      "label": "security_headers()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "get",
+      "file_type": "code",
+      "norm_label": "security_headers()",
+      "source_file": "app/main.py",
+      "source_location": "L99"
+    },
+    {
       "id": "app_main_settings_page",
       "label": "settings_page()",
       "_callable": true,
@@ -1536,18 +1500,6 @@
       "norm_label": "settings_page()",
       "source_file": "app/main.py",
       "source_location": "L321"
-    },
-    {
-      "id": "app_main_tidio_auth_screen",
-      "label": "tidio_auth_screen()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "get",
-      "file_type": "code",
-      "norm_label": "tidio_auth_screen()",
-      "source_file": "app/main.py",
-      "source_location": "L950"
     },
     {
       "id": "app_main_tidio_page",
@@ -1610,18 +1562,6 @@
       "source_location": "L6"
     },
     {
-      "id": "app_config_settings_validate_production_settings",
-      "label": ".validate_production_settings()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "scheduler.py",
-      "file_type": "code",
-      "norm_label": ".validate_production_settings()",
-      "source_file": "app/config.py",
-      "source_location": "L31"
-    },
-    {
       "id": "app_main_lifespan",
       "label": "lifespan()",
       "_callable": true,
@@ -1632,42 +1572,6 @@
       "norm_label": "lifespan()",
       "source_file": "app/main.py",
       "source_location": "L57"
-    },
-    {
-      "id": "app_models_ensure_sqlite_directory",
-      "label": "ensure_sqlite_directory()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "scheduler.py",
-      "file_type": "code",
-      "norm_label": "ensure_sqlite_directory()",
-      "source_file": "app/models.py",
-      "source_location": "L115"
-    },
-    {
-      "id": "app_models_init_db",
-      "label": "init_db()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "scheduler.py",
-      "file_type": "code",
-      "norm_label": "init_db()",
-      "source_file": "app/models.py",
-      "source_location": "L153"
-    },
-    {
-      "id": "app_models_migrate_notification_approval_fields",
-      "label": "_migrate_notification_approval_fields()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "scheduler.py",
-      "file_type": "code",
-      "norm_label": "_migrate_notification_approval_fields()",
-      "source_file": "app/models.py",
-      "source_location": "L139"
     },
     {
       "id": "app_scheduler_add_check_job",
@@ -1742,100 +1646,16 @@
       "source_location": "L151"
     },
     {
-      "id": "tests_test_notifications_center_notificationcentertests_test_migration_adds_nullable_approval_fields_without_backfilling_legacy_rows",
-      "label": ".test_migration_adds_nullable_approval_fields_without_backfilling_legacy_rows()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "scheduler.py",
-      "file_type": "code",
-      "norm_label": ".test_migration_adds_nullable_approval_fields_without_backfilling_legacy_rows()",
-      "source_file": "tests/test_notifications_center.py",
-      "source_location": "L315"
-    },
-    {
-      "id": "tests_test_production_config_productionconfigtests_test_production_configuration_accepts_secure_values",
-      "label": ".test_production_configuration_accepts_secure_values()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "scheduler.py",
-      "file_type": "code",
-      "norm_label": ".test_production_configuration_accepts_secure_values()",
-      "source_file": "tests/test_production_config.py",
-      "source_location": "L23"
-    },
-    {
-      "id": "tests_test_production_config_productionconfigtests_test_production_configuration_rejects_missing_secrets_and_wildcard_host",
-      "label": ".test_production_configuration_rejects_missing_secrets_and_wildcard_host()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "scheduler.py",
-      "file_type": "code",
-      "norm_label": ".test_production_configuration_rejects_missing_secrets_and_wildcard_host()",
-      "source_file": "tests/test_production_config.py",
-      "source_location": "L26"
-    },
-    {
-      "id": "tests_test_production_config_productionconfigtests_test_production_configuration_requires_enabled_telegram_credentials",
-      "label": ".test_production_configuration_requires_enabled_telegram_credentials()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "scheduler.py",
-      "file_type": "code",
-      "norm_label": ".test_production_configuration_requires_enabled_telegram_credentials()",
-      "source_file": "tests/test_production_config.py",
-      "source_location": "L31"
-    },
-    {
-      "id": "tests_test_production_config_productionconfigtests_test_production_configuration_requires_support_sales_chat_when_enabled",
-      "label": ".test_production_configuration_requires_support_sales_chat_when_enabled()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "scheduler.py",
-      "file_type": "code",
-      "norm_label": ".test_production_configuration_requires_support_sales_chat_when_enabled()",
-      "source_file": "tests/test_production_config.py",
-      "source_location": "L36"
-    },
-    {
-      "id": "tests_test_production_config_productionconfigtests_test_sqlite_directory_is_created_for_nested_database_path",
-      "label": ".test_sqlite_directory_is_created_for_nested_database_path()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "scheduler.py",
-      "file_type": "code",
-      "norm_label": ".test_sqlite_directory_is_created_for_nested_database_path()",
-      "source_file": "tests/test_production_config.py",
-      "source_location": "L44"
-    },
-    {
-      "id": "tests_test_production_config_productionconfigtests_valid_production_settings",
-      "label": "._valid_production_settings()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "scheduler.py",
-      "file_type": "code",
-      "norm_label": "._valid_production_settings()",
-      "source_file": "tests/test_production_config.py",
-      "source_location": "L10"
-    },
-    {
-      "id": "app_auth_principal_for_username",
-      "label": "principal_for_username()",
+      "id": "app_auth_require_admin",
+      "label": "require_admin()",
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "User",
+      "community_name": "Principal",
       "file_type": "code",
-      "norm_label": "principal_for_username()",
+      "norm_label": "require_admin()",
       "source_file": "app/auth.py",
-      "source_location": "L36"
+      "source_location": "L133"
     },
     {
       "id": "app_main_create_user",
@@ -1843,7 +1663,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "User",
+      "community_name": "Principal",
       "file_type": "code",
       "norm_label": "create_user()",
       "source_file": "app/main.py",
@@ -1855,11 +1675,35 @@
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "User",
+      "community_name": "Principal",
       "file_type": "code",
       "norm_label": "delete_user()",
       "source_file": "app/main.py",
       "source_location": "L1267"
+    },
+    {
+      "id": "app_main_disable_user",
+      "label": "disable_user()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "Principal",
+      "file_type": "code",
+      "norm_label": "disable_user()",
+      "source_file": "app/main.py",
+      "source_location": "L1243"
+    },
+    {
+      "id": "app_main_enable_user",
+      "label": "enable_user()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "Principal",
+      "file_type": "code",
+      "norm_label": "enable_user()",
+      "source_file": "app/main.py",
+      "source_location": "L1238"
     },
     {
       "id": "app_main_ensure_another_active_admin",
@@ -1867,7 +1711,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "User",
+      "community_name": "Principal",
       "file_type": "code",
       "norm_label": "_ensure_another_active_admin()",
       "source_file": "app/main.py",
@@ -1879,7 +1723,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "User",
+      "community_name": "Principal",
       "file_type": "code",
       "norm_label": "get_account()",
       "source_file": "app/main.py",
@@ -1891,7 +1735,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "User",
+      "community_name": "Principal",
       "file_type": "code",
       "norm_label": "_get_managed_user()",
       "source_file": "app/main.py",
@@ -1903,7 +1747,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "User",
+      "community_name": "Principal",
       "file_type": "code",
       "norm_label": "get_user()",
       "source_file": "app/main.py",
@@ -1915,11 +1759,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "User",
+      "community_name": "Principal",
       "file_type": "code",
       "norm_label": "list_users()",
       "source_file": "app/main.py",
       "source_location": "L1136"
+    },
+    {
+      "id": "app_main_reset_user_password",
+      "label": "reset_user_password()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "Principal",
+      "file_type": "code",
+      "norm_label": "reset_user_password()",
+      "source_file": "app/main.py",
+      "source_location": "L1224"
     },
     {
       "id": "app_main_serialize_user",
@@ -1927,7 +1783,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "User",
+      "community_name": "Principal",
       "file_type": "code",
       "norm_label": "_serialize_user()",
       "source_file": "app/main.py",
@@ -1939,7 +1795,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "User",
+      "community_name": "Principal",
       "file_type": "code",
       "norm_label": "_set_user_active()",
       "source_file": "app/main.py",
@@ -1951,11 +1807,59 @@
       "_callable": true,
       "_origin": "ast",
       "community": 16,
-      "community_name": "User",
+      "community_name": "Principal",
       "file_type": "code",
       "norm_label": "update_user()",
       "source_file": "app/main.py",
       "source_location": "L1182"
+    },
+    {
+      "id": "tests_test_telegram_telegramtestendpointtests_test_endpoint_handles_unexpected_sender_failure_without_exposing_details",
+      "label": ".test_endpoint_handles_unexpected_sender_failure_without_exposing_details()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "Principal",
+      "file_type": "code",
+      "norm_label": ".test_endpoint_handles_unexpected_sender_failure_without_exposing_details()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L325"
+    },
+    {
+      "id": "tests_test_telegram_telegramtestendpointtests_test_endpoint_reports_disabled_and_does_not_send",
+      "label": ".test_endpoint_reports_disabled_and_does_not_send()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "Principal",
+      "file_type": "code",
+      "norm_label": ".test_endpoint_reports_disabled_and_does_not_send()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L310"
+    },
+    {
+      "id": "tests_test_telegram_telegramtestendpointtests_test_endpoint_requires_auth_and_sends_no_release_event",
+      "label": ".test_endpoint_requires_auth_and_sends_no_release_event()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "Principal",
+      "file_type": "code",
+      "norm_label": ".test_endpoint_requires_auth_and_sends_no_release_event()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L292"
+    },
+    {
+      "id": "tests_test_telegram_telegramtestendpointtests_test_test_message_is_visibly_marked_as_test",
+      "label": ".test_test_message_is_visibly_marked_as_test()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "Principal",
+      "file_type": "code",
+      "norm_label": ".test_test_message_is_visibly_marked_as_test()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L340"
     },
     {
       "id": "app_main_approval_action_id",
@@ -2078,16 +1982,28 @@
       "source_location": "L551"
     },
     {
-      "id": "app_main_test_notification",
-      "label": "test_notification()",
+      "id": "app_main_status",
+      "label": "status()",
       "_callable": true,
       "_origin": "ast",
       "community": 18,
       "community_name": "Notification",
       "file_type": "code",
-      "norm_label": "test_notification()",
+      "norm_label": "status()",
       "source_file": "app/main.py",
-      "source_location": "L789"
+      "source_location": "L993"
+    },
+    {
+      "id": "app_main_utc_timestamp",
+      "label": "_utc_timestamp()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 18,
+      "community_name": "Notification",
+      "file_type": "code",
+      "norm_label": "_utc_timestamp()",
+      "source_file": "app/main.py",
+      "source_location": "L378"
     },
     {
       "id": "app_main_validate_notification_payload",
@@ -2102,54 +2018,6 @@
       "source_location": "L577"
     },
     {
-      "id": "app_notifications_service_create_notification",
-      "label": "create_notification()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Notification",
-      "file_type": "code",
-      "norm_label": "create_notification()",
-      "source_file": "app/notifications/service.py",
-      "source_location": "L15"
-    },
-    {
-      "id": "app_notifications_service_metadata_for",
-      "label": "metadata_for()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Notification",
-      "file_type": "code",
-      "norm_label": "metadata_for()",
-      "source_file": "app/notifications/service.py",
-      "source_location": "L94"
-    },
-    {
-      "id": "tests_test_notifications_center_notificationcentertests_test_legacy_approval_without_binding_metadata_is_not_authorized",
-      "label": ".test_legacy_approval_without_binding_metadata_is_not_authorized()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Notification",
-      "file_type": "code",
-      "norm_label": ".test_legacy_approval_without_binding_metadata_is_not_authorized()",
-      "source_file": "tests/test_notifications_center.py",
-      "source_location": "L285"
-    },
-    {
-      "id": "app_auth_authenticate_token",
-      "label": "authenticate_token()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": "authenticate_token()",
-      "source_file": "app/auth.py",
-      "source_location": "L105"
-    },
-    {
       "id": "app_auth_create_access_token",
       "label": "create_access_token()",
       "_callable": true,
@@ -2160,78 +2028,6 @@
       "norm_label": "create_access_token()",
       "source_file": "app/auth.py",
       "source_location": "L90"
-    },
-    {
-      "id": "app_auth_hash_user_password",
-      "label": "hash_user_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": "hash_user_password()",
-      "source_file": "app/auth.py",
-      "source_location": "L144"
-    },
-    {
-      "id": "app_auth_request_origin",
-      "label": "_request_origin()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": "_request_origin()",
-      "source_file": "app/auth.py",
-      "source_location": "L67"
-    },
-    {
-      "id": "app_auth_require_admin",
-      "label": "require_admin()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": "require_admin()",
-      "source_file": "app/auth.py",
-      "source_location": "L133"
-    },
-    {
-      "id": "app_auth_verify_user_password",
-      "label": "verify_user_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": "verify_user_password()",
-      "source_file": "app/auth.py",
-      "source_location": "L150"
-    },
-    {
-      "id": "app_main_change_own_password",
-      "label": "change_own_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": "change_own_password()",
-      "source_file": "app/main.py",
-      "source_location": "L1118"
-    },
-    {
-      "id": "app_main_reset_user_password",
-      "label": "reset_user_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": "reset_user_password()",
-      "source_file": "app/main.py",
-      "source_location": "L1224"
     },
     {
       "id": "tests_test_notifications_center_notificationcentertests_setup",
@@ -2474,150 +2270,6 @@
       "source_location": "L449"
     },
     {
-      "id": "tests_test_telegram_telegramtestendpointtests_test_endpoint_handles_unexpected_sender_failure_without_exposing_details",
-      "label": ".test_endpoint_handles_unexpected_sender_failure_without_exposing_details()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_endpoint_handles_unexpected_sender_failure_without_exposing_details()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L325"
-    },
-    {
-      "id": "tests_test_telegram_telegramtestendpointtests_test_endpoint_reports_disabled_and_does_not_send",
-      "label": ".test_endpoint_reports_disabled_and_does_not_send()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_endpoint_reports_disabled_and_does_not_send()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L310"
-    },
-    {
-      "id": "tests_test_telegram_telegramtestendpointtests_test_endpoint_requires_auth_and_sends_no_release_event",
-      "label": ".test_endpoint_requires_auth_and_sends_no_release_event()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_endpoint_requires_auth_and_sends_no_release_event()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L292"
-    },
-    {
-      "id": "tests_test_telegram_telegramtestendpointtests_test_test_message_is_visibly_marked_as_test",
-      "label": ".test_test_message_is_visibly_marked_as_test()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_test_message_is_visibly_marked_as_test()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L340"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_setup",
-      "label": ".setUp()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".setup()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L17"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_teardown",
-      "label": ".tearDown()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".teardown()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L45"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_test_admin_and_user_login_disabled_login_and_invalid_credentials",
-      "label": ".test_admin_and_user_login_disabled_login_and_invalid_credentials()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_admin_and_user_login_disabled_login_and_invalid_credentials()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L52"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_test_admin_only_routes_and_unauthenticated_rejection",
-      "label": ".test_admin_only_routes_and_unauthenticated_rejection()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_admin_only_routes_and_unauthenticated_rejection()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L66"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_test_bad_login_does_not_log_submitted_password",
-      "label": ".test_bad_login_does_not_log_submitted_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_bad_login_does_not_log_submitted_password()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L174"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_test_create_edit_password_reset_enable_disable_and_delete",
-      "label": ".test_create_edit_password_reset_enable_disable_and_delete()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_create_edit_password_reset_enable_disable_and_delete()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L99"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_test_last_admin_and_self_protection",
-      "label": ".test_last_admin_and_self_protection()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_last_admin_and_self_protection()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L145"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_test_password_change_and_validation_errors_never_echo_password",
-      "label": ".test_password_change_and_validation_errors_never_echo_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_password_change_and_validation_errors_never_echo_password()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L159"
-    },
-    {
       "id": "app_providers_almalinux_almalinuxprovider_latest",
       "label": ".latest()",
       "_callable": true,
@@ -2791,7 +2443,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 20,
-      "community_name": "tidio.py",
+      "community_name": "test_tidio.py",
       "file_type": "code",
       "norm_label": ".__init__()",
       "source_file": "app/tidio.py",
@@ -2803,11 +2455,59 @@
       "_callable": true,
       "_origin": "ast",
       "community": 20,
-      "community_name": "tidio.py",
+      "community_name": "test_tidio.py",
       "file_type": "code",
       "norm_label": ".snapshot()",
       "source_file": "app/tidio.py",
-      "source_location": "L113"
+      "source_location": "L122"
+    },
+    {
+      "id": "tests_test_tidio_test_tidio_inbox_render_wait_is_bounded",
+      "label": "test_tidio_inbox_render_wait_is_bounded()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "test_tidio.py",
+      "file_type": "code",
+      "norm_label": "test_tidio_inbox_render_wait_is_bounded()",
+      "source_file": "tests/test_tidio.py",
+      "source_location": "L120"
+    },
+    {
+      "id": "tests_test_tidio_test_tidio_inbox_render_wait_is_bounded_inner_text",
+      "label": "inner_text()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "test_tidio.py",
+      "file_type": "code",
+      "norm_label": "inner_text()",
+      "source_file": "tests/test_tidio.py",
+      "source_location": "L125"
+    },
+    {
+      "id": "tests_test_tidio_test_tidio_inbox_render_wait_is_bounded_is_closed",
+      "label": "is_closed()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "test_tidio.py",
+      "file_type": "code",
+      "norm_label": "is_closed()",
+      "source_file": "tests/test_tidio.py",
+      "source_location": "L132"
+    },
+    {
+      "id": "tests_test_tidio_test_tidio_inbox_render_wait_is_bounded_locator",
+      "label": "locator()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 20,
+      "community_name": "test_tidio.py",
+      "file_type": "code",
+      "norm_label": "locator()",
+      "source_file": "tests/test_tidio.py",
+      "source_location": "L136"
     },
     {
       "id": "tests_test_tidio_test_tidio_password_encryption_round_trip",
@@ -2815,7 +2515,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 20,
-      "community_name": "tidio.py",
+      "community_name": "test_tidio.py",
       "file_type": "code",
       "norm_label": "test_tidio_password_encryption_round_trip()",
       "source_file": "tests/test_tidio.py",
@@ -2827,7 +2527,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 20,
-      "community_name": "tidio.py",
+      "community_name": "test_tidio.py",
       "file_type": "code",
       "norm_label": "test_tidio_session_is_encrypted_and_persisted()",
       "source_file": "tests/test_tidio.py",
@@ -2839,7 +2539,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 20,
-      "community_name": "tidio.py",
+      "community_name": "test_tidio.py",
       "file_type": "code",
       "norm_label": "storage_state()",
       "source_file": "tests/test_tidio.py",
@@ -2851,11 +2551,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 20,
-      "community_name": "tidio.py",
+      "community_name": "test_tidio.py",
       "file_type": "code",
       "norm_label": "test_tidio_snapshot_defaults()",
       "source_file": "tests/test_tidio.py",
       "source_location": "L8"
+    },
+    {
+      "id": "app_tidio_tidiomonitor_connect",
+      "label": ".connect()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": ".connect",
+      "file_type": "code",
+      "norm_label": ".connect()",
+      "source_file": "app/tidio.py",
+      "source_location": "L140"
     },
     {
       "id": "app_tidio_tidiomonitor_decrypt_password",
@@ -2863,11 +2575,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 22,
-      "community_name": "._reconnect",
+      "community_name": ".connect",
       "file_type": "code",
       "norm_label": ".decrypt_password()",
       "source_file": "app/tidio.py",
-      "source_location": "L125"
+      "source_location": "L134"
     },
     {
       "id": "app_tidio_tidiomonitor_encrypt_password",
@@ -2875,11 +2587,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 22,
-      "community_name": "._reconnect",
+      "community_name": ".connect",
       "file_type": "code",
       "norm_label": ".encrypt_password()",
       "source_file": "app/tidio.py",
-      "source_location": "L122"
+      "source_location": "L131"
     },
     {
       "id": "app_tidio_tidiomonitor_ensure_browser",
@@ -2887,11 +2599,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 22,
-      "community_name": "._reconnect",
+      "community_name": ".connect",
       "file_type": "code",
       "norm_label": "._ensure_browser()",
       "source_file": "app/tidio.py",
-      "source_location": "L269"
+      "source_location": "L278"
     },
     {
       "id": "app_tidio_tidiomonitor_fernet",
@@ -2899,11 +2611,35 @@
       "_callable": true,
       "_origin": "ast",
       "community": 22,
-      "community_name": "._reconnect",
+      "community_name": ".connect",
       "file_type": "code",
       "norm_label": "._fernet()",
       "source_file": "app/tidio.py",
-      "source_location": "L116"
+      "source_location": "L125"
+    },
+    {
+      "id": "app_tidio_tidiomonitor_monitor_loop",
+      "label": "._monitor_loop()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": ".connect",
+      "file_type": "code",
+      "norm_label": "._monitor_loop()",
+      "source_file": "app/tidio.py",
+      "source_location": "L500"
+    },
+    {
+      "id": "app_tidio_tidiomonitor_public_error",
+      "label": "._public_error()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": ".connect",
+      "file_type": "code",
+      "norm_label": "._public_error()",
+      "source_file": "app/tidio.py",
+      "source_location": "L671"
     },
     {
       "id": "app_tidio_tidiomonitor_reconnect",
@@ -2911,11 +2647,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 22,
-      "community_name": "._reconnect",
+      "community_name": ".connect",
       "file_type": "code",
       "norm_label": "._reconnect()",
       "source_file": "app/tidio.py",
-      "source_location": "L511"
+      "source_location": "L520"
     },
     {
       "id": "app_tidio_tidiomonitor_restore",
@@ -2923,11 +2659,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 22,
-      "community_name": "._reconnect",
+      "community_name": ".connect",
       "file_type": "code",
       "norm_label": ".restore()",
       "source_file": "app/tidio.py",
-      "source_location": "L252"
+      "source_location": "L261"
     },
     {
       "id": "app_tidio_tidiomonitor_save_credentials",
@@ -2935,71 +2671,239 @@
       "_callable": true,
       "_origin": "ast",
       "community": 22,
-      "community_name": "._reconnect",
+      "community_name": ".connect",
       "file_type": "code",
       "norm_label": "._save_credentials()",
       "source_file": "app/tidio.py",
-      "source_location": "L588"
+      "source_location": "L597"
     },
     {
-      "id": "app_main_get_os",
-      "label": "get_os()",
+      "id": "app_tidio_tidiomonitor_set_enabled",
+      "label": "._set_enabled()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": ".connect",
+      "file_type": "code",
+      "norm_label": "._set_enabled()",
+      "source_file": "app/tidio.py",
+      "source_location": "L624"
+    },
+    {
+      "id": "app_tidio_tidiomonitor_start_monitor_task",
+      "label": "._start_monitor_task()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": ".connect",
+      "file_type": "code",
+      "norm_label": "._start_monitor_task()",
+      "source_file": "app/tidio.py",
+      "source_location": "L490"
+    },
+    {
+      "id": "tests_test_web_webdashboardtests_sign_in",
+      "label": ".sign_in()",
       "_callable": true,
       "_origin": "ast",
       "community": 23,
-      "community_name": "_utc_timestamp",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
-      "norm_label": "get_os()",
-      "source_file": "app/main.py",
-      "source_location": "L398"
+      "norm_label": ".sign_in()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L60"
     },
     {
-      "id": "app_main_list_os",
-      "label": "list_os()",
+      "id": "tests_test_web_webdashboardtests_teardown",
+      "label": ".tearDown()",
       "_callable": true,
       "_origin": "ast",
       "community": 23,
-      "community_name": "_utc_timestamp",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
-      "norm_label": "list_os()",
-      "source_file": "app/main.py",
-      "source_location": "L388"
+      "norm_label": ".teardown()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L53"
     },
     {
-      "id": "app_main_serialize_os",
-      "label": "serialize_os()",
+      "id": "tests_test_web_webdashboardtests_test_authenticated_pages_render_and_major_event_is_displayed",
+      "label": ".test_authenticated_pages_render_and_major_event_is_displayed()",
       "_callable": true,
       "_origin": "ast",
       "community": 23,
-      "community_name": "_utc_timestamp",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
-      "norm_label": "serialize_os()",
-      "source_file": "app/main.py",
-      "source_location": "L360"
+      "norm_label": ".test_authenticated_pages_render_and_major_event_is_displayed()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L180"
     },
     {
-      "id": "app_main_status",
-      "label": "status()",
+      "id": "tests_test_web_webdashboardtests_test_check_now_api_and_logout",
+      "label": ".test_check_now_api_and_logout()",
       "_callable": true,
       "_origin": "ast",
       "community": 23,
-      "community_name": "_utc_timestamp",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
-      "norm_label": "status()",
-      "source_file": "app/main.py",
-      "source_location": "L993"
+      "norm_label": ".test_check_now_api_and_logout()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L321"
     },
     {
-      "id": "app_main_utc_timestamp",
-      "label": "_utc_timestamp()",
+      "id": "tests_test_web_webdashboardtests_test_html_form_fallback_posts_credentials_without_putting_them_in_url",
+      "label": ".test_html_form_fallback_posts_credentials_without_putting_them_in_url()",
       "_callable": true,
       "_origin": "ast",
       "community": 23,
-      "community_name": "_utc_timestamp",
+      "community_name": "WebDashboardTests",
       "file_type": "code",
-      "norm_label": "_utc_timestamp()",
-      "source_file": "app/main.py",
-      "source_location": "L378"
+      "norm_label": ".test_html_form_fallback_posts_credentials_without_putting_them_in_url()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L124"
+    },
+    {
+      "id": "tests_test_web_webdashboardtests_test_http_credentials_create_httponly_cookie_and_authenticated_dashboard",
+      "label": ".test_http_credentials_create_httponly_cookie_and_authenticated_dashboard()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "WebDashboardTests",
+      "file_type": "code",
+      "norm_label": ".test_http_credentials_create_httponly_cookie_and_authenticated_dashboard()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L92"
+    },
+    {
+      "id": "tests_test_web_webdashboardtests_test_https_browser_session_marks_cookie_secure",
+      "label": ".test_https_browser_session_marks_cookie_secure()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "WebDashboardTests",
+      "file_type": "code",
+      "norm_label": ".test_https_browser_session_marks_cookie_secure()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L164"
+    },
+    {
+      "id": "tests_test_web_webdashboardtests_test_login_page_and_existing_jwt_login_flow",
+      "label": ".test_login_page_and_existing_jwt_login_flow()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "WebDashboardTests",
+      "file_type": "code",
+      "norm_label": ".test_login_page_and_existing_jwt_login_flow()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L73"
+    },
+    {
+      "id": "tests_test_web_webdashboardtests_test_manual_check_refreshes_authoritative_timestamps_and_keeps_scheduler_next_run",
+      "label": ".test_manual_check_refreshes_authoritative_timestamps_and_keeps_scheduler_next_run()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "WebDashboardTests",
+      "file_type": "code",
+      "norm_label": ".test_manual_check_refreshes_authoritative_timestamps_and_keeps_scheduler_next_run()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L224"
+    },
+    {
+      "id": "tests_test_web_webdashboardtests_test_manual_check_refreshes_authoritative_timestamps_and_keeps_scheduler_next_run_init",
+      "label": "__init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "WebDashboardTests",
+      "file_type": "code",
+      "norm_label": "__init__()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L251"
+    },
+    {
+      "id": "tests_test_web_webdashboardtests_test_manual_check_refreshes_authoritative_timestamps_and_keeps_scheduler_next_run_latest",
+      "label": "latest()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "WebDashboardTests",
+      "file_type": "code",
+      "norm_label": "latest()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L254"
+    },
+    {
+      "id": "tests_test_web_webdashboardtests_test_provider_errors_are_rendered_on_dashboard",
+      "label": ".test_provider_errors_are_rendered_on_dashboard()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "WebDashboardTests",
+      "file_type": "code",
+      "norm_label": ".test_provider_errors_are_rendered_on_dashboard()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L189"
+    },
+    {
+      "id": "tests_test_web_webdashboardtests_test_settings_displays_telegram_chat_configuration_and_test_button",
+      "label": ".test_settings_displays_telegram_chat_configuration_and_test_button()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "WebDashboardTests",
+      "file_type": "code",
+      "norm_label": ".test_settings_displays_telegram_chat_configuration_and_test_button()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L295"
+    },
+    {
+      "id": "tests_test_web_webdashboardtests_test_static_javascript_full_and_range_responses_are_well_formed",
+      "label": ".test_static_javascript_full_and_range_responses_are_well_formed()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "WebDashboardTests",
+      "file_type": "code",
+      "norm_label": ".test_static_javascript_full_and_range_responses_are_well_formed()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L150"
+    },
+    {
+      "id": "tests_test_web_webdashboardtests_test_status_exposes_support_sales_configuration_without_secrets",
+      "label": ".test_status_exposes_support_sales_configuration_without_secrets()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "WebDashboardTests",
+      "file_type": "code",
+      "norm_label": ".test_status_exposes_support_sales_configuration_without_secrets()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L310"
+    },
+    {
+      "id": "tests_test_web_webdashboardtests_test_status_release_pagination_event_filters_and_cookie_api_auth",
+      "label": ".test_status_release_pagination_event_filters_and_cookie_api_auth()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "WebDashboardTests",
+      "file_type": "code",
+      "norm_label": ".test_status_release_pagination_event_filters_and_cookie_api_auth()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L203"
+    },
+    {
+      "id": "tests_test_web_webdashboardtests_test_unauthenticated_pages_redirect_to_login",
+      "label": ".test_unauthenticated_pages_redirect_to_login()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "WebDashboardTests",
+      "file_type": "code",
+      "norm_label": ".test_unauthenticated_pages_redirect_to_login()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L173"
     },
     {
       "id": "tests_test_tidio_test_tidio_keeps_browser_open_for_manual_verification",
@@ -3650,28 +3554,64 @@
       "source_location": "L357"
     },
     {
+      "id": "app_tidio_tidiomonitor_authentication_action",
+      "label": ".authentication_action()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "TidioMonitor",
+      "file_type": "code",
+      "norm_label": ".authentication_action()",
+      "source_file": "app/tidio.py",
+      "source_location": "L175"
+    },
+    {
+      "id": "app_tidio_tidiomonitor_authentication_interaction_available",
+      "label": ".authentication_interaction_available()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "TidioMonitor",
+      "file_type": "code",
+      "norm_label": ".authentication_interaction_available()",
+      "source_file": "app/tidio.py",
+      "source_location": "L87"
+    },
+    {
+      "id": "app_tidio_tidiomonitor_authentication_screenshot",
+      "label": ".authentication_screenshot()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "TidioMonitor",
+      "file_type": "code",
+      "norm_label": ".authentication_screenshot()",
+      "source_file": "app/tidio.py",
+      "source_location": "L170"
+    },
+    {
       "id": "app_tidio_tidiomonitor_close_browser",
       "label": "._close_browser()",
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": ".connect",
+      "community_name": "TidioMonitor",
       "file_type": "code",
       "norm_label": "._close_browser()",
       "source_file": "app/tidio.py",
-      "source_location": "L639"
+      "source_location": "L648"
     },
     {
-      "id": "app_tidio_tidiomonitor_connect",
-      "label": ".connect()",
+      "id": "app_tidio_tidiomonitor_diagnose_page",
+      "label": "._diagnose_page()",
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": ".connect",
+      "community_name": "TidioMonitor",
       "file_type": "code",
-      "norm_label": ".connect()",
+      "norm_label": "._diagnose_page()",
       "source_file": "app/tidio.py",
-      "source_location": "L131"
+      "source_location": "L53"
     },
     {
       "id": "app_tidio_tidiomonitor_disconnect",
@@ -3679,47 +3619,59 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": ".connect",
+      "community_name": "TidioMonitor",
       "file_type": "code",
       "norm_label": ".disconnect()",
       "source_file": "app/tidio.py",
-      "source_location": "L231"
+      "source_location": "L240"
     },
     {
-      "id": "app_tidio_tidiomonitor_monitor_loop",
-      "label": "._monitor_loop()",
+      "id": "app_tidio_tidiomonitor_log_browser_response",
+      "label": "._log_browser_response()",
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": ".connect",
+      "community_name": "TidioMonitor",
       "file_type": "code",
-      "norm_label": "._monitor_loop()",
+      "norm_label": "._log_browser_response()",
       "source_file": "app/tidio.py",
-      "source_location": "L491"
+      "source_location": "L106"
     },
     {
-      "id": "app_tidio_tidiomonitor_public_error",
-      "label": "._public_error()",
+      "id": "app_tidio_tidiomonitor_log_console_error",
+      "label": "._log_console_error()",
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": ".connect",
+      "community_name": "TidioMonitor",
       "file_type": "code",
-      "norm_label": "._public_error()",
+      "norm_label": "._log_console_error()",
       "source_file": "app/tidio.py",
-      "source_location": "L662"
+      "source_location": "L61"
     },
     {
-      "id": "app_tidio_tidiomonitor_set_enabled",
-      "label": "._set_enabled()",
+      "id": "app_tidio_tidiomonitor_log_request_failure",
+      "label": "._log_request_failure()",
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": ".connect",
+      "community_name": "TidioMonitor",
       "file_type": "code",
-      "norm_label": "._set_enabled()",
+      "norm_label": "._log_request_failure()",
       "source_file": "app/tidio.py",
-      "source_location": "L615"
+      "source_location": "L93"
+    },
+    {
+      "id": "app_tidio_tidiomonitor_session_path",
+      "label": "._session_path()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "TidioMonitor",
+      "file_type": "code",
+      "norm_label": "._session_path()",
+      "source_file": "app/tidio.py",
+      "source_location": "L50"
     },
     {
       "id": "app_tidio_tidiomonitor_shutdown",
@@ -3727,23 +3679,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": ".connect",
+      "community_name": "TidioMonitor",
       "file_type": "code",
       "norm_label": ".shutdown()",
       "source_file": "app/tidio.py",
-      "source_location": "L226"
-    },
-    {
-      "id": "app_tidio_tidiomonitor_start_monitor_task",
-      "label": "._start_monitor_task()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": ".connect",
-      "file_type": "code",
-      "norm_label": "._start_monitor_task()",
-      "source_file": "app/tidio.py",
-      "source_location": "L481"
+      "source_location": "L235"
     },
     {
       "id": "app_tidio_tidiomonitor_stop_monitor_task",
@@ -3751,11 +3691,35 @@
       "_callable": true,
       "_origin": "ast",
       "community": 4,
-      "community_name": ".connect",
+      "community_name": "TidioMonitor",
       "file_type": "code",
       "norm_label": "._stop_monitor_task()",
       "source_file": "app/tidio.py",
-      "source_location": "L486"
+      "source_location": "L495"
+    },
+    {
+      "id": "tests_test_tidio_test_tidio_console_diagnostics_redact_error_text",
+      "label": "test_tidio_console_diagnostics_redact_error_text()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "TidioMonitor",
+      "file_type": "code",
+      "norm_label": "test_tidio_console_diagnostics_redact_error_text()",
+      "source_file": "tests/test_tidio.py",
+      "source_location": "L143"
+    },
+    {
+      "id": "tests_test_tidio_test_tidio_recaptcha_response_logs_path_without_query",
+      "label": "test_tidio_recaptcha_response_logs_path_without_query()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "TidioMonitor",
+      "file_type": "code",
+      "norm_label": "test_tidio_recaptcha_response_logs_path_without_query()",
+      "source_file": "tests/test_tidio.py",
+      "source_location": "L157"
     },
     {
       "id": "tests_test_tidio_test_tidio_waits_for_inbox_client_render",
@@ -3835,7 +3799,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 47,
-      "community_name": "WebDashboardTests",
+      "community_name": "SchedulerExecutionTests",
       "file_type": "code",
       "norm_label": ".__init__()",
       "source_file": "tests/test_scheduler.py",
@@ -3847,7 +3811,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 47,
-      "community_name": "WebDashboardTests",
+      "community_name": "SchedulerExecutionTests",
       "file_type": "code",
       "norm_label": ".latest()",
       "source_file": "tests/test_scheduler.py",
@@ -3859,7 +3823,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 47,
-      "community_name": "WebDashboardTests",
+      "community_name": "SchedulerExecutionTests",
       "file_type": "code",
       "norm_label": "._run_with_scheduler()",
       "source_file": "tests/test_scheduler.py",
@@ -3871,7 +3835,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 47,
-      "community_name": "WebDashboardTests",
+      "community_name": "SchedulerExecutionTests",
       "file_type": "code",
       "norm_label": ".setup()",
       "source_file": "tests/test_scheduler.py",
@@ -3883,7 +3847,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 47,
-      "community_name": "WebDashboardTests",
+      "community_name": "SchedulerExecutionTests",
       "file_type": "code",
       "norm_label": ".teardown()",
       "source_file": "tests/test_scheduler.py",
@@ -3895,7 +3859,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 47,
-      "community_name": "WebDashboardTests",
+      "community_name": "SchedulerExecutionTests",
       "file_type": "code",
       "norm_label": ".test_cron_next_runs_are_0900_and_2300_utc()",
       "source_file": "tests/test_scheduler.py",
@@ -3907,7 +3871,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 47,
-      "community_name": "WebDashboardTests",
+      "community_name": "SchedulerExecutionTests",
       "file_type": "code",
       "norm_label": ".test_missed_execution_is_observable()",
       "source_file": "tests/test_scheduler.py",
@@ -3919,7 +3883,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 47,
-      "community_name": "WebDashboardTests",
+      "community_name": "SchedulerExecutionTests",
       "file_type": "code",
       "norm_label": ".test_provider_failure_does_not_stop_scheduler()",
       "source_file": "tests/test_scheduler.py",
@@ -3931,7 +3895,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 47,
-      "community_name": "WebDashboardTests",
+      "community_name": "SchedulerExecutionTests",
       "file_type": "code",
       "norm_label": ".test_scheduled_job_runs_shared_service_and_updates_state()",
       "source_file": "tests/test_scheduler.py",
@@ -3943,7 +3907,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 47,
-      "community_name": "WebDashboardTests",
+      "community_name": "SchedulerExecutionTests",
       "file_type": "code",
       "norm_label": ".test_unexpected_job_exception_is_logged_and_scheduler_keeps_running()",
       "source_file": "tests/test_scheduler.py",
@@ -3955,11 +3919,47 @@
       "_callable": true,
       "_origin": "ast",
       "community": 47,
-      "community_name": "WebDashboardTests",
+      "community_name": "SchedulerExecutionTests",
       "file_type": "code",
       "norm_label": "._wait_until()",
       "source_file": "tests/test_scheduler.py",
       "source_location": "L84"
+    },
+    {
+      "id": "tests_test_telegram_telegramclienttests_test_baseline_minor_arch_and_telegram_failure_do_not_fail_check",
+      "label": ".test_baseline_minor_arch_and_telegram_failure_do_not_fail_check()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "SchedulerExecutionTests",
+      "file_type": "code",
+      "norm_label": ".test_baseline_minor_arch_and_telegram_failure_do_not_fail_check()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L178"
+    },
+    {
+      "id": "tests_test_telegram_telegramclienttests_test_baseline_minor_arch_and_telegram_failure_do_not_fail_check_init",
+      "label": "__init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "SchedulerExecutionTests",
+      "file_type": "code",
+      "norm_label": "__init__()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L186"
+    },
+    {
+      "id": "tests_test_telegram_telegramclienttests_test_baseline_minor_arch_and_telegram_failure_do_not_fail_check_latest",
+      "label": "latest()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 47,
+      "community_name": "SchedulerExecutionTests",
+      "file_type": "code",
+      "norm_label": "latest()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L189"
     },
     {
       "id": "tests_test_versioning_checkservicetests_test_baseline_and_duplicate_major_events",
@@ -3967,7 +3967,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 47,
-      "community_name": "WebDashboardTests",
+      "community_name": "SchedulerExecutionTests",
       "file_type": "code",
       "norm_label": ".test_baseline_and_duplicate_major_events()",
       "source_file": "tests/test_versioning.py",
@@ -3979,7 +3979,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 47,
-      "community_name": "WebDashboardTests",
+      "community_name": "SchedulerExecutionTests",
       "file_type": "code",
       "norm_label": "latest()",
       "source_file": "tests/test_versioning.py",
@@ -3991,191 +3991,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 47,
-      "community_name": "WebDashboardTests",
+      "community_name": "SchedulerExecutionTests",
       "file_type": "code",
       "norm_label": "_done()",
       "source_file": "tests/test_versioning.py",
       "source_location": "L136"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_sign_in",
-      "label": ".sign_in()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".sign_in()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L60"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_teardown",
-      "label": ".tearDown()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".teardown()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L53"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_authenticated_pages_render_and_major_event_is_displayed",
-      "label": ".test_authenticated_pages_render_and_major_event_is_displayed()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".test_authenticated_pages_render_and_major_event_is_displayed()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L180"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_check_now_api_and_logout",
-      "label": ".test_check_now_api_and_logout()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".test_check_now_api_and_logout()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L321"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_https_browser_session_marks_cookie_secure",
-      "label": ".test_https_browser_session_marks_cookie_secure()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".test_https_browser_session_marks_cookie_secure()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L164"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_login_page_and_existing_jwt_login_flow",
-      "label": ".test_login_page_and_existing_jwt_login_flow()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".test_login_page_and_existing_jwt_login_flow()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L73"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_manual_check_refreshes_authoritative_timestamps_and_keeps_scheduler_next_run",
-      "label": ".test_manual_check_refreshes_authoritative_timestamps_and_keeps_scheduler_next_run()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".test_manual_check_refreshes_authoritative_timestamps_and_keeps_scheduler_next_run()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L224"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_manual_check_refreshes_authoritative_timestamps_and_keeps_scheduler_next_run_init",
-      "label": "__init__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": "__init__()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L251"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_manual_check_refreshes_authoritative_timestamps_and_keeps_scheduler_next_run_latest",
-      "label": "latest()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": "latest()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L254"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_provider_errors_are_rendered_on_dashboard",
-      "label": ".test_provider_errors_are_rendered_on_dashboard()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".test_provider_errors_are_rendered_on_dashboard()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L189"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_settings_displays_telegram_chat_configuration_and_test_button",
-      "label": ".test_settings_displays_telegram_chat_configuration_and_test_button()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".test_settings_displays_telegram_chat_configuration_and_test_button()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L295"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_static_javascript_full_and_range_responses_are_well_formed",
-      "label": ".test_static_javascript_full_and_range_responses_are_well_formed()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".test_static_javascript_full_and_range_responses_are_well_formed()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L150"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_status_exposes_support_sales_configuration_without_secrets",
-      "label": ".test_status_exposes_support_sales_configuration_without_secrets()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".test_status_exposes_support_sales_configuration_without_secrets()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L310"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_status_release_pagination_event_filters_and_cookie_api_auth",
-      "label": ".test_status_release_pagination_event_filters_and_cookie_api_auth()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".test_status_release_pagination_event_filters_and_cookie_api_auth()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L203"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_unauthenticated_pages_redirect_to_login",
-      "label": ".test_unauthenticated_pages_redirect_to_login()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 47,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".test_unauthenticated_pages_redirect_to_login()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L173"
     },
     {
       "id": "app_main_sanitized_validation_error",
@@ -4190,28 +4010,16 @@
       "source_location": "L92"
     },
     {
-      "id": "app_main_security_headers",
-      "label": "security_headers()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 48,
-      "community_name": "sanitized_validation_error",
-      "file_type": "code",
-      "norm_label": "security_headers()",
-      "source_file": "app/main.py",
-      "source_location": "L99"
-    },
-    {
       "id": "app_tidio_tidiomonitor_check_once",
       "label": "._check_once()",
       "_callable": true,
       "_origin": "ast",
       "community": 49,
-      "community_name": "._check_once",
+      "community_name": "tidio.py",
       "file_type": "code",
       "norm_label": "._check_once()",
       "source_file": "app/tidio.py",
-      "source_location": "L548"
+      "source_location": "L557"
     },
     {
       "id": "app_tidio_tidiomonitor_read_unassigned_count",
@@ -4219,11 +4027,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 49,
-      "community_name": "._check_once",
+      "community_name": "tidio.py",
       "file_type": "code",
       "norm_label": "._read_unassigned_count()",
       "source_file": "app/tidio.py",
-      "source_location": "L566"
+      "source_location": "L575"
     },
     {
       "id": "app_tidio_tidiomonitor_touch_status",
@@ -4231,131 +4039,371 @@
       "_callable": true,
       "_origin": "ast",
       "community": 49,
-      "community_name": "._check_once",
+      "community_name": "tidio.py",
       "file_type": "code",
       "norm_label": "._touch_status()",
       "source_file": "app/tidio.py",
-      "source_location": "L626"
+      "source_location": "L635"
     },
     {
-      "id": "app_tidio_tidiomonitor_diagnose_page",
-      "label": "._diagnose_page()",
+      "id": "app_config_settings_validate_production_settings",
+      "label": ".validate_production_settings()",
       "_callable": true,
       "_origin": "ast",
       "community": 50,
-      "community_name": "._diagnose_page",
+      "community_name": "ProductionConfigTests",
       "file_type": "code",
-      "norm_label": "._diagnose_page()",
-      "source_file": "app/tidio.py",
-      "source_location": "L53"
+      "norm_label": ".validate_production_settings()",
+      "source_file": "app/config.py",
+      "source_location": "L31"
     },
     {
-      "id": "app_tidio_tidiomonitor_log_browser_response",
-      "label": "._log_browser_response()",
+      "id": "app_models_ensure_sqlite_directory",
+      "label": "ensure_sqlite_directory()",
       "_callable": true,
       "_origin": "ast",
       "community": 50,
-      "community_name": "._diagnose_page",
+      "community_name": "ProductionConfigTests",
       "file_type": "code",
-      "norm_label": "._log_browser_response()",
-      "source_file": "app/tidio.py",
-      "source_location": "L100"
+      "norm_label": "ensure_sqlite_directory()",
+      "source_file": "app/models.py",
+      "source_location": "L115"
     },
     {
-      "id": "app_tidio_tidiomonitor_log_request_failure",
-      "label": "._log_request_failure()",
+      "id": "app_models_init_db",
+      "label": "init_db()",
       "_callable": true,
       "_origin": "ast",
       "community": 50,
-      "community_name": "._diagnose_page",
+      "community_name": "ProductionConfigTests",
       "file_type": "code",
-      "norm_label": "._log_request_failure()",
-      "source_file": "app/tidio.py",
-      "source_location": "L93"
+      "norm_label": "init_db()",
+      "source_file": "app/models.py",
+      "source_location": "L153"
     },
     {
-      "id": "tests_test_tidio_test_tidio_inbox_render_wait_is_bounded",
-      "label": "test_tidio_inbox_render_wait_is_bounded()",
+      "id": "app_models_migrate_notification_approval_fields",
+      "label": "_migrate_notification_approval_fields()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "ProductionConfigTests",
+      "file_type": "code",
+      "norm_label": "_migrate_notification_approval_fields()",
+      "source_file": "app/models.py",
+      "source_location": "L139"
+    },
+    {
+      "id": "tests_test_notifications_center_notificationcentertests_test_migration_adds_nullable_approval_fields_without_backfilling_legacy_rows",
+      "label": ".test_migration_adds_nullable_approval_fields_without_backfilling_legacy_rows()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "ProductionConfigTests",
+      "file_type": "code",
+      "norm_label": ".test_migration_adds_nullable_approval_fields_without_backfilling_legacy_rows()",
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L315"
+    },
+    {
+      "id": "tests_test_production_config_productionconfigtests_test_production_configuration_accepts_secure_values",
+      "label": ".test_production_configuration_accepts_secure_values()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "ProductionConfigTests",
+      "file_type": "code",
+      "norm_label": ".test_production_configuration_accepts_secure_values()",
+      "source_file": "tests/test_production_config.py",
+      "source_location": "L23"
+    },
+    {
+      "id": "tests_test_production_config_productionconfigtests_test_production_configuration_rejects_missing_secrets_and_wildcard_host",
+      "label": ".test_production_configuration_rejects_missing_secrets_and_wildcard_host()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "ProductionConfigTests",
+      "file_type": "code",
+      "norm_label": ".test_production_configuration_rejects_missing_secrets_and_wildcard_host()",
+      "source_file": "tests/test_production_config.py",
+      "source_location": "L26"
+    },
+    {
+      "id": "tests_test_production_config_productionconfigtests_test_production_configuration_requires_enabled_telegram_credentials",
+      "label": ".test_production_configuration_requires_enabled_telegram_credentials()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "ProductionConfigTests",
+      "file_type": "code",
+      "norm_label": ".test_production_configuration_requires_enabled_telegram_credentials()",
+      "source_file": "tests/test_production_config.py",
+      "source_location": "L31"
+    },
+    {
+      "id": "tests_test_production_config_productionconfigtests_test_production_configuration_requires_support_sales_chat_when_enabled",
+      "label": ".test_production_configuration_requires_support_sales_chat_when_enabled()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "ProductionConfigTests",
+      "file_type": "code",
+      "norm_label": ".test_production_configuration_requires_support_sales_chat_when_enabled()",
+      "source_file": "tests/test_production_config.py",
+      "source_location": "L36"
+    },
+    {
+      "id": "tests_test_production_config_productionconfigtests_test_sqlite_directory_is_created_for_nested_database_path",
+      "label": ".test_sqlite_directory_is_created_for_nested_database_path()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "ProductionConfigTests",
+      "file_type": "code",
+      "norm_label": ".test_sqlite_directory_is_created_for_nested_database_path()",
+      "source_file": "tests/test_production_config.py",
+      "source_location": "L44"
+    },
+    {
+      "id": "tests_test_production_config_productionconfigtests_valid_production_settings",
+      "label": "._valid_production_settings()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "ProductionConfigTests",
+      "file_type": "code",
+      "norm_label": "._valid_production_settings()",
+      "source_file": "tests/test_production_config.py",
+      "source_location": "L10"
+    },
+    {
+      "id": "app_auth_verify_user_password",
+      "label": "verify_user_password()",
       "_callable": true,
       "_origin": "ast",
       "community": 51,
-      "community_name": "test_tidio_inbox_render_wait_is_bounded",
+      "community_name": "post",
       "file_type": "code",
-      "norm_label": "test_tidio_inbox_render_wait_is_bounded()",
-      "source_file": "tests/test_tidio.py",
-      "source_location": "L120"
+      "norm_label": "verify_user_password()",
+      "source_file": "app/auth.py",
+      "source_location": "L150"
     },
     {
-      "id": "tests_test_tidio_test_tidio_inbox_render_wait_is_bounded_inner_text",
-      "label": "inner_text()",
+      "id": "app_main_authenticate_login",
+      "label": "_authenticate_login()",
       "_callable": true,
       "_origin": "ast",
       "community": 51,
-      "community_name": "test_tidio_inbox_render_wait_is_bounded",
+      "community_name": "post",
       "file_type": "code",
-      "norm_label": "inner_text()",
-      "source_file": "tests/test_tidio.py",
-      "source_location": "L125"
+      "norm_label": "_authenticate_login()",
+      "source_file": "app/main.py",
+      "source_location": "L176"
     },
     {
-      "id": "tests_test_tidio_test_tidio_inbox_render_wait_is_bounded_is_closed",
-      "label": "is_closed()",
+      "id": "app_main_change_own_password",
+      "label": "change_own_password()",
       "_callable": true,
       "_origin": "ast",
       "community": 51,
-      "community_name": "test_tidio_inbox_render_wait_is_bounded",
+      "community_name": "post",
       "file_type": "code",
-      "norm_label": "is_closed()",
-      "source_file": "tests/test_tidio.py",
-      "source_location": "L132"
+      "norm_label": "change_own_password()",
+      "source_file": "app/main.py",
+      "source_location": "L1118"
     },
     {
-      "id": "tests_test_tidio_test_tidio_inbox_render_wait_is_bounded_locator",
-      "label": "locator()",
+      "id": "app_main_check",
+      "label": "check()",
       "_callable": true,
       "_origin": "ast",
       "community": 51,
-      "community_name": "test_tidio_inbox_render_wait_is_bounded",
+      "community_name": "post",
       "file_type": "code",
-      "norm_label": "locator()",
-      "source_file": "tests/test_tidio.py",
-      "source_location": "L136"
+      "norm_label": "check()",
+      "source_file": "app/main.py",
+      "source_location": "L490"
     },
     {
-      "id": "app_tidio_tidiomonitor_authentication_action",
-      "label": ".authentication_action()",
+      "id": "app_main_login",
+      "label": "login()",
       "_callable": true,
       "_origin": "ast",
-      "community": 6,
-      "community_name": "TidioMonitor",
+      "community": 51,
+      "community_name": "post",
       "file_type": "code",
-      "norm_label": ".authentication_action()",
-      "source_file": "app/tidio.py",
-      "source_location": "L166"
+      "norm_label": "login()",
+      "source_file": "app/main.py",
+      "source_location": "L143"
     },
     {
-      "id": "app_tidio_tidiomonitor_authentication_interaction_available",
-      "label": ".authentication_interaction_available()",
+      "id": "app_main_login_form",
+      "label": "login_form()",
       "_callable": true,
       "_origin": "ast",
-      "community": 6,
-      "community_name": "TidioMonitor",
+      "community": 51,
+      "community_name": "post",
       "file_type": "code",
-      "norm_label": ".authentication_interaction_available()",
-      "source_file": "app/tidio.py",
-      "source_location": "L87"
+      "norm_label": "login_form()",
+      "source_file": "app/main.py",
+      "source_location": "L228"
     },
     {
-      "id": "app_tidio_tidiomonitor_authentication_screenshot",
-      "label": ".authentication_screenshot()",
+      "id": "app_main_logout",
+      "label": "logout()",
       "_callable": true,
       "_origin": "ast",
-      "community": 6,
-      "community_name": "TidioMonitor",
+      "community": 51,
+      "community_name": "post",
       "file_type": "code",
-      "norm_label": ".authentication_screenshot()",
-      "source_file": "app/tidio.py",
-      "source_location": "L161"
+      "norm_label": "logout()",
+      "source_file": "app/main.py",
+      "source_location": "L272"
+    },
+    {
+      "id": "app_main_set_session_cookie",
+      "label": "_set_session_cookie()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "post",
+      "file_type": "code",
+      "norm_label": "_set_session_cookie()",
+      "source_file": "app/main.py",
+      "source_location": "L245"
+    },
+    {
+      "id": "app_main_test_notification",
+      "label": "test_notification()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "post",
+      "file_type": "code",
+      "norm_label": "test_notification()",
+      "source_file": "app/main.py",
+      "source_location": "L789"
+    },
+    {
+      "id": "app_main_test_support_sales_telegram_notification",
+      "label": "test_support_sales_telegram_notification()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "post",
+      "file_type": "code",
+      "norm_label": "test_support_sales_telegram_notification()",
+      "source_file": "app/main.py",
+      "source_location": "L520"
+    },
+    {
+      "id": "app_main_test_telegram_notification",
+      "label": "test_telegram_notification()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "post",
+      "file_type": "code",
+      "norm_label": "test_telegram_notification()",
+      "source_file": "app/main.py",
+      "source_location": "L495"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_test_create_edit_password_reset_enable_disable_and_delete",
+      "label": ".test_create_edit_password_reset_enable_disable_and_delete()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "post",
+      "file_type": "code",
+      "norm_label": ".test_create_edit_password_reset_enable_disable_and_delete()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L99"
+    },
+    {
+      "id": "app_auth_authenticate_token",
+      "label": "authenticate_token()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 52,
+      "community_name": "authenticate_token",
+      "file_type": "code",
+      "norm_label": "authenticate_token()",
+      "source_file": "app/auth.py",
+      "source_location": "L105"
+    },
+    {
+      "id": "app_auth_principal_for_username",
+      "label": "principal_for_username()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 52,
+      "community_name": "authenticate_token",
+      "file_type": "code",
+      "norm_label": "principal_for_username()",
+      "source_file": "app/auth.py",
+      "source_location": "L36"
+    },
+    {
+      "id": "app_auth_request_origin",
+      "label": "_request_origin()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 52,
+      "community_name": "authenticate_token",
+      "file_type": "code",
+      "norm_label": "_request_origin()",
+      "source_file": "app/auth.py",
+      "source_location": "L67"
+    },
+    {
+      "id": "app_auth_verify_access_token",
+      "label": "verify_access_token()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 52,
+      "community_name": "authenticate_token",
+      "file_type": "code",
+      "norm_label": "verify_access_token()",
+      "source_file": "app/auth.py",
+      "source_location": "L96"
+    },
+    {
+      "id": "app_main_create_web_session",
+      "label": "create_web_session()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 52,
+      "community_name": "authenticate_token",
+      "file_type": "code",
+      "norm_label": "create_web_session()",
+      "source_file": "app/main.py",
+      "source_location": "L259"
+    },
+    {
+      "id": "tests_test_deployment_health_deploymentworkflowsafetytests_test_failure_notification_is_unconditional_and_does_not_mask_job_failure",
+      "label": ".test_failure_notification_is_unconditional_and_does_not_mask_job_failure()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 53,
+      "community_name": "DeploymentWorkflowSafetyTests",
+      "file_type": "code",
+      "norm_label": ".test_failure_notification_is_unconditional_and_does_not_mask_job_failure()",
+      "source_file": "tests/test_deployment_health.py",
+      "source_location": "L181"
+    },
+    {
+      "id": "tests_test_deployment_health_deploymentworkflowsafetytests_test_workflow_never_prints_telegram_token_or_ssh_key",
+      "label": ".test_workflow_never_prints_telegram_token_or_ssh_key()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 53,
+      "community_name": "DeploymentWorkflowSafetyTests",
+      "file_type": "code",
+      "norm_label": ".test_workflow_never_prints_telegram_token_or_ssh_key()",
+      "source_file": "tests/test_deployment_health.py",
+      "source_location": "L190"
     },
     {
       "id": "app_tidio_tidiomonitor_click_login_action",
@@ -4363,11 +4411,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "TidioMonitor",
+      "community_name": ".finish_authentication",
       "file_type": "code",
       "norm_label": "._click_login_action()",
       "source_file": "app/tidio.py",
-      "source_location": "L363"
+      "source_location": "L372"
     },
     {
       "id": "app_tidio_tidiomonitor_find_visible_input",
@@ -4375,11 +4423,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "TidioMonitor",
+      "community_name": ".finish_authentication",
       "file_type": "code",
       "norm_label": "._find_visible_input()",
       "source_file": "app/tidio.py",
-      "source_location": "L351"
+      "source_location": "L360"
     },
     {
       "id": "app_tidio_tidiomonitor_finish_authentication",
@@ -4387,23 +4435,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "TidioMonitor",
+      "community_name": ".finish_authentication",
       "file_type": "code",
       "norm_label": ".finish_authentication()",
       "source_file": "app/tidio.py",
-      "source_location": "L193"
-    },
-    {
-      "id": "app_tidio_tidiomonitor_log_console_error",
-      "label": "._log_console_error()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "TidioMonitor",
-      "file_type": "code",
-      "norm_label": "._log_console_error()",
-      "source_file": "app/tidio.py",
-      "source_location": "L61"
+      "source_location": "L202"
     },
     {
       "id": "app_tidio_tidiomonitor_log_inbox_not_rendered",
@@ -4411,11 +4447,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "TidioMonitor",
+      "community_name": ".finish_authentication",
       "file_type": "code",
       "norm_label": "._log_inbox_not_rendered()",
       "source_file": "app/tidio.py",
-      "source_location": "L465"
+      "source_location": "L474"
     },
     {
       "id": "app_tidio_tidiomonitor_login",
@@ -4423,11 +4459,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "TidioMonitor",
+      "community_name": ".finish_authentication",
       "file_type": "code",
       "norm_label": "._login()",
       "source_file": "app/tidio.py",
-      "source_location": "L289"
+      "source_location": "L298"
     },
     {
       "id": "app_tidio_tidiomonitor_open_inbox",
@@ -4435,11 +4471,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "TidioMonitor",
+      "community_name": ".finish_authentication",
       "file_type": "code",
       "norm_label": "._open_inbox()",
       "source_file": "app/tidio.py",
-      "source_location": "L432"
+      "source_location": "L441"
     },
     {
       "id": "app_tidio_tidiomonitor_raise_login_page_state",
@@ -4447,11 +4483,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "TidioMonitor",
+      "community_name": ".finish_authentication",
       "file_type": "code",
       "norm_label": "._raise_login_page_state()",
       "source_file": "app/tidio.py",
-      "source_location": "L374"
+      "source_location": "L383"
     },
     {
       "id": "app_tidio_tidiomonitor_save_session",
@@ -4459,23 +4495,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "TidioMonitor",
+      "community_name": ".finish_authentication",
       "file_type": "code",
       "norm_label": "._save_session()",
       "source_file": "app/tidio.py",
-      "source_location": "L421"
-    },
-    {
-      "id": "app_tidio_tidiomonitor_session_path",
-      "label": "._session_path()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "TidioMonitor",
-      "file_type": "code",
-      "norm_label": "._session_path()",
-      "source_file": "app/tidio.py",
-      "source_location": "L50"
+      "source_location": "L430"
     },
     {
       "id": "app_tidio_tidiomonitor_verification_required",
@@ -4483,11 +4507,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "TidioMonitor",
+      "community_name": ".finish_authentication",
       "file_type": "code",
       "norm_label": "._verification_required()",
       "source_file": "app/tidio.py",
-      "source_location": "L404"
+      "source_location": "L413"
     },
     {
       "id": "app_tidio_tidiomonitor_wait_for_inbox_content",
@@ -4495,23 +4519,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 6,
-      "community_name": "TidioMonitor",
+      "community_name": ".finish_authentication",
       "file_type": "code",
       "norm_label": "._wait_for_inbox_content()",
       "source_file": "app/tidio.py",
-      "source_location": "L442"
-    },
-    {
-      "id": "tests_test_tidio_test_tidio_console_diagnostics_redact_error_text",
-      "label": "test_tidio_console_diagnostics_redact_error_text()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "TidioMonitor",
-      "file_type": "code",
-      "norm_label": "test_tidio_console_diagnostics_redact_error_text()",
-      "source_file": "tests/test_tidio.py",
-      "source_location": "L143"
+      "source_location": "L451"
     },
     {
       "id": "tests_test_deployment_health_deploymenthealthchecktests_run_check",
@@ -4694,6 +4706,30 @@
       "source_location": "L9"
     },
     {
+      "id": "app_notifications_service_create_notification",
+      "label": "create_notification()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "TelegramSendResult",
+      "file_type": "code",
+      "norm_label": "create_notification()",
+      "source_file": "app/notifications/service.py",
+      "source_location": "L15"
+    },
+    {
+      "id": "app_notifications_service_metadata_for",
+      "label": "metadata_for()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "TelegramSendResult",
+      "file_type": "code",
+      "norm_label": "metadata_for()",
+      "source_file": "app/notifications/service.py",
+      "source_location": "L94"
+    },
+    {
       "id": "app_notifications_telegram_failure",
       "label": "_failure()",
       "_callable": true,
@@ -4752,6 +4788,18 @@
       "norm_label": "send_test()",
       "source_file": "app/notifications/telegram.py",
       "source_location": "L92"
+    },
+    {
+      "id": "tests_test_notifications_center_notificationcentertests_test_legacy_approval_without_binding_metadata_is_not_authorized",
+      "label": ".test_legacy_approval_without_binding_metadata_is_not_authorized()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "TelegramSendResult",
+      "file_type": "code",
+      "norm_label": ".test_legacy_approval_without_binding_metadata_is_not_authorized()",
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L285"
     },
     {
       "id": "tests_test_telegram_fakeasyncclient_aenter",
@@ -4872,42 +4920,6 @@
       "norm_label": ".test_api_failure_is_safe_and_logged_by_notifier()",
       "source_file": "tests/test_telegram.py",
       "source_location": "L91"
-    },
-    {
-      "id": "tests_test_telegram_telegramclienttests_test_baseline_minor_arch_and_telegram_failure_do_not_fail_check",
-      "label": ".test_baseline_minor_arch_and_telegram_failure_do_not_fail_check()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "TelegramSendResult",
-      "file_type": "code",
-      "norm_label": ".test_baseline_minor_arch_and_telegram_failure_do_not_fail_check()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L178"
-    },
-    {
-      "id": "tests_test_telegram_telegramclienttests_test_baseline_minor_arch_and_telegram_failure_do_not_fail_check_init",
-      "label": "__init__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "TelegramSendResult",
-      "file_type": "code",
-      "norm_label": "__init__()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L186"
-    },
-    {
-      "id": "tests_test_telegram_telegramclienttests_test_baseline_minor_arch_and_telegram_failure_do_not_fail_check_latest",
-      "label": "latest()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "TelegramSendResult",
-      "file_type": "code",
-      "norm_label": "latest()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L189"
     },
     {
       "id": "tests_test_telegram_telegramclienttests_test_disabled_does_not_make_request",
@@ -5246,39 +5258,6 @@
       "source_location": ""
     },
     {
-      "id": "post",
-      "label": "post",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "main.py",
-      "file_type": "code",
-      "norm_label": "post",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "app_main_rationale_177",
-      "label": "DB user credentials first; retain the configured admin as bootstrap fallback.",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "main.py",
-      "file_type": "rationale",
-      "norm_label": "db user credentials first; retain the configured admin as bootstrap fallback.",
-      "source_file": "app/main.py",
-      "source_location": "L177"
-    },
-    {
-      "id": "app_main_rationale_229",
-      "label": "POST fallback for browsers when client-side JavaScript is unavailable.",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "main.py",
-      "file_type": "rationale",
-      "norm_label": "post fallback for browsers when client-side javascript is unavailable.",
-      "source_file": "app/main.py",
-      "source_location": "L229"
-    },
-    {
       "id": "app_schemas",
       "label": "schemas.py",
       "_origin": "ast",
@@ -5334,6 +5313,17 @@
       "source_location": ""
     },
     {
+      "id": "middleware",
+      "label": "middleware",
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "get",
+      "file_type": "code",
+      "norm_label": "middleware",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "app_scheduler",
       "label": "scheduler.py",
       "_origin": "ast",
@@ -5356,17 +5346,6 @@
       "source_location": ""
     },
     {
-      "id": "basesettings",
-      "label": "BaseSettings",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "scheduler.py",
-      "file_type": "code",
-      "norm_label": "basesettings",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "fastapi",
       "label": "FastAPI",
       "_origin": "ast",
@@ -5376,28 +5355,6 @@
       "norm_label": "fastapi",
       "source_file": "",
       "source_location": ""
-    },
-    {
-      "id": "app_config_rationale_32",
-      "label": "Fail startup on missing/unsafe credentials in production mode.",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "scheduler.py",
-      "file_type": "rationale",
-      "norm_label": "fail startup on missing/unsafe credentials in production mode.",
-      "source_file": "app/config.py",
-      "source_location": "L32"
-    },
-    {
-      "id": "app_models_rationale_140",
-      "label": "Add nullable approval-binding fields without granting legacy rows access.",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "scheduler.py",
-      "file_type": "rationale",
-      "norm_label": "add nullable approval-binding fields without granting legacy rows access.",
-      "source_file": "app/models.py",
-      "source_location": "L140"
     },
     {
       "id": "app_scheduler_rationale_109",
@@ -5448,7 +5405,7 @@
       "label": "delete",
       "_origin": "ast",
       "community": 16,
-      "community_name": "User",
+      "community_name": "Principal",
       "file_type": "code",
       "norm_label": "delete",
       "source_file": "",
@@ -5459,22 +5416,11 @@
       "label": "patch",
       "_origin": "ast",
       "community": 16,
-      "community_name": "User",
+      "community_name": "Principal",
       "file_type": "code",
       "norm_label": "patch",
       "source_file": "",
       "source_location": ""
-    },
-    {
-      "id": "app_auth_rationale_37",
-      "label": "Resolve every request against current DB state so disable takes effect\u2026",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "User",
-      "file_type": "rationale",
-      "norm_label": "resolve every request against current db state so disable takes effect...",
-      "source_file": "app/auth.py",
-      "source_location": "L37"
     },
     {
       "id": "scripts_deployment_health_check",
@@ -5537,29 +5483,7 @@
       "source_location": "L1"
     },
     {
-      "id": "any",
-      "label": "Any",
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Notification",
-      "file_type": "code",
-      "norm_label": "any",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "app_notifications_service",
-      "label": "notifications/service.py",
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Notification",
-      "file_type": "code",
-      "norm_label": "notifications/service.py",
-      "source_file": "app/notifications/service.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "app_notifications_service_py_datetime",
+      "id": "app_main_py_datetime",
       "label": "datetime",
       "_origin": "ast",
       "community": 18,
@@ -5590,28 +5514,6 @@
       "norm_label": "return only an openclaw request's action-bound approval decision.",
       "source_file": "app/main.py",
       "source_location": "L745"
-    },
-    {
-      "id": "app_auth_py_request",
-      "label": "Request",
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": "request",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "httpauthorizationcredentials",
-      "label": "HTTPAuthorizationCredentials",
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": "httpauthorizationcredentials",
-      "source_file": "",
-      "source_location": ""
     },
     {
       "id": "abc",
@@ -5746,46 +5648,35 @@
       "source_location": "L1"
     },
     {
-      "id": "app_tidio",
-      "label": "tidio.py",
-      "_origin": "ast",
-      "community": 20,
-      "community_name": "tidio.py",
-      "file_type": "code",
-      "norm_label": "tidio.py",
-      "source_file": "app/tidio.py",
-      "source_location": "L1"
-    },
-    {
       "id": "tests_test_tidio",
       "label": "test_tidio.py",
       "_origin": "ast",
       "community": 20,
-      "community_name": "tidio.py",
+      "community_name": "test_tidio.py",
       "file_type": "code",
       "norm_label": "test_tidio.py",
       "source_file": "tests/test_tidio.py",
       "source_location": "L1"
     },
     {
-      "id": "fernet",
-      "label": "Fernet",
+      "id": "exception",
+      "label": "Exception",
       "_origin": "ast",
       "community": 22,
-      "community_name": "._reconnect",
+      "community_name": ".connect",
       "file_type": "code",
-      "norm_label": "fernet",
+      "norm_label": "exception",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "app_main_py_datetime",
-      "label": "datetime",
+      "id": "fernet",
+      "label": "Fernet",
       "_origin": "ast",
-      "community": 23,
-      "community_name": "_utc_timestamp",
+      "community": 22,
+      "community_name": ".connect",
       "file_type": "code",
-      "norm_label": "datetime",
+      "norm_label": "fernet",
       "source_file": "",
       "source_location": ""
     },
@@ -5801,13 +5692,24 @@
       "source_location": "L1"
     },
     {
-      "id": "exception",
-      "label": "Exception",
+      "id": "page",
+      "label": "Page",
       "_origin": "ast",
       "community": 4,
-      "community_name": ".connect",
+      "community_name": "TidioMonitor",
       "file_type": "code",
-      "norm_label": "exception",
+      "norm_label": "page",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "path",
+      "label": "Path",
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "TidioMonitor",
+      "file_type": "code",
+      "norm_label": "path",
       "source_file": "",
       "source_location": ""
     },
@@ -5823,17 +5725,6 @@
       "source_location": ""
     },
     {
-      "id": "middleware",
-      "label": "middleware",
-      "_origin": "ast",
-      "community": 48,
-      "community_name": "sanitized_validation_error",
-      "file_type": "code",
-      "norm_label": "middleware",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "requestvalidationerror",
       "label": "RequestValidationError",
       "_origin": "ast",
@@ -5845,59 +5736,158 @@
       "source_location": ""
     },
     {
+      "id": "app_tidio",
+      "label": "tidio.py",
+      "_origin": "ast",
+      "community": 49,
+      "community_name": "tidio.py",
+      "file_type": "code",
+      "norm_label": "tidio.py",
+      "source_file": "app/tidio.py",
+      "source_location": "L1"
+    },
+    {
       "id": "app_tidio_py_datetime",
       "label": "datetime",
       "_origin": "ast",
       "community": 49,
-      "community_name": "._check_once",
+      "community_name": "tidio.py",
       "file_type": "code",
       "norm_label": "datetime",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "page",
-      "label": "Page",
+      "id": "basesettings",
+      "label": "BaseSettings",
       "_origin": "ast",
       "community": 50,
-      "community_name": "._diagnose_page",
+      "community_name": "ProductionConfigTests",
       "file_type": "code",
-      "norm_label": "page",
+      "norm_label": "basesettings",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "path",
-      "label": "Path",
+      "id": "app_config_rationale_32",
+      "label": "Fail startup on missing/unsafe credentials in production mode.",
       "_origin": "ast",
-      "community": 6,
-      "community_name": "TidioMonitor",
+      "community": 50,
+      "community_name": "ProductionConfigTests",
+      "file_type": "rationale",
+      "norm_label": "fail startup on missing/unsafe credentials in production mode.",
+      "source_file": "app/config.py",
+      "source_location": "L32"
+    },
+    {
+      "id": "app_models_rationale_140",
+      "label": "Add nullable approval-binding fields without granting legacy rows access.",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "ProductionConfigTests",
+      "file_type": "rationale",
+      "norm_label": "add nullable approval-binding fields without granting legacy rows access.",
+      "source_file": "app/models.py",
+      "source_location": "L140"
+    },
+    {
+      "id": "post",
+      "label": "post",
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "post",
       "file_type": "code",
-      "norm_label": "path",
+      "norm_label": "post",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "app_tidio_rationale_443",
+      "id": "app_main_rationale_177",
+      "label": "DB user credentials first; retain the configured admin as bootstrap fallback.",
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "post",
+      "file_type": "rationale",
+      "norm_label": "db user credentials first; retain the configured admin as bootstrap fallback.",
+      "source_file": "app/main.py",
+      "source_location": "L177"
+    },
+    {
+      "id": "app_main_rationale_229",
+      "label": "POST fallback for browsers when client-side JavaScript is unavailable.",
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "post",
+      "file_type": "rationale",
+      "norm_label": "post fallback for browsers when client-side javascript is unavailable.",
+      "source_file": "app/main.py",
+      "source_location": "L229"
+    },
+    {
+      "id": "app_auth_py_request",
+      "label": "Request",
+      "_origin": "ast",
+      "community": 52,
+      "community_name": "authenticate_token",
+      "file_type": "code",
+      "norm_label": "request",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "httpauthorizationcredentials",
+      "label": "HTTPAuthorizationCredentials",
+      "_origin": "ast",
+      "community": 52,
+      "community_name": "authenticate_token",
+      "file_type": "code",
+      "norm_label": "httpauthorizationcredentials",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "app_auth_rationale_37",
+      "label": "Resolve every request against current DB state so disable takes effect\u2026",
+      "_origin": "ast",
+      "community": 52,
+      "community_name": "authenticate_token",
+      "file_type": "rationale",
+      "norm_label": "resolve every request against current db state so disable takes effect...",
+      "source_file": "app/auth.py",
+      "source_location": "L37"
+    },
+    {
+      "id": "app_tidio_rationale_452",
       "label": "Allow Tidio's client-side inbox to hydrate without waiting for analytics idle.",
       "_origin": "ast",
       "community": 6,
-      "community_name": "TidioMonitor",
+      "community_name": ".finish_authentication",
       "file_type": "rationale",
       "norm_label": "allow tidio's client-side inbox to hydrate without waiting for analytics idle.",
       "source_file": "app/tidio.py",
-      "source_location": "L443"
+      "source_location": "L452"
     },
     {
-      "id": "app_tidio_rationale_466",
+      "id": "app_tidio_rationale_475",
       "label": "Log page metadata only; never include page text, form values, or URLs with\u2026",
       "_origin": "ast",
       "community": 6,
-      "community_name": "TidioMonitor",
+      "community_name": ".finish_authentication",
       "file_type": "rationale",
       "norm_label": "log page metadata only; never include page text, form values, or urls with...",
       "source_file": "app/tidio.py",
-      "source_location": "L466"
+      "source_location": "L475"
+    },
+    {
+      "id": "any",
+      "label": "Any",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "TelegramSendResult",
+      "file_type": "code",
+      "norm_label": "any",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "app_notifications_discord",
@@ -5920,6 +5910,28 @@
       "norm_label": "notifications/__init__.py",
       "source_file": "app/notifications/__init__.py",
       "source_location": "L1"
+    },
+    {
+      "id": "app_notifications_service",
+      "label": "notifications/service.py",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "TelegramSendResult",
+      "file_type": "code",
+      "norm_label": "notifications/service.py",
+      "source_file": "app/notifications/service.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "app_notifications_service_py_datetime",
+      "label": "datetime",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "TelegramSendResult",
+      "file_type": "code",
+      "norm_label": "datetime",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "app_notifications_telegram",
@@ -7097,6 +7109,18 @@
       "type": "external"
     },
     {
+      "id": "asyncio",
+      "label": "asyncio",
+      "_origin": "semantic",
+      "community": 15,
+      "community_name": "scheduler.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "asyncio",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "logging",
       "label": "logging",
       "_origin": "semantic",
@@ -7105,30 +7129,6 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "logging",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "json",
-      "label": "json",
-      "_origin": "semantic",
-      "community": 18,
-      "community_name": "Notification",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "json",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "typing",
-      "label": "typing",
-      "_origin": "semantic",
-      "community": 18,
-      "community_name": "Notification",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "typing",
       "source_file": "",
       "type": "external"
     },
@@ -7157,78 +7157,6 @@
       "type": "external"
     },
     {
-      "id": "asyncio",
-      "label": "asyncio",
-      "_origin": "semantic",
-      "community": 20,
-      "community_name": "tidio.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "asyncio",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "base64",
-      "label": "base64",
-      "_origin": "semantic",
-      "community": 20,
-      "community_name": "tidio.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "base64",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "cryptography_fernet",
-      "label": "cryptography_fernet",
-      "_origin": "semantic",
-      "community": 20,
-      "community_name": "tidio.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "cryptography_fernet",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "dataclasses",
-      "label": "dataclasses",
-      "_origin": "semantic",
-      "community": 20,
-      "community_name": "tidio.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "dataclasses",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "playwright_async_api",
-      "label": "playwright_async_api",
-      "_origin": "semantic",
-      "community": 20,
-      "community_name": "tidio.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "playwright_async_api",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "urllib_parse",
-      "label": "urllib_parse",
-      "_origin": "semantic",
-      "community": 20,
-      "community_name": "tidio.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "urllib_parse",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "shutil",
       "label": "shutil",
       "_origin": "semantic",
@@ -7241,6 +7169,78 @@
       "type": "external"
     },
     {
+      "id": "base64",
+      "label": "base64",
+      "_origin": "semantic",
+      "community": 49,
+      "community_name": "tidio.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "base64",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "cryptography_fernet",
+      "label": "cryptography_fernet",
+      "_origin": "semantic",
+      "community": 49,
+      "community_name": "tidio.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "cryptography_fernet",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "dataclasses",
+      "label": "dataclasses",
+      "_origin": "semantic",
+      "community": 49,
+      "community_name": "tidio.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "dataclasses",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "json",
+      "label": "json",
+      "_origin": "semantic",
+      "community": 49,
+      "community_name": "tidio.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "json",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "playwright_async_api",
+      "label": "playwright_async_api",
+      "_origin": "semantic",
+      "community": 49,
+      "community_name": "tidio.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "playwright_async_api",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "urllib_parse",
+      "label": "urllib_parse",
+      "_origin": "semantic",
+      "community": 49,
+      "community_name": "tidio.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "urllib_parse",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "httpx",
       "label": "httpx",
       "_origin": "semantic",
@@ -7249,6 +7249,18 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "httpx",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "typing",
+      "label": "typing",
+      "_origin": "semantic",
+      "community": 9,
+      "community_name": "TelegramSendResult",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "typing",
       "source_file": "",
       "type": "external"
     }
@@ -8835,7 +8847,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L561",
+      "source_location": "L570",
       "weight": 1.0
     },
     {
@@ -8847,7 +8859,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L563",
+      "source_location": "L572",
       "weight": 1.0
     },
     {
@@ -8859,7 +8871,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L564",
+      "source_location": "L573",
       "weight": 1.0
     },
     {
@@ -8871,7 +8883,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L372",
+      "source_location": "L381",
       "weight": 1.0
     },
     {
@@ -8883,7 +8895,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L137",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
@@ -8895,7 +8907,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L138",
+      "source_location": "L147",
       "weight": 1.0
     },
     {
@@ -8907,7 +8919,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L139",
+      "source_location": "L148",
       "weight": 1.0
     },
     {
@@ -8919,7 +8931,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L140",
+      "source_location": "L149",
       "weight": 1.0
     },
     {
@@ -8931,7 +8943,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L142",
+      "source_location": "L151",
       "weight": 1.0
     },
     {
@@ -8943,7 +8955,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L143",
+      "source_location": "L152",
       "weight": 1.0
     },
     {
@@ -8955,7 +8967,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L146",
+      "source_location": "L155",
       "weight": 1.0
     },
     {
@@ -8967,7 +8979,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L156",
+      "source_location": "L165",
       "weight": 1.0
     },
     {
@@ -8979,7 +8991,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L127",
+      "source_location": "L136",
       "weight": 1.0
     },
     {
@@ -9015,7 +9027,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L233",
+      "source_location": "L242",
       "weight": 1.0
     },
     {
@@ -9027,7 +9039,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L234",
+      "source_location": "L243",
       "weight": 1.0
     },
     {
@@ -9039,7 +9051,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L249",
+      "source_location": "L258",
       "weight": 1.0
     },
     {
@@ -9051,7 +9063,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L123",
+      "source_location": "L132",
       "weight": 1.0
     },
     {
@@ -9063,7 +9075,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L282",
+      "source_location": "L291",
       "weight": 1.0
     },
     {
@@ -9075,7 +9087,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L287",
+      "source_location": "L296",
       "weight": 1.0
     },
     {
@@ -9087,7 +9099,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L197",
+      "source_location": "L206",
       "weight": 1.0
     },
     {
@@ -9099,7 +9111,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L199",
+      "source_location": "L208",
       "weight": 1.0
     },
     {
@@ -9111,7 +9123,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L202",
+      "source_location": "L211",
       "weight": 1.0
     },
     {
@@ -9123,7 +9135,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L205",
+      "source_location": "L214",
       "weight": 1.0
     },
     {
@@ -9135,7 +9147,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L215",
+      "source_location": "L224",
       "weight": 1.0
     },
     {
@@ -9147,7 +9159,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L219",
+      "source_location": "L228",
       "weight": 1.0
     },
     {
@@ -9159,7 +9171,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L220",
+      "source_location": "L229",
       "weight": 1.0
     },
     {
@@ -9171,7 +9183,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L221",
+      "source_location": "L230",
       "weight": 1.0
     },
     {
@@ -9183,7 +9195,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L223",
+      "source_location": "L232",
       "weight": 1.0
     },
     {
@@ -9207,7 +9219,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L298",
+      "source_location": "L307",
       "weight": 1.0
     },
     {
@@ -9219,7 +9231,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L307",
+      "source_location": "L316",
       "weight": 1.0
     },
     {
@@ -9231,7 +9243,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L308",
+      "source_location": "L317",
       "weight": 1.0
     },
     {
@@ -9243,7 +9255,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L309",
+      "source_location": "L318",
       "weight": 1.0
     },
     {
@@ -9255,7 +9267,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L329",
+      "source_location": "L338",
       "weight": 1.0
     },
     {
@@ -9267,7 +9279,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L341",
+      "source_location": "L350",
       "weight": 1.0
     },
     {
@@ -9279,7 +9291,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L494",
+      "source_location": "L503",
       "weight": 1.0
     },
     {
@@ -9291,7 +9303,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L499",
+      "source_location": "L508",
       "weight": 1.0
     },
     {
@@ -9303,7 +9315,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L499",
+      "source_location": "L508",
       "weight": 1.0
     },
     {
@@ -9315,7 +9327,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L503",
+      "source_location": "L512",
       "weight": 1.0
     },
     {
@@ -9327,7 +9339,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L437",
+      "source_location": "L446",
       "weight": 1.0
     },
     {
@@ -9339,7 +9351,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L391",
+      "source_location": "L400",
       "weight": 1.0
     },
     {
@@ -9351,7 +9363,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L518",
+      "source_location": "L527",
       "weight": 1.0
     },
     {
@@ -9363,7 +9375,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L524",
+      "source_location": "L533",
       "weight": 1.0
     },
     {
@@ -9375,7 +9387,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L529",
+      "source_location": "L538",
       "weight": 1.0
     },
     {
@@ -9387,7 +9399,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L530",
+      "source_location": "L539",
       "weight": 1.0
     },
     {
@@ -9399,7 +9411,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L531",
+      "source_location": "L540",
       "weight": 1.0
     },
     {
@@ -9411,7 +9423,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L533",
+      "source_location": "L542",
       "weight": 1.0
     },
     {
@@ -9423,7 +9435,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L259",
+      "source_location": "L268",
       "weight": 1.0
     },
     {
@@ -9435,7 +9447,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L262",
+      "source_location": "L271",
       "weight": 1.0
     },
     {
@@ -9447,7 +9459,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L267",
+      "source_location": "L276",
       "weight": 1.0
     },
     {
@@ -9459,7 +9471,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L592",
+      "source_location": "L601",
       "weight": 1.0
     },
     {
@@ -9471,7 +9483,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L595",
+      "source_location": "L604",
       "weight": 1.0
     },
     {
@@ -9483,7 +9495,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L426",
+      "source_location": "L435",
       "weight": 1.0
     },
     {
@@ -9495,7 +9507,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L227",
+      "source_location": "L236",
       "weight": 1.0
     },
     {
@@ -9507,7 +9519,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L229",
+      "source_location": "L238",
       "weight": 1.0
     },
     {
@@ -9519,7 +9531,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L482",
+      "source_location": "L491",
       "weight": 1.0
     },
     {
@@ -9531,7 +9543,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/tidio.py",
-      "source_location": "L484",
+      "source_location": "L493",
       "weight": 1.0
     },
     {
@@ -11764,6 +11776,18 @@
       "context": "call",
       "source_file": "tests/test_tidio.py",
       "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_tidio_test_tidio_recaptcha_response_logs_path_without_query",
+      "target": "app_tidio_tidiomonitor_log_browser_response",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "tests/test_tidio.py",
+      "source_location": "L167",
       "weight": 1.0
     },
     {
@@ -18303,7 +18327,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "app/tidio.py",
-      "source_location": "L662",
+      "source_location": "L671",
       "weight": 1.0
     },
     {
@@ -18315,7 +18339,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "app/tidio.py",
-      "source_location": "L626",
+      "source_location": "L635",
       "weight": 1.0
     },
     {
@@ -18483,7 +18507,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "app/tidio.py",
-      "source_location": "L116",
+      "source_location": "L125",
       "weight": 1.0
     },
     {
@@ -18507,7 +18531,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "app/tidio.py",
-      "source_location": "L113",
+      "source_location": "L122",
       "weight": 1.0
     },
     {
@@ -20958,6 +20982,17 @@
     },
     {
       "source": "tests_test_tidio",
+      "target": "tests_test_tidio_test_tidio_recaptcha_response_logs_path_without_query",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_tidio.py",
+      "source_location": "L157",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_tidio",
       "target": "tests_test_tidio_test_tidio_session_is_encrypted_and_persisted",
       "relation": "contains",
       "_origin": "ast",
@@ -21811,7 +21846,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L100",
+      "source_location": "L106",
       "weight": 1.0
     },
     {
@@ -21822,7 +21857,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L113",
+      "source_location": "L122",
       "weight": 1.0
     },
     {
@@ -21833,7 +21868,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L116",
+      "source_location": "L125",
       "weight": 1.0
     },
     {
@@ -21844,7 +21879,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L122",
+      "source_location": "L131",
       "weight": 1.0
     },
     {
@@ -21855,7 +21890,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L125",
+      "source_location": "L134",
       "weight": 1.0
     },
     {
@@ -21866,7 +21901,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L131",
+      "source_location": "L140",
       "weight": 1.0
     },
     {
@@ -21877,7 +21912,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L161",
+      "source_location": "L170",
       "weight": 1.0
     },
     {
@@ -21888,7 +21923,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L166",
+      "source_location": "L175",
       "weight": 1.0
     },
     {
@@ -21899,7 +21934,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L193",
+      "source_location": "L202",
       "weight": 1.0
     },
     {
@@ -21910,7 +21945,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L226",
+      "source_location": "L235",
       "weight": 1.0
     },
     {
@@ -21921,7 +21956,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L231",
+      "source_location": "L240",
       "weight": 1.0
     },
     {
@@ -21932,7 +21967,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L252",
+      "source_location": "L261",
       "weight": 1.0
     },
     {
@@ -21943,7 +21978,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L269",
+      "source_location": "L278",
       "weight": 1.0
     },
     {
@@ -21954,7 +21989,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L289",
+      "source_location": "L298",
       "weight": 1.0
     },
     {
@@ -21965,18 +22000,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L351",
-      "weight": 1.0
-    },
-    {
-      "source": "app_tidio_tidiomonitor",
-      "target": "app_tidio_tidiomonitor_click_login_action",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "app/tidio.py",
-      "source_location": "L363",
+      "source_location": "L360",
       "weight": 1.0
     },
     {
@@ -21992,13 +22016,24 @@
     },
     {
       "source": "app_tidio_tidiomonitor",
+      "target": "app_tidio_tidiomonitor_click_login_action",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/tidio.py",
+      "source_location": "L372",
+      "weight": 1.0
+    },
+    {
+      "source": "app_tidio_tidiomonitor",
       "target": "app_tidio_tidiomonitor_raise_login_page_state",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L374",
+      "source_location": "L383",
       "weight": 1.0
     },
     {
@@ -22009,7 +22044,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L404",
+      "source_location": "L413",
       "weight": 1.0
     },
     {
@@ -22020,7 +22055,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L421",
+      "source_location": "L430",
       "weight": 1.0
     },
     {
@@ -22031,7 +22066,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L432",
+      "source_location": "L441",
       "weight": 1.0
     },
     {
@@ -22042,7 +22077,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L442",
+      "source_location": "L451",
       "weight": 1.0
     },
     {
@@ -22053,7 +22088,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L465",
+      "source_location": "L474",
       "weight": 1.0
     },
     {
@@ -22064,7 +22099,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L481",
+      "source_location": "L490",
       "weight": 1.0
     },
     {
@@ -22075,18 +22110,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L486",
-      "weight": 1.0
-    },
-    {
-      "source": "app_tidio_tidiomonitor",
-      "target": "app_tidio_tidiomonitor_monitor_loop",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "app/tidio.py",
-      "source_location": "L491",
+      "source_location": "L495",
       "weight": 1.0
     },
     {
@@ -22102,13 +22126,24 @@
     },
     {
       "source": "app_tidio_tidiomonitor",
+      "target": "app_tidio_tidiomonitor_monitor_loop",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/tidio.py",
+      "source_location": "L500",
+      "weight": 1.0
+    },
+    {
+      "source": "app_tidio_tidiomonitor",
       "target": "app_tidio_tidiomonitor_reconnect",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L511",
+      "source_location": "L520",
       "weight": 1.0
     },
     {
@@ -22130,7 +22165,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L548",
+      "source_location": "L557",
       "weight": 1.0
     },
     {
@@ -22141,7 +22176,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L566",
+      "source_location": "L575",
       "weight": 1.0
     },
     {
@@ -22152,7 +22187,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L588",
+      "source_location": "L597",
       "weight": 1.0
     },
     {
@@ -22174,7 +22209,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L615",
+      "source_location": "L624",
       "weight": 1.0
     },
     {
@@ -22185,7 +22220,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L626",
+      "source_location": "L635",
       "weight": 1.0
     },
     {
@@ -22196,7 +22231,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L639",
+      "source_location": "L648",
       "weight": 1.0
     },
     {
@@ -22207,7 +22242,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L662",
+      "source_location": "L671",
       "weight": 1.0
     },
     {
@@ -23553,25 +23588,25 @@
       "weight": 1.0
     },
     {
-      "source": "app_tidio_rationale_443",
+      "source": "app_tidio_rationale_452",
       "target": "app_tidio_tidiomonitor_wait_for_inbox_content",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L443",
+      "source_location": "L452",
       "weight": 1.0
     },
     {
-      "source": "app_tidio_rationale_466",
+      "source": "app_tidio_rationale_475",
       "target": "app_tidio_tidiomonitor_log_inbox_not_rendered",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/tidio.py",
-      "source_location": "L466",
+      "source_location": "L475",
       "weight": 1.0
     },
     {
@@ -24404,7 +24439,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "app/tidio.py",
-      "source_location": "L211",
+      "source_location": "L220",
       "weight": 0.8
     },
     {
@@ -24625,6 +24660,17 @@
       "confidence_score": 0.95,
       "source_file": "tests/test_tidio.py",
       "source_location": "L149",
+      "weight": 0.8
+    },
+    {
+      "source": "tests_test_tidio_test_tidio_recaptcha_response_logs_path_without_query",
+      "target": "app_tidio_tidiomonitor",
+      "relation": "uses",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "tests/test_tidio.py",
+      "source_location": "L167",
       "weight": 0.8
     },
     {
@@ -25061,5 +25107,5 @@
       "source_file": ".codex/skills/graphify/SKILL.md"
     }
   ],
-  "built_at_commit": "ea609c0d654d15d02d2ffa092c35903c5ded6747"
+  "built_at_commit": "66a2e1d6dc13ff39cb5103b88e1f0388945fead0"
 }

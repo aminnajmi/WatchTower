@@ -1,9 +1,9 @@
 {
-  "0": "test_telegram.py",
+  "0": "auth.py",
   "1": "main.py",
   "2": "Release",
   "3": "app.js",
-  "4": "WebDashboardTests",
+  "4": ".connect",
   "5": "Graphify Instructions",
   "6": "TidioMonitor",
   "7": "Dashboard Templates and Docs",
@@ -19,10 +19,11 @@
   "17": "deployment-health-check.sh",
   "18": "Notification",
   "19": "create_access_token",
-  "20": "auth.py",
+  "20": "tidio.py",
   "21": "shutil",
-  "22": "create_openclaw_notification",
+  "22": "._reconnect",
   "23": "_utc_timestamp",
+  "24": "test_tidio_keeps_browser_open_for_manual_verification",
   "25": "WatchTower CI/CD Deployment Workflow",
   "26": "WatchTower Compose Service",
   "27": "Role-based Authentication",
@@ -44,5 +45,10 @@
   "43": "Settings Page",
   "44": "Tidio Integration Page",
   "45": "User Management Page",
-  "47": "SchedulerExecutionTests"
+  "46": "test_tidio_waits_for_inbox_client_render",
+  "47": "WebDashboardTests",
+  "48": "sanitized_validation_error",
+  "49": "._check_once",
+  "50": "._diagnose_page",
+  "51": "test_tidio_inbox_render_wait_is_bounded"
 }

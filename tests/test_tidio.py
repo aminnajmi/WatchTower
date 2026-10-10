@@ -152,3 +152,21 @@ def test_tidio_console_diagnostics_redact_error_text(caplog):
     assert "host=code.tidio.co" in caplog.text
     assert "secret-token-value" not in caplog.text
     assert "token=secret" not in caplog.text
+
+
+def test_tidio_recaptcha_response_logs_path_without_query(caplog):
+    class Request:
+        resource_type = "script"
+
+    class Response:
+        url = "https://www.gstatic.com/recaptcha/releases/release-id/api.js?key=secret-key"
+        request = Request()
+        status = 200
+        headers = {"content-type": "application/javascript", "x-content-type-options": "nosniff"}
+
+    TidioMonitor._log_browser_response(Response())
+
+    assert "host=www.gstatic.com" in caplog.text
+    assert "path=/recaptcha/releases/release-id/api.js" in caplog.text
+    assert "status=200" in caplog.text
+    assert "secret-key" not in caplog.text
