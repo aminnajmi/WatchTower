@@ -25,7 +25,6 @@
         {% endif %}
         <a class="nav-link {% if active == 'notifications' %}active{% endif %}" href="/notification-center"><span>🔔</span>Notifications</a>
         {% if is_admin %}<a class="nav-link {% if active == 'users' %}active{% endif %}" href="/users"><span>♙</span>User Management</a>{% endif %}
-        {% if is_admin %}<a class="nav-link {% if active == 'tidio' %}active{% endif %}" href="/tidio"><span>◌</span>Tidio</a>{% endif %}
         <a class="nav-link {% if active == 'account' %}active{% endif %}" href="/account"><span>◉</span>My Account</a>
         {% if is_admin %}<a class="nav-link {% if active == 'settings' %}active{% endif %}" href="/settings"><span>⚙</span>Settings</a>{% endif %}
       </nav>

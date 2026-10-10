@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, timezone
-import asyncio
 import hashlib
 import hmac
 import logging
@@ -33,7 +32,7 @@ from .auth import (
     verify_password,
 )
 from .config import settings
-from .models import init_db, SessionLocal, OSRelease, ReleaseHistory, ReleaseEvent, User, Notification, TidioConnection
+from .models import init_db, SessionLocal, OSRelease, ReleaseHistory, ReleaseEvent, User, Notification
 from .schemas import UserCreate, UserUpdate, PasswordReset, PasswordChange, NotificationCreate
 from .notifications.telegram import (
     send_test as send_telegram_test,
@@ -48,7 +47,6 @@ from . import service
 from . import scheduler as scheduler_module
 from .service import check_all
 from .scheduler import JOB_ID, SCHEDULE_LABEL, start_scheduler, stop_scheduler
-from .tidio import monitor as tidio_monitor
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 configure_session_factory_provider(lambda: SessionLocal)
@@ -58,16 +56,9 @@ async def lifespan(_app: FastAPI):
     settings.validate_production_settings()
     init_db()
     start_scheduler()
-    tidio_restore_task = asyncio.create_task(tidio_monitor.restore())
     try:
         yield
     finally:
-        tidio_restore_task.cancel()
-        try:
-            await tidio_restore_task
-        except asyncio.CancelledError:
-            pass
-        await tidio_monitor.shutdown()
         stop_scheduler()
 
 
@@ -335,11 +326,6 @@ def users_page(request: Request):
     if principal.role != "admin":
         raise HTTPException(status_code=403, detail="Administrator role required")
     return _render_page(request, "users.html", "users")
-
-
-@app.get("/tidio", response_class=HTMLResponse, include_in_schema=False)
-def tidio_page(request: Request):
-    return _render_admin_page(request, "tidio.html", "tidio")
 
 
 @app.get("/account", response_class=HTMLResponse, include_in_schema=False)
@@ -886,103 +872,6 @@ def deny_notification(
         return _serialize_notification(notification)
     finally:
         db.close()
-
-class TidioConnectRequest(BaseModel):
-    username: str
-    password: str
-
-
-class TidioBrowserActionRequest(BaseModel):
-    action: str
-    x: float | None = None
-    y: float | None = None
-    text: str | None = None
-    key: str | None = None
-    delta_y: float | None = None
-
-
-def _tidio_status_payload() -> dict:
-    db = SessionLocal()
-    try:
-        row = db.get(TidioConnection, 1)
-        snapshot = tidio_monitor.snapshot
-        return {
-            "configured": bool(row and row.username and row.password_encrypted),
-            "username": row.username if row else None,
-            "status": snapshot.status if snapshot.status != "not_configured" else (row.status if row else "not_configured"),
-            "connected": snapshot.connected,
-            "unassigned_chats": snapshot.unassigned_count,
-            "last_checked_at": _utc_timestamp(row.last_checked_at) if row else snapshot.last_checked_at,
-            "last_error": snapshot.error or (row.last_error if row else None),
-            "poll_interval_seconds": 3,
-            "authentication_interaction_available": tidio_monitor.authentication_interaction_available,
-        }
-    finally:
-        db.close()
-
-
-@app.get("/api/v1/tidio", dependencies=[Depends(require_admin)])
-def tidio_status():
-    return _tidio_status_payload()
-
-
-@app.post("/api/v1/tidio/connect", dependencies=[Depends(require_admin)])
-async def tidio_connect(payload: TidioConnectRequest):
-    username = payload.username.strip()
-    if not username or not payload.password:
-        raise HTTPException(status_code=422, detail="Tidio username and password are required")
-    result = await tidio_monitor.connect(username, payload.password)
-    if not result.connected:
-        return JSONResponse(
-            {"success": False, "error": result.error or "Tidio connection failed", "status": result.status},
-            status_code=503,
-        )
-    return {"success": True, **_tidio_status_payload()}
-
-
-@app.post("/api/v1/tidio/disconnect", dependencies=[Depends(require_admin)])
-async def tidio_disconnect():
-    await tidio_monitor.disconnect()
-    return {"success": True, **_tidio_status_payload()}
-
-
-@app.get("/api/v1/tidio/auth-screen", dependencies=[Depends(require_admin)])
-async def tidio_auth_screen():
-    try:
-        image = await tidio_monitor.authentication_screenshot()
-    except RuntimeError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
-    return JSONResponse(
-        {"image": f"data:image/jpeg;base64,{image}", "width": 1440, "height": 1000},
-        headers={"Cache-Control": "no-store", "Pragma": "no-cache"},
-    )
-
-
-@app.post("/api/v1/tidio/auth-action", dependencies=[Depends(require_admin)])
-async def tidio_auth_action(payload: TidioBrowserActionRequest):
-    try:
-        await tidio_monitor.authentication_action(
-            payload.action, x=payload.x, y=payload.y, text=payload.text,
-            key=payload.key, delta_y=payload.delta_y,
-        )
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
-    except RuntimeError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
-    return {"success": True}
-
-
-@app.post("/api/v1/tidio/auth-finish", dependencies=[Depends(require_admin)])
-async def tidio_auth_finish():
-    try:
-        snapshot = await tidio_monitor.finish_authentication()
-    except RuntimeError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
-    result = _tidio_status_payload()
-    if not snapshot.connected:
-        return JSONResponse({"success": False, "detail": snapshot.error or "Tidio verification is not complete", **result}, status_code=409)
-    return {"success": True, **result}
-
 
 @app.get("/api/v1/providers", dependencies=[Depends(require_admin)])
 def providers():

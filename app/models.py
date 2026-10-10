@@ -83,20 +83,6 @@ class Notification(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
-class TidioConnection(Base):
-    __tablename__ = "tidio_connection"
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    username: Mapped[str] = mapped_column(String(320))
-    password_encrypted: Mapped[str] = mapped_column(Text)
-    status: Mapped[str] = mapped_column(String(40), default="disconnected", index=True)
-    enabled: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
-    last_checked_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    last_error: Mapped[str | None] = mapped_column(Text, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
-
 class ReleaseEvent(Base):
     __tablename__ = "release_events"
 

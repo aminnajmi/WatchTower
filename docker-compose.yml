@@ -28,10 +28,7 @@ services:
       - ALL
     security_opt:
       - no-new-privileges:true
-    # Chromium can create many processes and threads on high-core-count hosts.
-    # Keep a finite container-level bound while leaving room for one browser
-    # session plus the app and Xvfb processes.
-    pids_limit: 512
+    pids_limit: 128
     ulimits:
       nofile:
         soft: 65536
