@@ -172,9 +172,23 @@ class TidioMonitor:
             await self._open_inbox()
             await self._save_session()
             return
-        await page.locator('input[type="email"]').first.fill(username)
-        await page.locator('input[type="password"]').first.fill(password)
-        await page.get_by_role("button", name=re.compile(r"log in", re.I)).first.click()
+        email = await self._find_visible_input((
+            'input[type="email"]', 'input[autocomplete="username"]',
+            'input[name*="email" i]', 'input[name*="user" i]',
+            'input[type="text"]', 'input:not([type])',
+        ))
+        if email is None:
+            await self._raise_login_page_state("Tidio username field was not found")
+        await email.fill(username)
+
+        password_field = await self._find_visible_input(('input[type="password"]',))
+        if password_field is None:
+            await self._click_login_action()
+            password_field = await self._find_visible_input(('input[type="password"]',), timeout_ms=10_000)
+        if password_field is None:
+            await self._raise_login_page_state("Tidio password field was not found")
+        await password_field.fill(password)
+        await self._click_login_action()
         await page.wait_for_timeout(2_000)
         try:
             await page.wait_for_load_state("networkidle", timeout=15_000)
@@ -187,6 +201,39 @@ class TidioMonitor:
             raise RuntimeError("Tidio rejected the supplied credentials")
         await self._open_inbox()
         await self._save_session()
+
+    async def _find_visible_input(self, selectors: tuple[str, ...], timeout_ms: int = 2_000):
+        assert self._page is not None
+        for selector in selectors:
+            locator = self._page.locator(selector)
+            try:
+                await locator.first.wait_for(state="visible", timeout=timeout_ms)
+                return locator.first
+            except Exception:
+                continue
+        return None
+
+    async def _click_login_action(self) -> None:
+        assert self._page is not None
+        for name in (r"log in", r"sign in", r"continue", r"next"):
+            button = self._page.get_by_role("button", name=re.compile(name, re.I)).first
+            try:
+                await button.click(timeout=2_000)
+                return
+            except Exception:
+                continue
+        await self._raise_login_page_state("Tidio login action was not found")
+
+    async def _raise_login_page_state(self, fallback: str) -> None:
+        assert self._page is not None
+        try:
+            body = (await self._page.locator("body").inner_text(timeout=3_000)).lower()
+        except Exception:
+            body = ""
+        if any(term in body for term in ("recaptcha", "captcha", "two-factor", "verification", "verify your identity")):
+            raise RuntimeError("Tidio requires additional browser verification")
+        logger.warning("Tidio login form unavailable path=%s", urlparse(self._page.url).path[:100])
+        raise RuntimeError(fallback)
 
     async def _save_session(self) -> None:
         if not self._context:
