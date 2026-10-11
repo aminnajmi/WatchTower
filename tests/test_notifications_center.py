@@ -189,7 +189,8 @@ class NotificationCenterTests(unittest.TestCase):
         self.assertEqual(notification["task_specification"], expected_spec)
         self.assertEqual(notification["task_spec"], expected_spec)
         self.assertEqual(notification["task_spec_sha256"], expected_digest)
-        self.assertEqual(notification["action_id"], expected_digest)
+        self.assertNotEqual(notification["action_id"], expected_digest)
+        self.assertEqual(len(notification["action_id"]), 64)
         self.assertEqual(notification["task_schema_version"], 1)
         self.assertTrue(notification["created_by"].startswith("openclaw:"))
         self.assertEqual(notification["title"], "Approval Required: OperaVPS Website Inspection")
@@ -206,7 +207,7 @@ class NotificationCenterTests(unittest.TestCase):
         self.assertEqual(approval.json()["task_spec_sha256"], expected_digest)
         self.assertEqual(approval.json()["task_specification"], expected_spec)
         self.assertEqual(approval.json()["task_spec"], expected_spec)
-        self.assertEqual(approval.json()["action_id"], expected_digest)
+        self.assertEqual(approval.json()["action_id"], notification["action_id"])
         self.assertEqual(approval.json()["task_schema_version"], 1)
         self.assertEqual(self.client.put(f"/api/v1/notifications/{notification['id']}", headers=self.admin_headers, json={"task_specification": {}}).status_code, 405)
 
@@ -231,7 +232,7 @@ class NotificationCenterTests(unittest.TestCase):
         expiry = verify_approval(
             approved_response.json(),
             notification_id=notification["id"],
-            action_id=expected_digest,
+            action_id=notification["action_id"],
             spec=parse_task_spec(expected_spec),
         )
         self.assertIsNotNone(expiry.tzinfo)
@@ -254,12 +255,12 @@ class NotificationCenterTests(unittest.TestCase):
         self.assertEqual(item["task_spec"], specification)
         self.assertEqual(item["task_specification"], specification)
         self.assertEqual(item["task_spec_sha256"], digest)
-        self.assertEqual(item["action_id"], digest)
+        self.assertNotEqual(item["action_id"], digest)
         self.assertIn("ticket-12345", item["message"])
         self.assertIn(specification["parameters"]["reply_text"], item["message"])
         self.assertNotIn("sha256", item["message"])
 
-        approval_path = f"/api/v1/notifications/{item['id']}/approval?action_id={digest}"
+        approval_path = f"/api/v1/notifications/{item['id']}/approval?action_id={item['action_id']}"
         self.assertEqual(self.client.get(approval_path, headers=headers).json()["task_specification"], specification)
         self.assertEqual(self.client.post(f"/api/v1/notifications/{item['id']}/approve", headers=self.user_headers).status_code, 200)
         decision = self.client.get(approval_path, headers=headers)
@@ -295,6 +296,45 @@ class NotificationCenterTests(unittest.TestCase):
         result = self.client.post(f"/api/v1/notifications/{denied['id']}/deny", headers=self.user_headers, json={"reason": "No"})
         self.assertEqual(result.status_code, 200, result.text)
         self.assertEqual(result.json()["approval_status"], "denied")
+
+    def test_duplicate_task_specs_get_unique_pending_action_ids_and_consistent_status(self):
+        headers = {"Authorization": "Bearer openclaw-test-key"}
+        request = {
+            "source": "openclaw", "title": "Inspection", "message": "Inspect site",
+            "requires_approval": True,
+            "task_spec": {"version": 1, "task_type": "public_website_inspection", "url": "https://operavps.com/"},
+        }
+        first = self.client.post("/api/v1/notifications", headers=headers, json=request)
+        second = self.client.post("/api/v1/notifications", headers=headers, json=request)
+        self.assertEqual(first.status_code, 201, first.text)
+        self.assertEqual(second.status_code, 201, second.text)
+        first, second = first.json(), second.json()
+        self.assertEqual(first["task_spec_sha256"], second["task_spec_sha256"])
+        self.assertNotEqual(first["action_id"], second["action_id"])
+        self.assertEqual(first["approval_status"], "pending")
+        self.assertEqual(second["approval_status"], "pending")
+
+        for item in (first, second):
+            detail = self.client.get(f"/api/v1/notifications/{item['id']}", headers=headers)
+            decision = self.client.get(
+                f"/api/v1/notifications/{item['id']}/approval?action_id={item['action_id']}", headers=headers,
+            )
+            self.assertEqual(detail.status_code, 200, detail.text)
+            self.assertEqual(decision.status_code, 200, decision.text)
+            self.assertEqual(detail.json()["approval_status"], "pending")
+            self.assertEqual(decision.json()["approval_status"], "pending")
+            self.assertEqual(detail.json()["action_id"], decision.json()["action_id"])
+
+        approved = self.client.post(f"/api/v1/notifications/{second['id']}/approve", headers=self.user_headers)
+        self.assertEqual(approved.status_code, 200, approved.text)
+        detail = self.client.get(f"/api/v1/notifications/{second['id']}", headers=headers)
+        decision = self.client.get(f"/api/v1/notifications/{second['id']}/approval", headers=headers)
+        self.assertEqual(detail.json()["approval_status"], "approved")
+        self.assertEqual(decision.json()["approval_status"], "approved")
+        first_detail = self.client.get(f"/api/v1/notifications/{first['id']}", headers=headers)
+        first_decision = self.client.get(f"/api/v1/notifications/{first['id']}/approval", headers=headers)
+        self.assertEqual(first_detail.json()["approval_status"], "pending")
+        self.assertEqual(first_decision.json()["approval_status"], "pending")
 
     def test_business_action_rejects_malformed_specifications(self):
         headers = {"Authorization": "Bearer openclaw-test-key"}

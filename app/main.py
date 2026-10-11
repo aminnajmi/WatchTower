@@ -4,6 +4,7 @@ import hmac
 import logging
 import json
 import re
+import secrets
 from pathlib import Path
 from threading import Lock
 from urllib.parse import urlsplit
@@ -606,19 +607,9 @@ def _openclaw_key_fingerprint(authorization: str | None) -> str | None:
     return hashlib.sha256(token.strip().encode("utf-8")).hexdigest()
 
 
-def _approval_action_id(payload: NotificationCreate) -> str:
-    """Bind approval to a stable hash of the proposed action fields."""
-    action = {
-        "title": payload.title.strip(),
-        "message": payload.message.strip(),
-        "task_id": payload.task_id.strip() if payload.task_id else None,
-        "task_name": payload.task_name.strip() if payload.task_name else None,
-        "report_id": payload.report_id.strip() if payload.report_id else None,
-        "external_url": payload.external_url.strip() if payload.external_url else None,
-        "metadata": payload.metadata,
-    }
-    canonical = json.dumps(action, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+def _approval_action_id() -> str:
+    """Return a fresh 256-bit approval identity for each request."""
+    return secrets.token_hex(32)
 
 
 def _task_binding_is_valid(notification: Notification) -> bool:
@@ -642,7 +633,9 @@ def _task_binding_is_valid(notification: Notification) -> bool:
         and notification.task_type == spec.task_type
         and notification.action_id is not None
         and hmac.compare_digest(notification.task_spec_sha256, digest)
-        and hmac.compare_digest(notification.action_id, digest)
+        # Historical task approvals used the task digest itself as action_id.
+        # New approvals use a separate random identity to avoid cross-request
+        # decision reuse when identical specifications are submitted again.
     )
 
 
@@ -697,15 +690,12 @@ def create_openclaw_notification(payload: NotificationCreate, authorization: str
             approval_expires_at = now + timedelta(hours=24)
         elif approval_expires_at <= now:
             raise HTTPException(status_code=422, detail="Approval expiration must be in the future")
-        action_id = _approval_action_id(payload)
+        action_id = _approval_action_id()
         approval_owner_hash = _openclaw_key_fingerprint(authorization)
         if approval_owner_hash is None:
             raise HTTPException(status_code=401, detail="Valid OpenClaw notification credentials required")
         if payload.task_specification is not None:
             canonical = canonical_task_json(payload.task_specification)
-            # Keep the existing action identifier tied to the immutable task
-            # for consumers that already use action_id as an approval binding.
-            action_id = task_digest(canonical)
             task_fields = {
                 "task_specification": canonical,
                 "task_spec_sha256": task_digest(canonical),
@@ -715,6 +705,10 @@ def create_openclaw_notification(payload: NotificationCreate, authorization: str
             }
     try:
         notification_values = payload.model_dump(exclude={"approval_expires_at", "task_specification"})
+        if payload.requires_approval:
+            # Request state is always pending; only the human decision routes
+            # can transition it to approved or denied.
+            notification_values["approval_status"] = "pending"
         if payload.task_specification is not None:
             # Keep agent-authored prose and metadata out of the executable
             # authorization record and human approval UI.

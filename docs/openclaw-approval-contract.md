@@ -41,9 +41,13 @@ Task-bound approval responses contain `notification_id`, `action_id`,
 `task_spec_sha256`. The task specification and digest are returned for pending,
 approved, and denied decisions, including after the expiry timestamp. The
 executor must reject non-approved or expired results. WatchTower rejects
-approval decisions after expiry. `action_id` is the specification digest, so a
-different specification gets a different action identity. Legacy approvals
-remain readable but have no task binding and can never authorize execution.
+approval decisions after expiry. `task_spec_sha256` is the canonical digest of
+the specification. `action_id` is a separate, fresh 256-bit identifier for
+each approval request, including repeated requests with identical task specs.
+OpenClaw must retain the returned action ID and use it with that notification
+ID when verifying approval. Historical task approvals that used the digest as
+their action ID remain readable. Legacy approvals remain readable but have no
+task binding and can never authorize execution.
 
 ## Task specification v1
 
@@ -72,9 +76,12 @@ Generic business automation uses this exact shape:
 Business actions require non-empty `system`, `action`, and `target` strings and
 a JSON object for `parameters`. Unknown fields and unsupported task types or
 versions are rejected. WatchTower stores the complete specification as
-canonical JSON, binds its SHA-256 digest to both `action_id` and the creating
-OpenClaw key, and returns the original object through the authenticated
-approval endpoint. A changed target, action, or parameter changes the digest.
+canonical JSON, stores its SHA-256 digest separately from the per-request
+`action_id`, associates both with the creating OpenClaw key, and returns the
+original object through the authenticated approval endpoint. A changed target,
+action, or parameter changes the digest. Repeated identical specifications
+keep the same digest but receive different action IDs and independent pending
+decisions.
 Notifications show the target, exact `reply_text` when present, and other
 change parameters. Agent-authored notification prose and metadata stay hidden.
 
