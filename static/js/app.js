@@ -650,6 +650,94 @@
     return ({ pending: 'Pending approval', approved: 'Approved', denied: 'Denied', expired: 'Expired', not_required: 'No approval required' }[status] || 'Unknown');
   }
 
+  function renderMarkdownInline(value) {
+    const source = String(value ?? '');
+    const pattern = /\[([^\]]+)\]\(([^\s)]+)(?:\s+"([^"]*)")?\)|(\*\*|__)(.+?)\4|(?<!\*)\*([^*\n]+)\*(?!\*)|(?<!_)_([^_\n]+)_(?!_)/g;
+    let output = '';
+    let cursor = 0;
+    let match;
+    while ((match = pattern.exec(source))) {
+      output += escapeHtml(source.slice(cursor, match.index));
+      if (match[1] !== undefined) {
+        const href = match[2];
+        const safeHref = /^(https?:|mailto:)/i.test(href) || /^(\/|\#|\?)/.test(href) && !/^\/\//.test(href);
+        const label = renderMarkdownInline(match[1]);
+        output += safeHref
+          ? `<a href="${escapeHtml(href)}"${match[3] ? ` title="${escapeHtml(match[3])}"` : ''} target="_blank" rel="noopener noreferrer">${label}</a>`
+          : escapeHtml(match[0]);
+      } else if (match[4]) {
+        output += `<strong>${renderMarkdownInline(match[5])}</strong>`;
+      } else if (match[6] !== undefined) {
+        output += `<em>${renderMarkdownInline(match[6])}</em>`;
+      } else {
+        output += `<em>${renderMarkdownInline(match[7])}</em>`;
+      }
+      cursor = pattern.lastIndex;
+    }
+    return output + escapeHtml(source.slice(cursor));
+  }
+
+  function splitMarkdownTableRow(line) {
+    let row = line.trim();
+    if (row.startsWith('|')) row = row.slice(1);
+    if (row.endsWith('|')) row = row.slice(0, -1);
+    return row.split(/(?<!\\)\|/).map(cell => cell.replace(/\\\|/g, '|').trim());
+  }
+
+  function isMarkdownTableSeparator(line) {
+    const cells = splitMarkdownTableRow(line);
+    return cells.length > 0 && cells.every(cell => /^:?-{3,}:?$/.test(cell));
+  }
+
+  function renderMarkdownTable(lines) {
+    const headers = splitMarkdownTableRow(lines[0]);
+    const alignments = splitMarkdownTableRow(lines[1]).map(cell => cell.startsWith(':') && cell.endsWith(':') ? 'center' : cell.endsWith(':') ? 'right' : cell.startsWith(':') ? 'left' : '');
+    const rows = lines.slice(2).map(splitMarkdownTableRow);
+    const cell = (value, index, tag) => `<${tag}${alignments[index] ? ` style="text-align:${alignments[index]}"` : ''}>${renderMarkdownInline(value || '')}</${tag}>`;
+    return `<div class="notification-table-wrap" role="region" aria-label="Notification table" tabindex="0"><table class="notification-table"><thead><tr>${headers.map((value, index) => cell(value, index, 'th')).join('')}</tr></thead><tbody>${rows.map(row => `<tr>${headers.map((_, index) => cell(row[index], index, 'td')).join('')}</tr>`).join('')}</tbody></table></div>`;
+  }
+
+  function renderMarkdown(value) {
+    const lines = String(value ?? '').replace(/\r\n?/g, '\n').split('\n');
+    const blocks = [];
+    let index = 0;
+    while (index < lines.length) {
+      if (!lines[index].trim()) { index += 1; continue; }
+      if (index + 1 < lines.length && lines[index].includes('|') && isMarkdownTableSeparator(lines[index + 1])) {
+        const table = [lines[index], lines[index + 1]];
+        index += 2;
+        while (index < lines.length && lines[index].trim() && lines[index].includes('|')) table.push(lines[index++]);
+        blocks.push(renderMarkdownTable(table));
+        continue;
+      }
+      const heading = lines[index].match(/^\s{0,3}(#{1,6})\s+(.+?)\s*#*\s*$/);
+      if (heading) {
+        const level = heading[1].length;
+        blocks.push(`<h${level}>${renderMarkdownInline(heading[2])}</h${level}>`);
+        index += 1;
+        continue;
+      }
+      const listMatch = lines[index].match(/^\s{0,3}([-+*]|\d+[.)])\s+(.+)$/);
+      if (listMatch) {
+        const ordered = /^\d/.test(listMatch[1]);
+        const tag = ordered ? 'ol' : 'ul';
+        const items = [];
+        while (index < lines.length) {
+          const item = lines[index].match(/^\s{0,3}([-+*]|\d+[.)])\s+(.+)$/);
+          if (!item || /^\d/.test(item[1]) !== ordered) break;
+          items.push(`<li>${renderMarkdownInline(item[2])}</li>`);
+          index += 1;
+        }
+        blocks.push(`<${tag}>${items.join('')}</${tag}>`);
+        continue;
+      }
+      const paragraph = [];
+      while (index < lines.length && lines[index].trim()) paragraph.push(lines[index++]);
+      blocks.push(`<p>${paragraph.map(renderMarkdownInline).join('<br>')}</p>`);
+    }
+    return blocks.join('');
+  }
+
   function renderNotification(notification) {
     const metadata = notification.metadata && typeof notification.metadata === 'object' ? notification.metadata : {};
     const task = notification.task_spec && typeof notification.task_spec === 'object'
@@ -684,7 +772,7 @@
         <h2>${metadata.test === true ? '🧪 ' : ''}${escapeHtml(notification.title)}</h2></div>
         <span class="muted small" title="${escapeHtml(dateText(notification.created_at))}">${escapeHtml(relativeTime(notification.created_at))}</span>
       </div>
-      <p class="notification-message">${escapeHtml(notification.message)}</p>
+      <div class="notification-message">${renderMarkdown(notification.message)}</div>
       ${taskDetails}
       ${chips.length ? `<div class="notification-meta">${chips.join('')}</div>` : ''}
       ${approvalActions}

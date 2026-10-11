@@ -240,9 +240,9 @@
     "semantic_hash": ""
   },
   "static/js/app.js": {
-    "mtime": 1791662292.1381533,
-    "seen": 1791662339.214008,
-    "ast_hash": "e167719ccf7855aa9fb3110f5cebc6c0",
+    "mtime": 1791736563.1454086,
+    "seen": 1791736594.487693,
+    "ast_hash": "0272f072437845373027571a01eca130",
     "semantic_hash": ""
   },
   "tests/test_startup.py": {
