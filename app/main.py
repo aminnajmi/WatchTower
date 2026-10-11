@@ -36,7 +36,7 @@ from .auth import (
 from .config import settings
 from .models import init_db, SessionLocal, OSRelease, ReleaseHistory, ReleaseEvent, User, Notification
 from .schemas import UserCreate, UserUpdate, PasswordReset, PasswordChange, NotificationCreate
-from .task_spec import TaskSpecification, canonical_task_json, task_digest
+from .task_spec import BusinessActionTask, TaskSpecification, canonical_task_json, task_digest
 from .notifications.telegram import (
     send_test as send_telegram_test,
     send_support_sales_test as send_support_sales_telegram_test,
@@ -646,8 +646,24 @@ def _task_binding_is_valid(notification: Notification) -> bool:
     )
 
 
-def _task_notification_copy(specification: TaskSpecification) -> tuple[str, str]:
+def _task_notification_copy(specification) -> tuple[str, str]:
     """Create approval UI copy from the validated task, never agent prose."""
+    if isinstance(specification, BusinessActionTask):
+        title = f"Approval Required: {specification.action.replace('_', ' ').capitalize()}"
+        details = json.dumps(specification.parameters, ensure_ascii=False, sort_keys=True, indent=2)
+        reply = specification.parameters.get("reply_text")
+        message = (
+            f"Approve {specification.action.replace('_', ' ')} in {specification.system} for target {specification.target}."
+        )
+        if reply is not None:
+            message += f"\n\nExact reply to send:\n{reply}"
+        other = {key: value for key, value in specification.parameters.items() if key != "reply_text"}
+        if other:
+            message += f"\n\nExact change parameters:\n{json.dumps(other, ensure_ascii=False, sort_keys=True, indent=2)}"
+        elif reply is None:
+            message += f"\n\nExact parameters:\n{details}"
+        message += "\n\nThis action will not begin until approval is verified."
+        return title[:200], message
     host = urlsplit(specification.url).hostname or "website"
     if host == "operavps.com":
         website_name = "OperaVPS"
@@ -711,7 +727,7 @@ def create_openclaw_notification(payload: NotificationCreate, authorization: str
                 "severity": "warning",
                 "metadata": {},
                 "task_id": None,
-                "task_name": "Public website inspection",
+                "task_name": ("Public website inspection" if payload.task_specification.task_type == "public_website_inspection" else payload.task_specification.action),
                 "report_id": None,
                 "external_url": None,
                 "completed_at": None,

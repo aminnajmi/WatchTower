@@ -59,17 +59,56 @@
       "source_location": "L93"
     },
     {
-      "id": "tests_openclaw_core_reference_gateerror",
-      "label": "GateError",
+      "id": "app_models_releasehistory",
+      "label": "ReleaseHistory",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 0,
       "community_name": "auth.py",
       "file_type": "code",
-      "norm_label": "gateerror",
-      "source_file": "tests/openclaw_core_reference.py",
-      "source_location": "L11"
+      "norm_label": "releasehistory",
+      "source_file": "app/models.py",
+      "source_location": "L44"
+    },
+    {
+      "id": "app_versioning_parsedversion",
+      "label": "ParsedVersion",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": "parsedversion",
+      "source_file": "app/versioning.py",
+      "source_location": "L8"
+    },
+    {
+      "id": "app_versioning_releasecomparison",
+      "label": "ReleaseComparison",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": "releasecomparison",
+      "source_file": "app/versioning.py",
+      "source_location": "L14"
+    },
+    {
+      "id": "app_versioning_releasestate",
+      "label": "ReleaseState",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": "releasestate",
+      "source_file": "app/versioning.py",
+      "source_location": "L21"
     },
     {
       "id": "tests_test_api_apitests",
@@ -85,30 +124,17 @@
       "source_location": "L18"
     },
     {
-      "id": "tests_test_deployment_health_deploymentworkflowsafetytests",
-      "label": "DeploymentWorkflowSafetyTests",
+      "id": "tests_test_telegram_telegramclienttests",
+      "label": "TelegramClientTests",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 0,
       "community_name": "auth.py",
       "file_type": "code",
-      "norm_label": "deploymentworkflowsafetytests",
-      "source_file": "tests/test_deployment_health.py",
-      "source_location": "L180"
-    },
-    {
-      "id": "tests_test_openclaw_task_compat_openclawtaskcompatibilitytests",
-      "label": "OpenClawTaskCompatibilityTests",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "openclawtaskcompatibilitytests",
-      "source_file": "tests/test_openclaw_task_compat.py",
-      "source_location": "L12"
+      "norm_label": "telegramclienttests",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L49"
     },
     {
       "id": "tests_test_versioning_checkservicetests",
@@ -124,6 +150,71 @@
       "source_location": "L58"
     },
     {
+      "id": "tests_test_versioning_comparereleasestests",
+      "label": "CompareReleasesTests",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": "comparereleasestests",
+      "source_file": "tests/test_versioning.py",
+      "source_location": "L15"
+    },
+    {
+      "id": "app_main_notificationdenyrequest",
+      "label": "NotificationDenyRequest",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "notificationdenyrequest",
+      "source_file": "app/main.py",
+      "source_location": "L960"
+    },
+    {
+      "id": "app_main_websessionrequest",
+      "label": "WebSessionRequest",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "websessionrequest",
+      "source_file": "app/main.py",
+      "source_location": "L119"
+    },
+    {
+      "id": "app_models_notification",
+      "label": "Notification",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "notification",
+      "source_file": "app/models.py",
+      "source_location": "L58"
+    },
+    {
+      "id": "app_schemas_notificationcreate",
+      "label": "NotificationCreate",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "notificationcreate",
+      "source_file": "app/schemas.py",
+      "source_location": "L125"
+    },
+    {
       "id": "app_schemas_checkresult",
       "label": "CheckResult",
       "_callable": true,
@@ -135,19 +226,6 @@
       "norm_label": "checkresult",
       "source_file": "app/schemas.py",
       "source_location": "L117"
-    },
-    {
-      "id": "app_schemas_notificationcreate",
-      "label": "NotificationCreate",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "schemas.py",
-      "file_type": "code",
-      "norm_label": "notificationcreate",
-      "source_file": "app/schemas.py",
-      "source_location": "L125"
     },
     {
       "id": "app_schemas_passwordchange",
@@ -215,17 +293,17 @@
       "source_location": "L44"
     },
     {
-      "id": "app_task_spec_taskspecification",
-      "label": "TaskSpecification",
+      "id": "tests_test_deployment_health_deploymentworkflowsafetytests",
+      "label": "DeploymentWorkflowSafetyTests",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 11,
-      "community_name": "TaskSpecification",
+      "community_name": "DeploymentWorkflowSafetyTests",
       "file_type": "code",
-      "norm_label": "taskspecification",
-      "source_file": "app/task_spec.py",
-      "source_location": "L10"
+      "norm_label": "deploymentworkflowsafetytests",
+      "source_file": "tests/test_deployment_health.py",
+      "source_location": "L180"
     },
     {
       "id": "app_auth_principal",
@@ -410,17 +488,95 @@
       "source_location": "L36"
     },
     {
+      "id": "app_task_spec_businessactiontask",
+      "label": "BusinessActionTask",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "businessactiontask",
+      "source_file": "app/task_spec.py",
+      "source_location": "L57"
+    },
+    {
+      "id": "app_task_spec_publicwebsiteinspectiontask",
+      "label": "PublicWebsiteInspectionTask",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "publicwebsiteinspectiontask",
+      "source_file": "app/task_spec.py",
+      "source_location": "L24"
+    },
+    {
+      "id": "app_task_spec_taskbase",
+      "label": "_TaskBase",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "_taskbase",
+      "source_file": "app/task_spec.py",
+      "source_location": "L11"
+    },
+    {
+      "id": "app_task_spec_taskspecification",
+      "label": "TaskSpecification",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "taskspecification",
+      "source_file": "app/task_spec.py",
+      "source_location": "L82"
+    },
+    {
       "id": "tests_openclaw_core_reference_coretaskspec",
       "label": "CoreTaskSpec",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 22,
-      "community_name": "OpenClaw task approval contract",
+      "community_name": "task_spec.py",
       "file_type": "code",
       "norm_label": "coretaskspec",
       "source_file": "tests/openclaw_core_reference.py",
       "source_location": "L49"
+    },
+    {
+      "id": "tests_openclaw_core_reference_gateerror",
+      "label": "GateError",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "gateerror",
+      "source_file": "tests/openclaw_core_reference.py",
+      "source_location": "L11"
+    },
+    {
+      "id": "tests_test_openclaw_task_compat_openclawtaskcompatibilitytests",
+      "label": "OpenClawTaskCompatibilityTests",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "openclawtaskcompatibilitytests",
+      "source_file": "tests/test_openclaw_task_compat.py",
+      "source_location": "L12"
     },
     {
       "id": "tests_test_notifications_center_notificationcentertests",
@@ -460,45 +616,6 @@
       "norm_label": "user",
       "source_file": "app/models.py",
       "source_location": "L13"
-    },
-    {
-      "id": "app_main_notificationdenyrequest",
-      "label": "NotificationDenyRequest",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "Notification",
-      "file_type": "code",
-      "norm_label": "notificationdenyrequest",
-      "source_file": "app/main.py",
-      "source_location": "L944"
-    },
-    {
-      "id": "app_models_notification",
-      "label": "Notification",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "Notification",
-      "file_type": "code",
-      "norm_label": "notification",
-      "source_file": "app/models.py",
-      "source_location": "L58"
-    },
-    {
-      "id": "app_main_websessionrequest",
-      "label": "WebSessionRequest",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 46,
-      "community_name": "_authenticate_login",
-      "file_type": "code",
-      "norm_label": "websessionrequest",
-      "source_file": "app/main.py",
-      "source_location": "L119"
     },
     {
       "id": "tests_test_scheduler_fakeprovider",
@@ -579,69 +696,17 @@
       "source_location": "L13"
     },
     {
-      "id": "app_models_releasehistory",
-      "label": "ReleaseHistory",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "app/service.py",
-      "file_type": "code",
-      "norm_label": "releasehistory",
-      "source_file": "app/models.py",
-      "source_location": "L44"
-    },
-    {
       "id": "app_notifications_telegram_telegramsendresult",
       "label": "TelegramSendResult",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": "telegramsendresult",
       "source_file": "app/notifications/telegram.py",
       "source_location": "L12"
-    },
-    {
-      "id": "app_versioning_parsedversion",
-      "label": "ParsedVersion",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "app/service.py",
-      "file_type": "code",
-      "norm_label": "parsedversion",
-      "source_file": "app/versioning.py",
-      "source_location": "L8"
-    },
-    {
-      "id": "app_versioning_releasecomparison",
-      "label": "ReleaseComparison",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "app/service.py",
-      "file_type": "code",
-      "norm_label": "releasecomparison",
-      "source_file": "app/versioning.py",
-      "source_location": "L14"
-    },
-    {
-      "id": "app_versioning_releasestate",
-      "label": "ReleaseState",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "app/service.py",
-      "file_type": "code",
-      "norm_label": "releasestate",
-      "source_file": "app/versioning.py",
-      "source_location": "L21"
     },
     {
       "id": "tests_test_telegram_fakeasyncclient",
@@ -650,7 +715,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": "fakeasyncclient",
       "source_file": "tests/test_telegram.py",
@@ -663,7 +728,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": "fakeresponse",
       "source_file": "tests/test_telegram.py",
@@ -676,61 +741,23 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": "supportsalestelegramtests",
       "source_file": "tests/test_telegram.py",
       "source_location": "L349"
     },
     {
-      "id": "tests_test_telegram_telegramclienttests",
-      "label": "TelegramClientTests",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "app/service.py",
-      "file_type": "code",
-      "norm_label": "telegramclienttests",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L49"
-    },
-    {
-      "id": "tests_test_versioning_comparereleasestests",
-      "label": "CompareReleasesTests",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "app/service.py",
-      "file_type": "code",
-      "norm_label": "comparereleasestests",
-      "source_file": "tests/test_versioning.py",
-      "source_location": "L15"
-    },
-    {
-      "id": "app_main_events",
-      "label": "events()",
+      "id": "app_auth_require_admin",
+      "label": "require_admin()",
       "_callable": true,
       "_origin": "ast",
       "community": 0,
       "community_name": "auth.py",
       "file_type": "code",
-      "norm_label": "events()",
-      "source_file": "app/main.py",
-      "source_location": "L448"
-    },
-    {
-      "id": "app_main_status",
-      "label": "status()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "status()",
-      "source_file": "app/main.py",
-      "source_location": "L1005"
+      "norm_label": "require_admin()",
+      "source_file": "app/auth.py",
+      "source_location": "L133"
     },
     {
       "id": "app_models_configure_sqlite_connection",
@@ -745,40 +772,40 @@
       "source_location": "L122"
     },
     {
-      "id": "tests_openclaw_core_reference_canonical_public_url",
-      "label": "canonical_public_url()",
+      "id": "app_service_check_all",
+      "label": "check_all()",
       "_callable": true,
       "_origin": "ast",
       "community": 0,
       "community_name": "auth.py",
       "file_type": "code",
-      "norm_label": "canonical_public_url()",
-      "source_file": "tests/openclaw_core_reference.py",
-      "source_location": "L15"
+      "norm_label": "check_all()",
+      "source_file": "app/service.py",
+      "source_location": "L23"
     },
     {
-      "id": "tests_openclaw_core_reference_parse_task_spec",
-      "label": "parse_task_spec()",
+      "id": "app_versioning_compare_releases",
+      "label": "compare_releases()",
       "_callable": true,
       "_origin": "ast",
       "community": 0,
       "community_name": "auth.py",
       "file_type": "code",
-      "norm_label": "parse_task_spec()",
-      "source_file": "tests/openclaw_core_reference.py",
-      "source_location": "L64"
+      "norm_label": "compare_releases()",
+      "source_file": "app/versioning.py",
+      "source_location": "L27"
     },
     {
-      "id": "tests_openclaw_core_reference_verify_approval",
-      "label": "verify_approval()",
+      "id": "app_versioning_parse_version",
+      "label": "parse_version()",
       "_callable": true,
       "_origin": "ast",
       "community": 0,
       "community_name": "auth.py",
       "file_type": "code",
-      "norm_label": "verify_approval()",
-      "source_file": "tests/openclaw_core_reference.py",
-      "source_location": "L72"
+      "norm_label": "parse_version()",
+      "source_file": "app/versioning.py",
+      "source_location": "L39"
     },
     {
       "id": "tests_test_api_apitests_test_health_docs_jwt_check_and_event_filters",
@@ -817,76 +844,40 @@
       "source_location": "L34"
     },
     {
-      "id": "tests_test_deployment_health_deploymentworkflowsafetytests_test_failure_notification_is_unconditional_and_does_not_mask_job_failure",
-      "label": ".test_failure_notification_is_unconditional_and_does_not_mask_job_failure()",
+      "id": "tests_test_telegram_telegramclienttests_test_disabled_does_not_make_request",
+      "label": ".test_disabled_does_not_make_request()",
       "_callable": true,
       "_origin": "ast",
       "community": 0,
       "community_name": "auth.py",
       "file_type": "code",
-      "norm_label": ".test_failure_notification_is_unconditional_and_does_not_mask_job_failure()",
-      "source_file": "tests/test_deployment_health.py",
-      "source_location": "L181"
+      "norm_label": ".test_disabled_does_not_make_request()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L50"
     },
     {
-      "id": "tests_test_deployment_health_deploymentworkflowsafetytests_test_workflow_never_prints_telegram_token_or_ssh_key",
-      "label": ".test_workflow_never_prints_telegram_token_or_ssh_key()",
+      "id": "tests_test_telegram_telegramclienttests_test_missing_token_or_chat_id_returns_configuration_error",
+      "label": ".test_missing_token_or_chat_id_returns_configuration_error()",
       "_callable": true,
       "_origin": "ast",
       "community": 0,
       "community_name": "auth.py",
       "file_type": "code",
-      "norm_label": ".test_workflow_never_prints_telegram_token_or_ssh_key()",
-      "source_file": "tests/test_deployment_health.py",
-      "source_location": "L190"
+      "norm_label": ".test_missing_token_or_chat_id_returns_configuration_error()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L59"
     },
     {
-      "id": "tests_test_notifications_center_notificationcentertests_test_task_bound_approval_is_canonical_immutable_and_verifiable",
-      "label": ".test_task_bound_approval_is_canonical_immutable_and_verifiable()",
+      "id": "tests_test_telegram_telegramclienttests_test_service_only_notifies_once_for_new_major_release",
+      "label": ".test_service_only_notifies_once_for_new_major_release()",
       "_callable": true,
       "_origin": "ast",
       "community": 0,
       "community_name": "auth.py",
       "file_type": "code",
-      "norm_label": ".test_task_bound_approval_is_canonical_immutable_and_verifiable()",
-      "source_file": "tests/test_notifications_center.py",
-      "source_location": "L170"
-    },
-    {
-      "id": "tests_test_openclaw_task_compat_openclawtaskcompatibilitytests_setupclass",
-      "label": ".setUpClass()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".setupclass()",
-      "source_file": "tests/test_openclaw_task_compat.py",
-      "source_location": "L14"
-    },
-    {
-      "id": "tests_test_openclaw_task_compat_openclawtaskcompatibilitytests_test_core_and_watchtower_normalize_url_inputs_identically",
-      "label": ".test_core_and_watchtower_normalize_url_inputs_identically()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".test_core_and_watchtower_normalize_url_inputs_identically()",
-      "source_file": "tests/test_openclaw_task_compat.py",
-      "source_location": "L38"
-    },
-    {
-      "id": "tests_test_openclaw_task_compat_openclawtaskcompatibilitytests_test_invalid_shared_vectors_are_rejected_by_both_implementations",
-      "label": ".test_invalid_shared_vectors_are_rejected_by_both_implementations()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".test_invalid_shared_vectors_are_rejected_by_both_implementations()",
-      "source_file": "tests/test_openclaw_task_compat.py",
-      "source_location": "L30"
+      "norm_label": ".test_service_only_notifies_once_for_new_major_release()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L129"
     },
     {
       "id": "tests_test_versioning_checkservicetests_test_provider_failures_are_included_in_results",
@@ -925,6 +916,18 @@
       "source_location": "L110"
     },
     {
+      "id": "tests_test_versioning_comparereleasestests_test_requested_release_comparisons",
+      "label": ".test_requested_release_comparisons()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": ".test_requested_release_comparisons()",
+      "source_file": "tests/test_versioning.py",
+      "source_location": "L16"
+    },
+    {
       "id": "tests_test_web_webdashboardtests_setup",
       "label": ".setUp()",
       "_callable": true,
@@ -935,6 +938,18 @@
       "norm_label": ".setup()",
       "source_file": "tests/test_web.py",
       "source_location": "L21"
+    },
+    {
+      "id": "app_auth_authenticate_token",
+      "label": "authenticate_token()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "authenticate_token()",
+      "source_file": "app/auth.py",
+      "source_location": "L105"
     },
     {
       "id": "app_auth_configure_session_factory_provider",
@@ -949,6 +964,78 @@
       "source_location": "L22"
     },
     {
+      "id": "app_auth_principal_for_username",
+      "label": "principal_for_username()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "principal_for_username()",
+      "source_file": "app/auth.py",
+      "source_location": "L36"
+    },
+    {
+      "id": "app_auth_request_origin",
+      "label": "_request_origin()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "_request_origin()",
+      "source_file": "app/auth.py",
+      "source_location": "L67"
+    },
+    {
+      "id": "app_auth_verify_access_token",
+      "label": "verify_access_token()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "verify_access_token()",
+      "source_file": "app/auth.py",
+      "source_location": "L96"
+    },
+    {
+      "id": "app_main_account_page",
+      "label": "account_page()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "account_page()",
+      "source_file": "app/main.py",
+      "source_location": "L335"
+    },
+    {
+      "id": "app_main_approval_action_id",
+      "label": "_approval_action_id()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "_approval_action_id()",
+      "source_file": "app/main.py",
+      "source_location": "L609"
+    },
+    {
+      "id": "app_main_approve_notification",
+      "label": "approve_notification()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "approve_notification()",
+      "source_file": "app/main.py",
+      "source_location": "L914"
+    },
+    {
       "id": "app_main_check",
       "label": "check()",
       "_callable": true,
@@ -961,6 +1048,54 @@
       "source_location": "L479"
     },
     {
+      "id": "app_main_create_openclaw_notification",
+      "label": "create_openclaw_notification()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "create_openclaw_notification()",
+      "source_file": "app/main.py",
+      "source_location": "L681"
+    },
+    {
+      "id": "app_main_create_web_session",
+      "label": "create_web_session()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "create_web_session()",
+      "source_file": "app/main.py",
+      "source_location": "L253"
+    },
+    {
+      "id": "app_main_dashboard_page",
+      "label": "dashboard_page()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "dashboard_page()",
+      "source_file": "app/main.py",
+      "source_location": "L282"
+    },
+    {
+      "id": "app_main_deny_notification",
+      "label": "deny_notification()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "deny_notification()",
+      "source_file": "app/main.py",
+      "source_location": "L965"
+    },
+    {
       "id": "app_main_disable_user",
       "label": "disable_user()",
       "_callable": true,
@@ -970,7 +1105,7 @@
       "file_type": "code",
       "norm_label": "disable_user()",
       "source_file": "app/main.py",
-      "source_location": "L1255"
+      "source_location": "L1271"
     },
     {
       "id": "app_main_enable_user",
@@ -982,7 +1117,43 @@
       "file_type": "code",
       "norm_label": "enable_user()",
       "source_file": "app/main.py",
-      "source_location": "L1250"
+      "source_location": "L1266"
+    },
+    {
+      "id": "app_main_events",
+      "label": "events()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "events()",
+      "source_file": "app/main.py",
+      "source_location": "L448"
+    },
+    {
+      "id": "app_main_events_page",
+      "label": "events_page()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "events_page()",
+      "source_file": "app/main.py",
+      "source_location": "L310"
+    },
+    {
+      "id": "app_main_get_notification",
+      "label": "get_notification()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "get_notification()",
+      "source_file": "app/main.py",
+      "source_location": "L807"
     },
     {
       "id": "app_main_get_os",
@@ -1009,6 +1180,30 @@
       "source_location": "L124"
     },
     {
+      "id": "app_main_home",
+      "label": "home()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "home()",
+      "source_file": "app/main.py",
+      "source_location": "L152"
+    },
+    {
+      "id": "app_main_list_notifications",
+      "label": "list_notifications()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "list_notifications()",
+      "source_file": "app/main.py",
+      "source_location": "L750"
+    },
+    {
       "id": "app_main_list_os",
       "label": "list_os()",
       "_callable": true,
@@ -1019,6 +1214,30 @@
       "norm_label": "list_os()",
       "source_file": "app/main.py",
       "source_location": "L377"
+    },
+    {
+      "id": "app_main_login_form",
+      "label": "login_form()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "login_form()",
+      "source_file": "app/main.py",
+      "source_location": "L222"
+    },
+    {
+      "id": "app_main_login_page",
+      "label": "login_page()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "login_page()",
+      "source_file": "app/main.py",
+      "source_location": "L214"
     },
     {
       "id": "app_main_logout",
@@ -1033,6 +1252,78 @@
       "source_location": "L266"
     },
     {
+      "id": "app_main_notification_center_page",
+      "label": "notification_center_page()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "notification_center_page()",
+      "source_file": "app/main.py",
+      "source_location": "L340"
+    },
+    {
+      "id": "app_main_notifications_legacy_page",
+      "label": "notifications_legacy_page()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "notifications_legacy_page()",
+      "source_file": "app/main.py",
+      "source_location": "L345"
+    },
+    {
+      "id": "app_main_openclaw_authorized",
+      "label": "_openclaw_authorized()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "_openclaw_authorized()",
+      "source_file": "app/main.py",
+      "source_location": "L594"
+    },
+    {
+      "id": "app_main_openclaw_key_fingerprint",
+      "label": "_openclaw_key_fingerprint()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "_openclaw_key_fingerprint()",
+      "source_file": "app/main.py",
+      "source_location": "L602"
+    },
+    {
+      "id": "app_main_operating_systems_page",
+      "label": "operating_systems_page()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "operating_systems_page()",
+      "source_file": "app/main.py",
+      "source_location": "L295"
+    },
+    {
+      "id": "app_main_os_detail_page",
+      "label": "os_detail_page()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "os_detail_page()",
+      "source_file": "app/main.py",
+      "source_location": "L300"
+    },
+    {
       "id": "app_main_providers",
       "label": "providers()",
       "_callable": true,
@@ -1042,7 +1333,103 @@
       "file_type": "code",
       "norm_label": "providers()",
       "source_file": "app/main.py",
-      "source_location": "L1000"
+      "source_location": "L1016"
+    },
+    {
+      "id": "app_main_releases",
+      "label": "releases()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "releases()",
+      "source_file": "app/main.py",
+      "source_location": "L399"
+    },
+    {
+      "id": "app_main_releases_for_os",
+      "label": "releases_for_os()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "releases_for_os()",
+      "source_file": "app/main.py",
+      "source_location": "L443"
+    },
+    {
+      "id": "app_main_releases_page",
+      "label": "releases_page()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "releases_page()",
+      "source_file": "app/main.py",
+      "source_location": "L305"
+    },
+    {
+      "id": "app_main_render_admin_page",
+      "label": "_render_admin_page()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "_render_admin_page()",
+      "source_file": "app/main.py",
+      "source_location": "L272"
+    },
+    {
+      "id": "app_main_render_page",
+      "label": "_render_page()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "_render_page()",
+      "source_file": "app/main.py",
+      "source_location": "L196"
+    },
+    {
+      "id": "app_main_sanitized_validation_error",
+      "label": "sanitized_validation_error()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "sanitized_validation_error()",
+      "source_file": "app/main.py",
+      "source_location": "L86"
+    },
+    {
+      "id": "app_main_security_headers",
+      "label": "security_headers()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "security_headers()",
+      "source_file": "app/main.py",
+      "source_location": "L93"
+    },
+    {
+      "id": "app_main_serialize_notification",
+      "label": "_serialize_notification()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "_serialize_notification()",
+      "source_file": "app/main.py",
+      "source_location": "L540"
     },
     {
       "id": "app_main_serialize_os",
@@ -1057,16 +1444,52 @@
       "source_location": "L349"
     },
     {
-      "id": "app_main_set_user_active",
-      "label": "_set_user_active()",
+      "id": "app_main_set_session_cookie",
+      "label": "_set_session_cookie()",
       "_callable": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "main.py",
       "file_type": "code",
-      "norm_label": "_set_user_active()",
+      "norm_label": "_set_session_cookie()",
       "source_file": "app/main.py",
-      "source_location": "L1259"
+      "source_location": "L239"
+    },
+    {
+      "id": "app_main_settings_page",
+      "label": "settings_page()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "settings_page()",
+      "source_file": "app/main.py",
+      "source_location": "L315"
+    },
+    {
+      "id": "app_main_status",
+      "label": "status()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "status()",
+      "source_file": "app/main.py",
+      "source_location": "L1021"
+    },
+    {
+      "id": "app_main_task_notification_copy",
+      "label": "_task_notification_copy()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "_task_notification_copy()",
+      "source_file": "app/main.py",
+      "source_location": "L649"
     },
     {
       "id": "app_main_test_notification",
@@ -1078,7 +1501,7 @@
       "file_type": "code",
       "norm_label": "test_notification()",
       "source_file": "app/main.py",
-      "source_location": "L883"
+      "source_location": "L899"
     },
     {
       "id": "app_main_test_support_sales_telegram_notification",
@@ -1105,16 +1528,112 @@
       "source_location": "L484"
     },
     {
-      "id": "app_main_approval_action_id",
-      "label": "_approval_action_id()",
+      "id": "app_main_users_page",
+      "label": "users_page()",
       "_callable": true,
       "_origin": "ast",
-      "community": 10,
-      "community_name": "schemas.py",
+      "community": 1,
+      "community_name": "main.py",
       "file_type": "code",
-      "norm_label": "_approval_action_id()",
+      "norm_label": "users_page()",
       "source_file": "app/main.py",
-      "source_location": "L609"
+      "source_location": "L325"
+    },
+    {
+      "id": "app_main_utc_timestamp",
+      "label": "_utc_timestamp()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "_utc_timestamp()",
+      "source_file": "app/main.py",
+      "source_location": "L367"
+    },
+    {
+      "id": "app_main_validate_notification_payload",
+      "label": "_validate_notification_payload()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "_validate_notification_payload()",
+      "source_file": "app/main.py",
+      "source_location": "L572"
+    },
+    {
+      "id": "app_main_web_principal",
+      "label": "_web_principal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "_web_principal()",
+      "source_file": "app/main.py",
+      "source_location": "L164"
+    },
+    {
+      "id": "app_main_web_user",
+      "label": "_web_user()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "_web_user()",
+      "source_file": "app/main.py",
+      "source_location": "L159"
+    },
+    {
+      "id": "app_notifications_service_create_notification",
+      "label": "create_notification()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "create_notification()",
+      "source_file": "app/notifications/service.py",
+      "source_location": "L15"
+    },
+    {
+      "id": "app_notifications_service_metadata_for",
+      "label": "metadata_for()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "metadata_for()",
+      "source_file": "app/notifications/service.py",
+      "source_location": "L104"
+    },
+    {
+      "id": "app_providers_http_get",
+      "label": "get()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "get()",
+      "source_file": "app/providers/http.py",
+      "source_location": "L6"
+    },
+    {
+      "id": "tests_test_notifications_center_notificationcentertests_test_legacy_approval_without_binding_metadata_is_not_authorized",
+      "label": ".test_legacy_approval_without_binding_metadata_is_not_authorized()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": ".test_legacy_approval_without_binding_metadata_is_not_authorized()",
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L507"
     },
     {
       "id": "app_schemas_notificationcreate_normalized_choice",
@@ -1249,184 +1768,28 @@
       "source_location": "L53"
     },
     {
-      "id": "app_main_approve_notification",
-      "label": "approve_notification()",
+      "id": "tests_test_deployment_health_deploymentworkflowsafetytests_test_failure_notification_is_unconditional_and_does_not_mask_job_failure",
+      "label": ".test_failure_notification_is_unconditional_and_does_not_mask_job_failure()",
       "_callable": true,
       "_origin": "ast",
       "community": 11,
-      "community_name": "TaskSpecification",
+      "community_name": "DeploymentWorkflowSafetyTests",
       "file_type": "code",
-      "norm_label": "approve_notification()",
-      "source_file": "app/main.py",
-      "source_location": "L898"
+      "norm_label": ".test_failure_notification_is_unconditional_and_does_not_mask_job_failure()",
+      "source_file": "tests/test_deployment_health.py",
+      "source_location": "L181"
     },
     {
-      "id": "app_main_create_openclaw_notification",
-      "label": "create_openclaw_notification()",
+      "id": "tests_test_deployment_health_deploymentworkflowsafetytests_test_workflow_never_prints_telegram_token_or_ssh_key",
+      "label": ".test_workflow_never_prints_telegram_token_or_ssh_key()",
       "_callable": true,
       "_origin": "ast",
       "community": 11,
-      "community_name": "TaskSpecification",
+      "community_name": "DeploymentWorkflowSafetyTests",
       "file_type": "code",
-      "norm_label": "create_openclaw_notification()",
-      "source_file": "app/main.py",
-      "source_location": "L665"
-    },
-    {
-      "id": "app_main_get_notification",
-      "label": "get_notification()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TaskSpecification",
-      "file_type": "code",
-      "norm_label": "get_notification()",
-      "source_file": "app/main.py",
-      "source_location": "L791"
-    },
-    {
-      "id": "app_main_get_openclaw_approval_decision",
-      "label": "get_openclaw_approval_decision()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TaskSpecification",
-      "file_type": "code",
-      "norm_label": "get_openclaw_approval_decision()",
-      "source_file": "app/main.py",
-      "source_location": "L814"
-    },
-    {
-      "id": "app_main_openclaw_authorized",
-      "label": "_openclaw_authorized()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TaskSpecification",
-      "file_type": "code",
-      "norm_label": "_openclaw_authorized()",
-      "source_file": "app/main.py",
-      "source_location": "L594"
-    },
-    {
-      "id": "app_main_openclaw_key_fingerprint",
-      "label": "_openclaw_key_fingerprint()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TaskSpecification",
-      "file_type": "code",
-      "norm_label": "_openclaw_key_fingerprint()",
-      "source_file": "app/main.py",
-      "source_location": "L602"
-    },
-    {
-      "id": "app_main_task_binding_is_valid",
-      "label": "_task_binding_is_valid()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TaskSpecification",
-      "file_type": "code",
-      "norm_label": "_task_binding_is_valid()",
-      "source_file": "app/main.py",
-      "source_location": "L624"
-    },
-    {
-      "id": "app_main_task_notification_copy",
-      "label": "_task_notification_copy()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TaskSpecification",
-      "file_type": "code",
-      "norm_label": "_task_notification_copy()",
-      "source_file": "app/main.py",
-      "source_location": "L649"
-    },
-    {
-      "id": "app_main_validate_notification_payload",
-      "label": "_validate_notification_payload()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TaskSpecification",
-      "file_type": "code",
-      "norm_label": "_validate_notification_payload()",
-      "source_file": "app/main.py",
-      "source_location": "L572"
-    },
-    {
-      "id": "app_task_spec_canonical_task_json",
-      "label": "canonical_task_json()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TaskSpecification",
-      "file_type": "code",
-      "norm_label": "canonical_task_json()",
-      "source_file": "app/task_spec.py",
-      "source_location": "L70"
-    },
-    {
-      "id": "app_task_spec_task_digest",
-      "label": "task_digest()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TaskSpecification",
-      "file_type": "code",
-      "norm_label": "task_digest()",
-      "source_file": "app/task_spec.py",
-      "source_location": "L81"
-    },
-    {
-      "id": "app_task_spec_taskspecification_normalize_public_url",
-      "label": ".normalize_public_url()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TaskSpecification",
-      "file_type": "code",
-      "norm_label": ".normalize_public_url()",
-      "source_file": "app/task_spec.py",
-      "source_location": "L32"
-    },
-    {
-      "id": "app_task_spec_taskspecification_supported_task",
-      "label": ".supported_task()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TaskSpecification",
-      "file_type": "code",
-      "norm_label": ".supported_task()",
-      "source_file": "app/task_spec.py",
-      "source_location": "L25"
-    },
-    {
-      "id": "app_task_spec_taskspecification_supported_version",
-      "label": ".supported_version()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TaskSpecification",
-      "file_type": "code",
-      "norm_label": ".supported_version()",
-      "source_file": "app/task_spec.py",
-      "source_location": "L18"
-    },
-    {
-      "id": "tests_test_openclaw_task_compat_openclawtaskcompatibilitytests_test_valid_shared_vectors_match_both_implementations_and_fixed_digests",
-      "label": ".test_valid_shared_vectors_match_both_implementations_and_fixed_digests()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TaskSpecification",
-      "file_type": "code",
-      "norm_label": ".test_valid_shared_vectors_match_both_implementations_and_fixed_digests()",
-      "source_file": "tests/test_openclaw_task_compat.py",
-      "source_location": "L17"
+      "norm_label": ".test_workflow_never_prints_telegram_token_or_ssh_key()",
+      "source_file": "tests/test_deployment_health.py",
+      "source_location": "L190"
     },
     {
       "id": "app_main_lifespan",
@@ -1513,210 +1876,6 @@
       "source_location": "L151"
     },
     {
-      "id": "app_main_account_page",
-      "label": "account_page()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Request",
-      "file_type": "code",
-      "norm_label": "account_page()",
-      "source_file": "app/main.py",
-      "source_location": "L335"
-    },
-    {
-      "id": "app_main_dashboard_page",
-      "label": "dashboard_page()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Request",
-      "file_type": "code",
-      "norm_label": "dashboard_page()",
-      "source_file": "app/main.py",
-      "source_location": "L282"
-    },
-    {
-      "id": "app_main_events_page",
-      "label": "events_page()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Request",
-      "file_type": "code",
-      "norm_label": "events_page()",
-      "source_file": "app/main.py",
-      "source_location": "L310"
-    },
-    {
-      "id": "app_main_home",
-      "label": "home()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Request",
-      "file_type": "code",
-      "norm_label": "home()",
-      "source_file": "app/main.py",
-      "source_location": "L152"
-    },
-    {
-      "id": "app_main_login_page",
-      "label": "login_page()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Request",
-      "file_type": "code",
-      "norm_label": "login_page()",
-      "source_file": "app/main.py",
-      "source_location": "L214"
-    },
-    {
-      "id": "app_main_notification_center_page",
-      "label": "notification_center_page()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Request",
-      "file_type": "code",
-      "norm_label": "notification_center_page()",
-      "source_file": "app/main.py",
-      "source_location": "L340"
-    },
-    {
-      "id": "app_main_notifications_legacy_page",
-      "label": "notifications_legacy_page()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Request",
-      "file_type": "code",
-      "norm_label": "notifications_legacy_page()",
-      "source_file": "app/main.py",
-      "source_location": "L345"
-    },
-    {
-      "id": "app_main_operating_systems_page",
-      "label": "operating_systems_page()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Request",
-      "file_type": "code",
-      "norm_label": "operating_systems_page()",
-      "source_file": "app/main.py",
-      "source_location": "L295"
-    },
-    {
-      "id": "app_main_os_detail_page",
-      "label": "os_detail_page()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Request",
-      "file_type": "code",
-      "norm_label": "os_detail_page()",
-      "source_file": "app/main.py",
-      "source_location": "L300"
-    },
-    {
-      "id": "app_main_releases_page",
-      "label": "releases_page()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Request",
-      "file_type": "code",
-      "norm_label": "releases_page()",
-      "source_file": "app/main.py",
-      "source_location": "L305"
-    },
-    {
-      "id": "app_main_render_admin_page",
-      "label": "_render_admin_page()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Request",
-      "file_type": "code",
-      "norm_label": "_render_admin_page()",
-      "source_file": "app/main.py",
-      "source_location": "L272"
-    },
-    {
-      "id": "app_main_render_page",
-      "label": "_render_page()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Request",
-      "file_type": "code",
-      "norm_label": "_render_page()",
-      "source_file": "app/main.py",
-      "source_location": "L196"
-    },
-    {
-      "id": "app_main_security_headers",
-      "label": "security_headers()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Request",
-      "file_type": "code",
-      "norm_label": "security_headers()",
-      "source_file": "app/main.py",
-      "source_location": "L93"
-    },
-    {
-      "id": "app_main_settings_page",
-      "label": "settings_page()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Request",
-      "file_type": "code",
-      "norm_label": "settings_page()",
-      "source_file": "app/main.py",
-      "source_location": "L315"
-    },
-    {
-      "id": "app_main_users_page",
-      "label": "users_page()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Request",
-      "file_type": "code",
-      "norm_label": "users_page()",
-      "source_file": "app/main.py",
-      "source_location": "L325"
-    },
-    {
-      "id": "app_main_web_principal",
-      "label": "_web_principal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Request",
-      "file_type": "code",
-      "norm_label": "_web_principal()",
-      "source_file": "app/main.py",
-      "source_location": "L164"
-    },
-    {
-      "id": "app_main_web_user",
-      "label": "_web_user()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Request",
-      "file_type": "code",
-      "norm_label": "_web_user()",
-      "source_file": "app/main.py",
-      "source_location": "L159"
-    },
-    {
       "id": "app_auth_create_access_token",
       "label": "create_access_token()",
       "_callable": true,
@@ -1727,18 +1886,6 @@
       "norm_label": "create_access_token()",
       "source_file": "app/auth.py",
       "source_location": "L90"
-    },
-    {
-      "id": "app_auth_require_admin",
-      "label": "require_admin()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": "require_admin()",
-      "source_file": "app/auth.py",
-      "source_location": "L133"
     },
     {
       "id": "tests_test_notifications_center_notificationcentertests_test_notification_center_has_mandatory_loud_alerts_without_mute_control",
@@ -1765,6 +1912,18 @@
       "source_location": "L54"
     },
     {
+      "id": "tests_test_notifications_center_notificationcentertests_test_only_admin_sees_notification_center_test_button",
+      "label": ".test_only_admin_sees_notification_center_test_button()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "create_access_token",
+      "file_type": "code",
+      "norm_label": ".test_only_admin_sees_notification_center_test_button()",
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L66"
+    },
+    {
       "id": "tests_test_notifications_center_notificationcentertests_test_openclaw_approval_decision_endpoint_is_key_owned_action_bound_and_read_only",
       "label": ".test_openclaw_approval_decision_endpoint_is_key_owned_action_bound_and_read_only()",
       "_callable": true,
@@ -1774,7 +1933,7 @@
       "file_type": "code",
       "norm_label": ".test_openclaw_approval_decision_endpoint_is_key_owned_action_bound_and_read_only()",
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L300"
+      "source_location": "L383"
     },
     {
       "id": "tests_test_startup_applicationstartuptests_test_real_startup_scheduler_health_docs_and_status",
@@ -1897,30 +2056,6 @@
       "source_location": "L340"
     },
     {
-      "id": "app_main_releases",
-      "label": "releases()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "Release",
-      "file_type": "code",
-      "norm_label": "releases()",
-      "source_file": "app/main.py",
-      "source_location": "L399"
-    },
-    {
-      "id": "app_main_releases_for_os",
-      "label": "releases_for_os()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "Release",
-      "file_type": "code",
-      "norm_label": "releases_for_os()",
-      "source_file": "app/main.py",
-      "source_location": "L443"
-    },
-    {
       "id": "app_providers_almalinux_almalinuxprovider_latest",
       "label": ".latest()",
       "_callable": true,
@@ -2005,18 +2140,6 @@
       "source_location": "L4"
     },
     {
-      "id": "app_providers_http_get",
-      "label": "get()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "Release",
-      "file_type": "code",
-      "norm_label": "get()",
-      "source_file": "app/providers/http.py",
-      "source_location": "L6"
-    },
-    {
       "id": "app_providers_http_text",
       "label": "text()",
       "_callable": true,
@@ -2065,6 +2188,18 @@
       "source_location": "L22"
     },
     {
+      "id": "tests_test_telegram_telegramclienttests_test_service_only_notifies_once_for_new_major_release_latest",
+      "label": "latest()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "Release",
+      "file_type": "code",
+      "norm_label": "latest()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L148"
+    },
+    {
       "id": "tests_test_versioning_parseversiontests_test_current_release_classification",
       "label": ".test_current_release_classification()",
       "_callable": true,
@@ -2077,12 +2212,144 @@
       "source_location": "L37"
     },
     {
+      "id": "app_main_get_openclaw_approval_decision",
+      "label": "get_openclaw_approval_decision()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "get_openclaw_approval_decision()",
+      "source_file": "app/main.py",
+      "source_location": "L830"
+    },
+    {
+      "id": "app_main_task_binding_is_valid",
+      "label": "_task_binding_is_valid()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "_task_binding_is_valid()",
+      "source_file": "app/main.py",
+      "source_location": "L624"
+    },
+    {
+      "id": "app_task_spec_businessactiontask_bounded_parameters",
+      "label": ".bounded_parameters()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": ".bounded_parameters()",
+      "source_file": "app/task_spec.py",
+      "source_location": "L72"
+    },
+    {
+      "id": "app_task_spec_businessactiontask_nonblank",
+      "label": ".nonblank()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": ".nonblank()",
+      "source_file": "app/task_spec.py",
+      "source_location": "L66"
+    },
+    {
+      "id": "app_task_spec_canonical_task_json",
+      "label": "canonical_task_json()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "canonical_task_json()",
+      "source_file": "app/task_spec.py",
+      "source_location": "L103"
+    },
+    {
+      "id": "app_task_spec_publicwebsiteinspectiontask_normalize_public_url",
+      "label": ".normalize_public_url()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": ".normalize_public_url()",
+      "source_file": "app/task_spec.py",
+      "source_location": "L30"
+    },
+    {
+      "id": "app_task_spec_task_digest",
+      "label": "task_digest()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "task_digest()",
+      "source_file": "app/task_spec.py",
+      "source_location": "L109"
+    },
+    {
+      "id": "app_task_spec_taskbase_supported_version",
+      "label": ".supported_version()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": ".supported_version()",
+      "source_file": "app/task_spec.py",
+      "source_location": "L18"
+    },
+    {
+      "id": "app_task_spec_taskspecification_model_validate",
+      "label": ".model_validate()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": ".model_validate()",
+      "source_file": "app/task_spec.py",
+      "source_location": "L85"
+    },
+    {
+      "id": "app_task_spec_taskspecification_model_validate_json",
+      "label": ".model_validate_json()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": ".model_validate_json()",
+      "source_file": "app/task_spec.py",
+      "source_location": "L96"
+    },
+    {
+      "id": "tests_openclaw_core_reference_canonical_public_url",
+      "label": "canonical_public_url()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "canonical_public_url()",
+      "source_file": "tests/openclaw_core_reference.py",
+      "source_location": "L15"
+    },
+    {
       "id": "tests_openclaw_core_reference_coretaskspec_as_dict",
       "label": ".as_dict()",
       "_callable": true,
       "_origin": "ast",
       "community": 22,
-      "community_name": "OpenClaw task approval contract",
+      "community_name": "task_spec.py",
       "file_type": "code",
       "norm_label": ".as_dict()",
       "source_file": "tests/openclaw_core_reference.py",
@@ -2094,7 +2361,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 22,
-      "community_name": "OpenClaw task approval contract",
+      "community_name": "task_spec.py",
       "file_type": "code",
       "norm_label": ".canonical_json()",
       "source_file": "tests/openclaw_core_reference.py",
@@ -2106,11 +2373,95 @@
       "_callable": true,
       "_origin": "ast",
       "community": 22,
-      "community_name": "OpenClaw task approval contract",
+      "community_name": "task_spec.py",
       "file_type": "code",
       "norm_label": ".digest()",
       "source_file": "tests/openclaw_core_reference.py",
       "source_location": "L60"
+    },
+    {
+      "id": "tests_openclaw_core_reference_parse_task_spec",
+      "label": "parse_task_spec()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "parse_task_spec()",
+      "source_file": "tests/openclaw_core_reference.py",
+      "source_location": "L64"
+    },
+    {
+      "id": "tests_openclaw_core_reference_verify_approval",
+      "label": "verify_approval()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "verify_approval()",
+      "source_file": "tests/openclaw_core_reference.py",
+      "source_location": "L72"
+    },
+    {
+      "id": "tests_test_notifications_center_notificationcentertests_test_task_bound_approval_is_canonical_immutable_and_verifiable",
+      "label": ".test_task_bound_approval_is_canonical_immutable_and_verifiable()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": ".test_task_bound_approval_is_canonical_immutable_and_verifiable()",
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L170"
+    },
+    {
+      "id": "tests_test_openclaw_task_compat_openclawtaskcompatibilitytests_setupclass",
+      "label": ".setUpClass()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": ".setupclass()",
+      "source_file": "tests/test_openclaw_task_compat.py",
+      "source_location": "L14"
+    },
+    {
+      "id": "tests_test_openclaw_task_compat_openclawtaskcompatibilitytests_test_core_and_watchtower_normalize_url_inputs_identically",
+      "label": ".test_core_and_watchtower_normalize_url_inputs_identically()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": ".test_core_and_watchtower_normalize_url_inputs_identically()",
+      "source_file": "tests/test_openclaw_task_compat.py",
+      "source_location": "L38"
+    },
+    {
+      "id": "tests_test_openclaw_task_compat_openclawtaskcompatibilitytests_test_invalid_shared_vectors_are_rejected_by_both_implementations",
+      "label": ".test_invalid_shared_vectors_are_rejected_by_both_implementations()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": ".test_invalid_shared_vectors_are_rejected_by_both_implementations()",
+      "source_file": "tests/test_openclaw_task_compat.py",
+      "source_location": "L30"
+    },
+    {
+      "id": "tests_test_openclaw_task_compat_openclawtaskcompatibilitytests_test_valid_shared_vectors_match_both_implementations_and_fixed_digests",
+      "label": ".test_valid_shared_vectors_match_both_implementations_and_fixed_digests()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": ".test_valid_shared_vectors_match_both_implementations_and_fixed_digests()",
+      "source_file": "tests/test_openclaw_task_compat.py",
+      "source_location": "L17"
     },
     {
       "id": "tests_test_notifications_center_notificationcentertests_teardown",
@@ -2146,7 +2497,31 @@
       "file_type": "code",
       "norm_label": ".test_approval_expiration_must_be_future_and_non_approval_cannot_set_expiry()",
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L438"
+      "source_location": "L521"
+    },
+    {
+      "id": "tests_test_notifications_center_notificationcentertests_test_business_action_is_exactly_bound_and_human_decidable",
+      "label": ".test_business_action_is_exactly_bound_and_human_decidable()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "NotificationCenterTests",
+      "file_type": "code",
+      "norm_label": ".test_business_action_is_exactly_bound_and_human_decidable()",
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L239"
+    },
+    {
+      "id": "tests_test_notifications_center_notificationcentertests_test_business_action_rejects_malformed_specifications",
+      "label": ".test_business_action_rejects_malformed_specifications()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "NotificationCenterTests",
+      "file_type": "code",
+      "norm_label": ".test_business_action_rejects_malformed_specifications()",
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L299"
     },
     {
       "id": "tests_test_notifications_center_notificationcentertests_test_concurrent_task_decisions_allow_only_one_transition",
@@ -2158,7 +2533,7 @@
       "file_type": "code",
       "norm_label": ".test_concurrent_task_decisions_allow_only_one_transition()",
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L289"
+      "source_location": "L372"
     },
     {
       "id": "tests_test_notifications_center_notificationcentertests_test_expired_approval_cannot_be_retrieved_or_approved",
@@ -2170,7 +2545,7 @@
       "file_type": "code",
       "norm_label": ".test_expired_approval_cannot_be_retrieved_or_approved()",
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L398"
+      "source_location": "L481"
     },
     {
       "id": "tests_test_notifications_center_notificationcentertests_test_expired_task_response_still_contains_spec_for_executor_expiry_gate",
@@ -2182,7 +2557,7 @@
       "file_type": "code",
       "norm_label": ".test_expired_task_response_still_contains_spec_for_executor_expiry_gate()",
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L272"
+      "source_location": "L355"
     },
     {
       "id": "tests_test_notifications_center_notificationcentertests_test_notification_filters_and_unsafe_external_url_are_rejected",
@@ -2197,16 +2572,16 @@
       "source_location": "L129"
     },
     {
-      "id": "tests_test_notifications_center_notificationcentertests_test_only_admin_sees_notification_center_test_button",
-      "label": ".test_only_admin_sees_notification_center_test_button()",
+      "id": "tests_test_notifications_center_notificationcentertests_test_openapi_describes_both_task_specification_variants",
+      "label": ".test_openapi_describes_both_task_specification_variants()",
       "_callable": true,
       "_origin": "ast",
       "community": 23,
       "community_name": "NotificationCenterTests",
       "file_type": "code",
-      "norm_label": ".test_only_admin_sees_notification_center_test_button()",
+      "norm_label": ".test_openapi_describes_both_task_specification_variants()",
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L66"
+      "source_location": "L314"
     },
     {
       "id": "tests_test_notifications_center_notificationcentertests_test_openclaw_approval_decision_returns_denied_and_hides_non_owned_records",
@@ -2218,7 +2593,7 @@
       "file_type": "code",
       "norm_label": ".test_openclaw_approval_decision_returns_denied_and_hides_non_owned_records()",
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L366"
+      "source_location": "L449"
     },
     {
       "id": "tests_test_notifications_center_notificationcentertests_test_openclaw_approval_request_can_be_approved_or_denied",
@@ -2242,7 +2617,7 @@
       "file_type": "code",
       "norm_label": ".test_openclaw_approval_request_can_be_denied_with_reason()",
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L474"
+      "source_location": "L557"
     },
     {
       "id": "tests_test_notifications_center_notificationcentertests_test_openclaw_ingestion_requires_api_key",
@@ -2266,7 +2641,7 @@
       "file_type": "code",
       "norm_label": ".test_task_binding_corruption_fails_closed()",
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L257"
+      "source_location": "L340"
     },
     {
       "id": "tests_test_notifications_center_notificationcentertests_test_task_bound_creation_rejects_unsupported_or_unsafe_specs_and_client_decisions",
@@ -2278,7 +2653,7 @@
       "file_type": "code",
       "norm_label": ".test_task_bound_creation_rejects_unsupported_or_unsafe_specs_and_client_decisions()",
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L239"
+      "source_location": "L322"
     },
     {
       "id": "app_auth_hash_user_password",
@@ -2291,30 +2666,6 @@
       "norm_label": "hash_user_password()",
       "source_file": "app/auth.py",
       "source_location": "L144"
-    },
-    {
-      "id": "app_auth_verify_user_password",
-      "label": "verify_user_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "UserManagementTests",
-      "file_type": "code",
-      "norm_label": "verify_user_password()",
-      "source_file": "app/auth.py",
-      "source_location": "L150"
-    },
-    {
-      "id": "app_main_change_own_password",
-      "label": "change_own_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "UserManagementTests",
-      "file_type": "code",
-      "norm_label": "change_own_password()",
-      "source_file": "app/main.py",
-      "source_location": "L1130"
     },
     {
       "id": "tests_test_notifications_center_notificationcentertests_setup",
@@ -2387,18 +2738,6 @@
       "norm_label": ".test_bad_login_does_not_log_submitted_password()",
       "source_file": "tests/test_users.py",
       "source_location": "L174"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_test_create_edit_password_reset_enable_disable_and_delete",
-      "label": ".test_create_edit_password_reset_enable_disable_and_delete()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "UserManagementTests",
-      "file_type": "code",
-      "norm_label": ".test_create_edit_password_reset_enable_disable_and_delete()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L99"
     },
     {
       "id": "tests_test_users_usermanagementtests_test_last_admin_and_self_protection",
@@ -2914,7 +3253,7 @@
       "file_type": "code",
       "norm_label": "create_user()",
       "source_file": "app/main.py",
-      "source_location": "L1158"
+      "source_location": "L1174"
     },
     {
       "id": "app_main_delete_user",
@@ -2926,7 +3265,7 @@
       "file_type": "code",
       "norm_label": "delete_user()",
       "source_file": "app/main.py",
-      "source_location": "L1279"
+      "source_location": "L1295"
     },
     {
       "id": "app_main_ensure_another_active_admin",
@@ -2938,7 +3277,7 @@
       "file_type": "code",
       "norm_label": "_ensure_another_active_admin()",
       "source_file": "app/main.py",
-      "source_location": "L1109"
+      "source_location": "L1125"
     },
     {
       "id": "app_main_get_account",
@@ -2950,7 +3289,7 @@
       "file_type": "code",
       "norm_label": "get_account()",
       "source_file": "app/main.py",
-      "source_location": "L1117"
+      "source_location": "L1133"
     },
     {
       "id": "app_main_get_managed_user",
@@ -2962,7 +3301,7 @@
       "file_type": "code",
       "norm_label": "_get_managed_user()",
       "source_file": "app/main.py",
-      "source_location": "L1102"
+      "source_location": "L1118"
     },
     {
       "id": "app_main_get_user",
@@ -2974,7 +3313,7 @@
       "file_type": "code",
       "norm_label": "get_user()",
       "source_file": "app/main.py",
-      "source_location": "L1185"
+      "source_location": "L1201"
     },
     {
       "id": "app_main_list_users",
@@ -2986,7 +3325,7 @@
       "file_type": "code",
       "norm_label": "list_users()",
       "source_file": "app/main.py",
-      "source_location": "L1148"
+      "source_location": "L1164"
     },
     {
       "id": "app_main_reset_user_password",
@@ -2998,7 +3337,7 @@
       "file_type": "code",
       "norm_label": "reset_user_password()",
       "source_file": "app/main.py",
-      "source_location": "L1236"
+      "source_location": "L1252"
     },
     {
       "id": "app_main_serialize_user",
@@ -3010,7 +3349,19 @@
       "file_type": "code",
       "norm_label": "_serialize_user()",
       "source_file": "app/main.py",
-      "source_location": "L1090"
+      "source_location": "L1106"
+    },
+    {
+      "id": "app_main_set_user_active",
+      "label": "_set_user_active()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 4,
+      "community_name": "User",
+      "file_type": "code",
+      "norm_label": "_set_user_active()",
+      "source_file": "app/main.py",
+      "source_location": "L1275"
     },
     {
       "id": "app_main_update_user",
@@ -3022,103 +3373,55 @@
       "file_type": "code",
       "norm_label": "update_user()",
       "source_file": "app/main.py",
-      "source_location": "L1194"
+      "source_location": "L1210"
     },
     {
-      "id": "app_main_deny_notification",
-      "label": "deny_notification()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "Notification",
-      "file_type": "code",
-      "norm_label": "deny_notification()",
-      "source_file": "app/main.py",
-      "source_location": "L949"
-    },
-    {
-      "id": "app_main_list_notifications",
-      "label": "list_notifications()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "Notification",
-      "file_type": "code",
-      "norm_label": "list_notifications()",
-      "source_file": "app/main.py",
-      "source_location": "L734"
-    },
-    {
-      "id": "app_main_serialize_notification",
-      "label": "_serialize_notification()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "Notification",
-      "file_type": "code",
-      "norm_label": "_serialize_notification()",
-      "source_file": "app/main.py",
-      "source_location": "L540"
-    },
-    {
-      "id": "app_main_utc_timestamp",
-      "label": "_utc_timestamp()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "Notification",
-      "file_type": "code",
-      "norm_label": "_utc_timestamp()",
-      "source_file": "app/main.py",
-      "source_location": "L367"
-    },
-    {
-      "id": "app_notifications_service_create_notification",
-      "label": "create_notification()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "Notification",
-      "file_type": "code",
-      "norm_label": "create_notification()",
-      "source_file": "app/notifications/service.py",
-      "source_location": "L15"
-    },
-    {
-      "id": "app_notifications_service_metadata_for",
-      "label": "metadata_for()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "Notification",
-      "file_type": "code",
-      "norm_label": "metadata_for()",
-      "source_file": "app/notifications/service.py",
-      "source_location": "L104"
-    },
-    {
-      "id": "tests_test_notifications_center_notificationcentertests_test_legacy_approval_without_binding_metadata_is_not_authorized",
-      "label": ".test_legacy_approval_without_binding_metadata_is_not_authorized()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "Notification",
-      "file_type": "code",
-      "norm_label": ".test_legacy_approval_without_binding_metadata_is_not_authorized()",
-      "source_file": "tests/test_notifications_center.py",
-      "source_location": "L424"
-    },
-    {
-      "id": "app_auth_verify_access_token",
-      "label": "verify_access_token()",
+      "id": "app_auth_generate_password_hash",
+      "label": "generate_password_hash()",
       "_callable": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": "_authenticate_login",
+      "community_name": "generate_password_hash",
       "file_type": "code",
-      "norm_label": "verify_access_token()",
+      "norm_label": "generate_password_hash()",
       "source_file": "app/auth.py",
-      "source_location": "L96"
+      "source_location": "L139"
+    },
+    {
+      "id": "app_auth_hash_password",
+      "label": "_hash_password()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "generate_password_hash",
+      "file_type": "code",
+      "norm_label": "_hash_password()",
+      "source_file": "app/auth.py",
+      "source_location": "L75"
+    },
+    {
+      "id": "app_auth_verify_password",
+      "label": "verify_password()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "generate_password_hash",
+      "file_type": "code",
+      "norm_label": "verify_password()",
+      "source_file": "app/auth.py",
+      "source_location": "L79"
+    },
+    {
+      "id": "app_auth_verify_user_password",
+      "label": "verify_user_password()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "generate_password_hash",
+      "file_type": "code",
+      "norm_label": "verify_user_password()",
+      "source_file": "app/auth.py",
+      "source_location": "L150"
     },
     {
       "id": "app_main_authenticate_login",
@@ -3126,23 +3429,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": "_authenticate_login",
+      "community_name": "generate_password_hash",
       "file_type": "code",
       "norm_label": "_authenticate_login()",
       "source_file": "app/main.py",
       "source_location": "L170"
     },
     {
-      "id": "app_main_create_web_session",
-      "label": "create_web_session()",
+      "id": "app_main_change_own_password",
+      "label": "change_own_password()",
       "_callable": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": "_authenticate_login",
+      "community_name": "generate_password_hash",
       "file_type": "code",
-      "norm_label": "create_web_session()",
+      "norm_label": "change_own_password()",
       "source_file": "app/main.py",
-      "source_location": "L253"
+      "source_location": "L1146"
     },
     {
       "id": "app_main_login",
@@ -3150,35 +3453,59 @@
       "_callable": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": "_authenticate_login",
+      "community_name": "generate_password_hash",
       "file_type": "code",
       "norm_label": "login()",
       "source_file": "app/main.py",
       "source_location": "L137"
     },
     {
-      "id": "app_main_login_form",
-      "label": "login_form()",
+      "id": "tests_test_users_usermanagementtests_test_create_edit_password_reset_enable_disable_and_delete",
+      "label": ".test_create_edit_password_reset_enable_disable_and_delete()",
       "_callable": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": "_authenticate_login",
+      "community_name": "generate_password_hash",
       "file_type": "code",
-      "norm_label": "login_form()",
-      "source_file": "app/main.py",
-      "source_location": "L222"
+      "norm_label": ".test_create_edit_password_reset_enable_disable_and_delete()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L99"
     },
     {
-      "id": "app_main_set_session_cookie",
-      "label": "_set_session_cookie()",
+      "id": "tests_test_users_usermanagementtests_test_existing_environment_admin_is_bootstrapped_without_replacing_release_data",
+      "label": ".test_existing_environment_admin_is_bootstrapped_without_replacing_release_data()",
       "_callable": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": "_authenticate_login",
+      "community_name": "generate_password_hash",
       "file_type": "code",
-      "norm_label": "_set_session_cookie()",
-      "source_file": "app/main.py",
-      "source_location": "L239"
+      "norm_label": ".test_existing_environment_admin_is_bootstrapped_without_replacing_release_data()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L180"
+    },
+    {
+      "id": "tests_test_web_webdashboardtests_test_html_form_fallback_posts_credentials_without_putting_them_in_url",
+      "label": ".test_html_form_fallback_posts_credentials_without_putting_them_in_url()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "generate_password_hash",
+      "file_type": "code",
+      "norm_label": ".test_html_form_fallback_posts_credentials_without_putting_them_in_url()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L124"
+    },
+    {
+      "id": "tests_test_web_webdashboardtests_test_http_credentials_create_httponly_cookie_and_authenticated_dashboard",
+      "label": ".test_http_credentials_create_httponly_cookie_and_authenticated_dashboard()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 46,
+      "community_name": "generate_password_hash",
+      "file_type": "code",
+      "norm_label": ".test_http_credentials_create_httponly_cookie_and_authenticated_dashboard()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L92"
     },
     {
       "id": "tests_test_scheduler_fakeprovider_init",
@@ -3385,42 +3712,6 @@
       "source_location": "L136"
     },
     {
-      "id": "app_auth_authenticate_token",
-      "label": "authenticate_token()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 48,
-      "community_name": "authenticate_token",
-      "file_type": "code",
-      "norm_label": "authenticate_token()",
-      "source_file": "app/auth.py",
-      "source_location": "L105"
-    },
-    {
-      "id": "app_auth_principal_for_username",
-      "label": "principal_for_username()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 48,
-      "community_name": "authenticate_token",
-      "file_type": "code",
-      "norm_label": "principal_for_username()",
-      "source_file": "app/auth.py",
-      "source_location": "L36"
-    },
-    {
-      "id": "app_auth_request_origin",
-      "label": "_request_origin()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 48,
-      "community_name": "authenticate_token",
-      "file_type": "code",
-      "norm_label": "_request_origin()",
-      "source_file": "app/auth.py",
-      "source_location": "L67"
-    },
-    {
       "id": "app_config_settings_validate_production_settings",
       "label": ".validate_production_settings()",
       "_callable": true,
@@ -3478,7 +3769,7 @@
       "file_type": "code",
       "norm_label": ".test_migration_adds_nullable_approval_fields_without_backfilling_legacy_rows()",
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L454"
+      "source_location": "L537"
     },
     {
       "id": "tests_test_production_config_productionconfigtests_test_production_configuration_accepts_secure_values",
@@ -3553,66 +3844,6 @@
       "source_location": "L10"
     },
     {
-      "id": "app_main_sanitized_validation_error",
-      "label": "sanitized_validation_error()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 51,
-      "community_name": "sanitized_validation_error",
-      "file_type": "code",
-      "norm_label": "sanitized_validation_error()",
-      "source_file": "app/main.py",
-      "source_location": "L86"
-    },
-    {
-      "id": "app_auth_generate_password_hash",
-      "label": "generate_password_hash()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": "generate_password_hash()",
-      "source_file": "app/auth.py",
-      "source_location": "L139"
-    },
-    {
-      "id": "app_auth_hash_password",
-      "label": "_hash_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": "_hash_password()",
-      "source_file": "app/auth.py",
-      "source_location": "L75"
-    },
-    {
-      "id": "app_auth_verify_password",
-      "label": "verify_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": "verify_password()",
-      "source_file": "app/auth.py",
-      "source_location": "L79"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_test_existing_environment_admin_is_bootstrapped_without_replacing_release_data",
-      "label": ".test_existing_environment_admin_is_bootstrapped_without_replacing_release_data()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".test_existing_environment_admin_is_bootstrapped_without_replacing_release_data()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L180"
-    },
-    {
       "id": "tests_test_web_webdashboardtests_sign_in",
       "label": ".sign_in()",
       "_callable": true,
@@ -3659,30 +3890,6 @@
       "norm_label": ".test_check_now_api_and_logout()",
       "source_file": "tests/test_web.py",
       "source_location": "L321"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_html_form_fallback_posts_credentials_without_putting_them_in_url",
-      "label": ".test_html_form_fallback_posts_credentials_without_putting_them_in_url()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".test_html_form_fallback_posts_credentials_without_putting_them_in_url()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L124"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_http_credentials_create_httponly_cookie_and_authenticated_dashboard",
-      "label": ".test_http_credentials_create_httponly_cookie_and_authenticated_dashboard()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 52,
-      "community_name": "WebDashboardTests",
-      "file_type": "code",
-      "norm_label": ".test_http_credentials_create_httponly_cookie_and_authenticated_dashboard()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L92"
     },
     {
       "id": "tests_test_web_webdashboardtests_test_https_browser_session_marks_cookie_secure",
@@ -3978,7 +4185,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": "send()",
       "source_file": "app/notifications/discord.py",
@@ -3990,7 +4197,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": "notify()",
       "source_file": "app/notifications/__init__.py",
@@ -4002,7 +4209,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": "_failure()",
       "source_file": "app/notifications/telegram.py",
@@ -4014,7 +4221,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": "send()",
       "source_file": "app/notifications/telegram.py",
@@ -4026,7 +4233,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": "send_support_sales()",
       "source_file": "app/notifications/telegram.py",
@@ -4038,7 +4245,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": "send_support_sales_test()",
       "source_file": "app/notifications/telegram.py",
@@ -4050,47 +4257,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": "send_test()",
       "source_file": "app/notifications/telegram.py",
       "source_location": "L92"
-    },
-    {
-      "id": "app_service_check_all",
-      "label": "check_all()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "app/service.py",
-      "file_type": "code",
-      "norm_label": "check_all()",
-      "source_file": "app/service.py",
-      "source_location": "L23"
-    },
-    {
-      "id": "app_versioning_compare_releases",
-      "label": "compare_releases()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "app/service.py",
-      "file_type": "code",
-      "norm_label": "compare_releases()",
-      "source_file": "app/versioning.py",
-      "source_location": "L27"
-    },
-    {
-      "id": "app_versioning_parse_version",
-      "label": "parse_version()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "app/service.py",
-      "file_type": "code",
-      "norm_label": "parse_version()",
-      "source_file": "app/versioning.py",
-      "source_location": "L39"
     },
     {
       "id": "tests_test_telegram_fakeasyncclient_aenter",
@@ -4098,7 +4269,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": ".__aenter__()",
       "source_file": "tests/test_telegram.py",
@@ -4110,7 +4281,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": ".__aexit__()",
       "source_file": "tests/test_telegram.py",
@@ -4122,7 +4293,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": ".__init__()",
       "source_file": "tests/test_telegram.py",
@@ -4134,7 +4305,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": ".__init__()",
       "source_file": "tests/test_telegram.py",
@@ -4146,7 +4317,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": ".json()",
       "source_file": "tests/test_telegram.py",
@@ -4158,7 +4329,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": ".raise_for_status()",
       "source_file": "tests/test_telegram.py",
@@ -4170,7 +4341,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": ".test_disabling_support_sales_does_not_disable_support_tech()",
       "source_file": "tests/test_telegram.py",
@@ -4182,7 +4353,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": ".test_sender_targets_only_support_sales_and_disable_is_independent()",
       "source_file": "tests/test_telegram.py",
@@ -4194,7 +4365,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": ".test_support_sales_test_message()",
       "source_file": "tests/test_telegram.py",
@@ -4206,23 +4377,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": ".test_api_failure_is_safe_and_logged_by_notifier()",
       "source_file": "tests/test_telegram.py",
       "source_location": "L91"
-    },
-    {
-      "id": "tests_test_telegram_telegramclienttests_test_disabled_does_not_make_request",
-      "label": ".test_disabled_does_not_make_request()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "app/service.py",
-      "file_type": "code",
-      "norm_label": ".test_disabled_does_not_make_request()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L50"
     },
     {
       "id": "tests_test_telegram_telegramclienttests_test_every_completed_check_sends_one_telegram_summary_with_provider_errors",
@@ -4230,7 +4389,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": ".test_every_completed_check_sends_one_telegram_summary_with_provider_errors()",
       "source_file": "tests/test_telegram.py",
@@ -4242,23 +4401,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": "latest()",
       "source_file": "tests/test_telegram.py",
       "source_location": "L245"
-    },
-    {
-      "id": "tests_test_telegram_telegramclienttests_test_missing_token_or_chat_id_returns_configuration_error",
-      "label": ".test_missing_token_or_chat_id_returns_configuration_error()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "app/service.py",
-      "file_type": "code",
-      "norm_label": ".test_missing_token_or_chat_id_returns_configuration_error()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L59"
     },
     {
       "id": "tests_test_telegram_telegramclienttests_test_network_exception_url_does_not_leak_bot_token",
@@ -4266,35 +4413,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": ".test_network_exception_url_does_not_leak_bot_token()",
       "source_file": "tests/test_telegram.py",
       "source_location": "L108"
-    },
-    {
-      "id": "tests_test_telegram_telegramclienttests_test_service_only_notifies_once_for_new_major_release",
-      "label": ".test_service_only_notifies_once_for_new_major_release()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "app/service.py",
-      "file_type": "code",
-      "norm_label": ".test_service_only_notifies_once_for_new_major_release()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L129"
-    },
-    {
-      "id": "tests_test_telegram_telegramclienttests_test_service_only_notifies_once_for_new_major_release_latest",
-      "label": "latest()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "app/service.py",
-      "file_type": "code",
-      "norm_label": "latest()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L148"
     },
     {
       "id": "tests_test_telegram_telegramclienttests_test_success_uses_configured_chat_and_expected_message",
@@ -4302,23 +4425,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": ".test_success_uses_configured_chat_and_expected_message()",
       "source_file": "tests/test_telegram.py",
       "source_location": "L75"
-    },
-    {
-      "id": "tests_test_versioning_comparereleasestests_test_requested_release_comparisons",
-      "label": ".test_requested_release_comparisons()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "app/service.py",
-      "file_type": "code",
-      "norm_label": ".test_requested_release_comparisons()",
-      "source_file": "tests/test_versioning.py",
-      "source_location": "L16"
     },
     {
       "id": "app_auth",
@@ -4376,14 +4487,25 @@
       "source_location": "L1"
     },
     {
-      "id": "app_task_spec",
-      "label": "task_spec.py",
+      "id": "app_service",
+      "label": "app/service.py",
       "_origin": "ast",
       "community": 0,
       "community_name": "auth.py",
       "file_type": "code",
-      "norm_label": "task_spec.py",
-      "source_file": "app/task_spec.py",
+      "norm_label": "app/service.py",
+      "source_file": "app/service.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "app_versioning",
+      "label": "versioning.py",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": "versioning.py",
+      "source_file": "app/versioning.py",
       "source_location": "L1"
     },
     {
@@ -4405,39 +4527,6 @@
       "community_name": "auth.py",
       "file_type": "code",
       "norm_label": "listens_for",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "tests_openclaw_core_reference",
-      "label": "openclaw_core_reference.py",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "openclaw_core_reference.py",
-      "source_file": "tests/openclaw_core_reference.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "tests_openclaw_core_reference_py_any",
-      "label": "Any",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "any",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "tests_openclaw_core_reference_py_datetime",
-      "label": "datetime",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "datetime",
       "source_file": "",
       "source_location": ""
     },
@@ -4472,17 +4561,6 @@
       "file_type": "code",
       "norm_label": "test_notifications_center.py",
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "tests_test_openclaw_task_compat",
-      "label": "test_openclaw_task_compat.py",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "test_openclaw_task_compat.py",
-      "source_file": "tests/test_openclaw_task_compat.py",
       "source_location": "L1"
     },
     {
@@ -4563,48 +4641,37 @@
       "source_location": "L1"
     },
     {
-      "id": "valueerror",
-      "label": "ValueError",
+      "id": "app_versioning_rationale_28",
+      "label": "Compare stored and fetched releases; current-version classification is separate.",
       "_origin": "ast",
       "community": 0,
       "community_name": "auth.py",
+      "file_type": "rationale",
+      "norm_label": "compare stored and fetched releases; current-version classification is separate.",
+      "source_file": "app/versioning.py",
+      "source_location": "L28"
+    },
+    {
+      "id": "app_versioning_rationale_40",
+      "label": "Normalize major version and classify the release for deployment tracking.",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "auth.py",
+      "file_type": "rationale",
+      "norm_label": "normalize major version and classify the release for deployment tracking.",
+      "source_file": "app/versioning.py",
+      "source_location": "L40"
+    },
+    {
+      "id": "app_auth_py_request",
+      "label": "Request",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
       "file_type": "code",
-      "norm_label": "valueerror",
+      "norm_label": "request",
       "source_file": "",
       "source_location": ""
-    },
-    {
-      "id": "app_task_spec_rationale_1",
-      "label": "Task specification matching OpenClaw's fail-closed execution core.",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "rationale",
-      "norm_label": "task specification matching openclaw's fail-closed execution core.",
-      "source_file": "app/task_spec.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "tests_openclaw_core_reference_rationale_1",
-      "label": "Minimal test oracle transcribed from the supplied OpenClaw execution_core.py.",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "rationale",
-      "norm_label": "minimal test oracle transcribed from the supplied openclaw execution_core.py.",
-      "source_file": "tests/openclaw_core_reference.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "tests_openclaw_core_reference_rationale_76",
-      "label": "Verifier checks copied from execution_core.verify_approval.",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "rationale",
-      "norm_label": "verifier checks copied from execution_core.verify_approval.",
-      "source_file": "tests/openclaw_core_reference.py",
-      "source_location": "L76"
     },
     {
       "id": "app_main",
@@ -4618,6 +4685,105 @@
       "source_location": "L1"
     },
     {
+      "id": "app_main_py_basemodel",
+      "label": "BaseModel",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "basemodel",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "app_main_py_datetime",
+      "label": "datetime",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "datetime",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "app_main_py_request",
+      "label": "Request",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "request",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "app_notifications_service",
+      "label": "notifications/service.py",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "notifications/service.py",
+      "source_file": "app/notifications/service.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "app_notifications_service_py_any",
+      "label": "Any",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "any",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "app_notifications_service_py_datetime",
+      "label": "datetime",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "datetime",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "exception_handler",
+      "label": "exception_handler",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "exception_handler",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "httpauthorizationcredentials",
+      "label": "HTTPAuthorizationCredentials",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "httpauthorizationcredentials",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "middleware",
+      "label": "middleware",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "middleware",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "post",
       "label": "post",
       "_origin": "ast",
@@ -4625,6 +4791,17 @@
       "community_name": "main.py",
       "file_type": "code",
       "norm_label": "post",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "requestvalidationerror",
+      "label": "RequestValidationError",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "requestvalidationerror",
       "source_file": "",
       "source_location": ""
     },
@@ -4638,6 +4815,50 @@
       "norm_label": "allow the app's configured db session factory to be injected in tests.",
       "source_file": "app/auth.py",
       "source_location": "L23"
+    },
+    {
+      "id": "app_auth_rationale_37",
+      "label": "Resolve every request against current DB state so disable takes effect\u2026",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "rationale",
+      "norm_label": "resolve every request against current db state so disable takes effect...",
+      "source_file": "app/auth.py",
+      "source_location": "L37"
+    },
+    {
+      "id": "app_main_rationale_223",
+      "label": "POST fallback for browsers when client-side JavaScript is unavailable.",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "rationale",
+      "norm_label": "post fallback for browsers when client-side javascript is unavailable.",
+      "source_file": "app/main.py",
+      "source_location": "L223"
+    },
+    {
+      "id": "app_main_rationale_610",
+      "label": "Bind approval to a stable hash of the proposed action fields.",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "rationale",
+      "norm_label": "bind approval to a stable hash of the proposed action fields.",
+      "source_file": "app/main.py",
+      "source_location": "L610"
+    },
+    {
+      "id": "app_main_rationale_650",
+      "label": "Create approval UI copy from the validated task, never agent prose.",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "rationale",
+      "norm_label": "create approval ui copy from the validated task, never agent prose.",
+      "source_file": "app/main.py",
+      "source_location": "L650"
     },
     {
       "id": "app_schemas",
@@ -4673,7 +4894,7 @@
       "source_location": ""
     },
     {
-      "id": "model_validator",
+      "id": "app_schemas_py_model_validator",
       "label": "model_validator",
       "_origin": "ast",
       "community": 10,
@@ -4682,72 +4903,6 @@
       "norm_label": "model_validator",
       "source_file": "",
       "source_location": ""
-    },
-    {
-      "id": "app_main_rationale_610",
-      "label": "Bind approval to a stable hash of the proposed action fields.",
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "schemas.py",
-      "file_type": "rationale",
-      "norm_label": "bind approval to a stable hash of the proposed action fields.",
-      "source_file": "app/main.py",
-      "source_location": "L610"
-    },
-    {
-      "id": "app_task_spec_py_basemodel",
-      "label": "BaseModel",
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TaskSpecification",
-      "file_type": "code",
-      "norm_label": "basemodel",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "app_task_spec_py_field_validator",
-      "label": "field_validator",
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TaskSpecification",
-      "file_type": "code",
-      "norm_label": "field_validator",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "app_main_rationale_650",
-      "label": "Create approval UI copy from the validated task, never agent prose.",
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TaskSpecification",
-      "file_type": "rationale",
-      "norm_label": "create approval ui copy from the validated task, never agent prose.",
-      "source_file": "app/main.py",
-      "source_location": "L650"
-    },
-    {
-      "id": "app_main_rationale_819",
-      "label": "Return only an OpenClaw request's action-bound approval decision.",
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TaskSpecification",
-      "file_type": "rationale",
-      "norm_label": "return only an openclaw request's action-bound approval decision.",
-      "source_file": "app/main.py",
-      "source_location": "L819"
-    },
-    {
-      "id": "app_task_spec_rationale_71",
-      "label": "Match execution_core.TaskSpec.canonical_json exactly.",
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TaskSpecification",
-      "file_type": "rationale",
-      "norm_label": "match execution_core.taskspec.canonical_json exactly.",
-      "source_file": "app/task_spec.py",
-      "source_location": "L71"
     },
     {
       "id": "app_scheduler",
@@ -4887,28 +5042,6 @@
       "source_location": "L1"
     },
     {
-      "id": "app_main_py_request",
-      "label": "Request",
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Request",
-      "file_type": "code",
-      "norm_label": "request",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "middleware",
-      "label": "middleware",
-      "_origin": "ast",
-      "community": 18,
-      "community_name": "Request",
-      "file_type": "code",
-      "norm_label": "middleware",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "abc",
       "label": "ABC",
       "_origin": "ast",
@@ -5041,11 +5174,110 @@
       "source_location": "L1"
     },
     {
+      "id": "app_task_spec",
+      "label": "task_spec.py",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "task_spec.py",
+      "source_file": "app/task_spec.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "app_task_spec_py_basemodel",
+      "label": "BaseModel",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "basemodel",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "app_task_spec_py_field_validator",
+      "label": "field_validator",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "field_validator",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "app_task_spec_py_model_validator",
+      "label": "model_validator",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "model_validator",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "tests_openclaw_core_reference",
+      "label": "openclaw_core_reference.py",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "openclaw_core_reference.py",
+      "source_file": "tests/openclaw_core_reference.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "tests_openclaw_core_reference_py_any",
+      "label": "Any",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "any",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "tests_openclaw_core_reference_py_datetime",
+      "label": "datetime",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "datetime",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "tests_test_openclaw_task_compat",
+      "label": "test_openclaw_task_compat.py",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "test_openclaw_task_compat.py",
+      "source_file": "tests/test_openclaw_task_compat.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "valueerror",
+      "label": "ValueError",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "code",
+      "norm_label": "valueerror",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "docs_openclaw_approval_contract",
       "label": "openclaw-approval-contract.md",
       "_origin": "ast",
       "community": 22,
-      "community_name": "OpenClaw task approval contract",
+      "community_name": "task_spec.py",
       "file_type": "document",
       "node_kind": "page",
       "norm_label": "openclaw-approval-contract.md",
@@ -5057,19 +5289,19 @@
       "label": "Canonical JSON and digest",
       "_origin": "ast",
       "community": 22,
-      "community_name": "OpenClaw task approval contract",
+      "community_name": "task_spec.py",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "canonical json and digest",
       "source_file": "docs/openclaw-approval-contract.md",
-      "source_location": "L66"
+      "source_location": "L81"
     },
     {
       "id": "docs_openclaw_approval_contract_create_and_retrieve_an_approval",
       "label": "Create and retrieve an approval",
       "_origin": "ast",
       "community": 22,
-      "community_name": "OpenClaw task approval contract",
+      "community_name": "task_spec.py",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "create and retrieve an approval",
@@ -5081,31 +5313,31 @@
       "label": "Deployment and rollback",
       "_origin": "ast",
       "community": 22,
-      "community_name": "OpenClaw task approval contract",
+      "community_name": "task_spec.py",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "deployment and rollback",
       "source_file": "docs/openclaw-approval-contract.md",
-      "source_location": "L112"
+      "source_location": "L131"
     },
     {
       "id": "docs_openclaw_approval_contract_executor_network_safeguards",
       "label": "Executor network safeguards",
       "_origin": "ast",
       "community": 22,
-      "community_name": "OpenClaw task approval contract",
+      "community_name": "task_spec.py",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "executor network safeguards",
       "source_file": "docs/openclaw-approval-contract.md",
-      "source_location": "L103"
+      "source_location": "L122"
     },
     {
       "id": "docs_openclaw_approval_contract_openclaw_task_approval_contract",
       "label": "OpenClaw task approval contract",
       "_origin": "ast",
       "community": 22,
-      "community_name": "OpenClaw task approval contract",
+      "community_name": "task_spec.py",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "openclaw task approval contract",
@@ -5117,12 +5349,78 @@
       "label": "Task specification v1",
       "_origin": "ast",
       "community": 22,
-      "community_name": "OpenClaw task approval contract",
+      "community_name": "task_spec.py",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "task specification v1",
       "source_file": "docs/openclaw-approval-contract.md",
       "source_location": "L48"
+    },
+    {
+      "id": "app_main_rationale_835",
+      "label": "Return only an OpenClaw request's action-bound approval decision.",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "rationale",
+      "norm_label": "return only an openclaw request's action-bound approval decision.",
+      "source_file": "app/main.py",
+      "source_location": "L835"
+    },
+    {
+      "id": "app_task_spec_rationale_1",
+      "label": "Validated, immutable task specifications used by OpenClaw approvals.",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "rationale",
+      "norm_label": "validated, immutable task specifications used by openclaw approvals.",
+      "source_file": "app/task_spec.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "app_task_spec_rationale_104",
+      "label": "Match the execution core's canonical JSON representation.",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "rationale",
+      "norm_label": "match the execution core's canonical json representation.",
+      "source_file": "app/task_spec.py",
+      "source_location": "L104"
+    },
+    {
+      "id": "app_task_spec_rationale_83",
+      "label": "Compatibility facade for existing callers; parsing returns the concrete spec\u2026",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "rationale",
+      "norm_label": "compatibility facade for existing callers; parsing returns the concrete spec...",
+      "source_file": "app/task_spec.py",
+      "source_location": "L83"
+    },
+    {
+      "id": "tests_openclaw_core_reference_rationale_1",
+      "label": "Minimal test oracle transcribed from the supplied OpenClaw execution_core.py.",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "rationale",
+      "norm_label": "minimal test oracle transcribed from the supplied openclaw execution_core.py.",
+      "source_file": "tests/openclaw_core_reference.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "tests_openclaw_core_reference_rationale_76",
+      "label": "Verifier checks copied from execution_core.verify_approval.",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "file_type": "rationale",
+      "norm_label": "verifier checks copied from execution_core.verify_approval.",
+      "source_file": "tests/openclaw_core_reference.py",
+      "source_location": "L76"
     },
     {
       "id": "static_js_app",
@@ -5158,114 +5456,15 @@
       "source_location": ""
     },
     {
-      "id": "app_main_py_datetime",
-      "label": "datetime",
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "Notification",
-      "file_type": "code",
-      "norm_label": "datetime",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "app_notifications_service",
-      "label": "notifications/service.py",
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "Notification",
-      "file_type": "code",
-      "norm_label": "notifications/service.py",
-      "source_file": "app/notifications/service.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "app_notifications_service_py_any",
-      "label": "Any",
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "Notification",
-      "file_type": "code",
-      "norm_label": "any",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "app_notifications_service_py_datetime",
-      "label": "datetime",
-      "_origin": "ast",
-      "community": 44,
-      "community_name": "Notification",
-      "file_type": "code",
-      "norm_label": "datetime",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "app_main_py_basemodel",
-      "label": "BaseModel",
-      "_origin": "ast",
-      "community": 46,
-      "community_name": "_authenticate_login",
-      "file_type": "code",
-      "norm_label": "basemodel",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "app_main_rationale_171",
       "label": "DB user credentials first; retain the configured admin as bootstrap fallback.",
       "_origin": "ast",
       "community": 46,
-      "community_name": "_authenticate_login",
+      "community_name": "generate_password_hash",
       "file_type": "rationale",
       "norm_label": "db user credentials first; retain the configured admin as bootstrap fallback.",
       "source_file": "app/main.py",
       "source_location": "L171"
-    },
-    {
-      "id": "app_main_rationale_223",
-      "label": "POST fallback for browsers when client-side JavaScript is unavailable.",
-      "_origin": "ast",
-      "community": 46,
-      "community_name": "_authenticate_login",
-      "file_type": "rationale",
-      "norm_label": "post fallback for browsers when client-side javascript is unavailable.",
-      "source_file": "app/main.py",
-      "source_location": "L223"
-    },
-    {
-      "id": "app_auth_py_request",
-      "label": "Request",
-      "_origin": "ast",
-      "community": 48,
-      "community_name": "authenticate_token",
-      "file_type": "code",
-      "norm_label": "request",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "httpauthorizationcredentials",
-      "label": "HTTPAuthorizationCredentials",
-      "_origin": "ast",
-      "community": 48,
-      "community_name": "authenticate_token",
-      "file_type": "code",
-      "norm_label": "httpauthorizationcredentials",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "app_auth_rationale_37",
-      "label": "Resolve every request against current DB state so disable takes effect\u2026",
-      "_origin": "ast",
-      "community": 48,
-      "community_name": "authenticate_token",
-      "file_type": "rationale",
-      "norm_label": "resolve every request against current db state so disable takes effect...",
-      "source_file": "app/auth.py",
-      "source_location": "L37"
     },
     {
       "id": "basesettings",
@@ -5301,33 +5500,11 @@
       "source_location": "L133"
     },
     {
-      "id": "exception_handler",
-      "label": "exception_handler",
-      "_origin": "ast",
-      "community": 51,
-      "community_name": "sanitized_validation_error",
-      "file_type": "code",
-      "norm_label": "exception_handler",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "requestvalidationerror",
-      "label": "RequestValidationError",
-      "_origin": "ast",
-      "community": 51,
-      "community_name": "sanitized_validation_error",
-      "file_type": "code",
-      "norm_label": "requestvalidationerror",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "app_notifications_discord",
       "label": "discord.py",
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": "discord.py",
       "source_file": "app/notifications/discord.py",
@@ -5338,7 +5515,7 @@
       "label": "notifications/__init__.py",
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": "notifications/__init__.py",
       "source_file": "app/notifications/__init__.py",
@@ -5349,32 +5526,10 @@
       "label": "telegram.py",
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "code",
       "norm_label": "telegram.py",
       "source_file": "app/notifications/telegram.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "app_service",
-      "label": "app/service.py",
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "app/service.py",
-      "file_type": "code",
-      "norm_label": "app/service.py",
-      "source_file": "app/service.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "app_versioning",
-      "label": "versioning.py",
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "app/service.py",
-      "file_type": "code",
-      "norm_label": "versioning.py",
-      "source_file": "app/versioning.py",
       "source_location": "L1"
     },
     {
@@ -5382,7 +5537,7 @@
       "label": "Deliver to configured channels independently; report aggregate success.",
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "rationale",
       "norm_label": "deliver to configured channels independently; report aggregate success.",
       "source_file": "app/notifications/__init__.py",
@@ -5393,7 +5548,7 @@
       "label": "Send a Telegram message without exposing credentials in errors or logs.",
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "rationale",
       "norm_label": "send a telegram message without exposing credentials in errors or logs.",
       "source_file": "app/notifications/telegram.py",
@@ -5404,33 +5559,11 @@
       "label": "Send only to the independently configured Support-Sales group.",
       "_origin": "ast",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "file_type": "rationale",
       "norm_label": "send only to the independently configured support-sales group.",
       "source_file": "app/notifications/telegram.py",
       "source_location": "L61"
-    },
-    {
-      "id": "app_versioning_rationale_28",
-      "label": "Compare stored and fetched releases; current-version classification is separate.",
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "app/service.py",
-      "file_type": "rationale",
-      "norm_label": "compare stored and fetched releases; current-version classification is separate.",
-      "source_file": "app/versioning.py",
-      "source_location": "L28"
-    },
-    {
-      "id": "app_versioning_rationale_40",
-      "label": "Normalize major version and classify the release for deployment tracking.",
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "app/service.py",
-      "file_type": "rationale",
-      "norm_label": "normalize major version and classify the release for deployment tracking.",
-      "source_file": "app/versioning.py",
-      "source_location": "L40"
     },
     {
       "id": "docker_compose",
@@ -6225,26 +6358,14 @@
       "type": "external"
     },
     {
-      "id": "hashlib",
-      "label": "hashlib",
+      "id": "hmac",
+      "label": "hmac",
       "_origin": "semantic",
       "community": 0,
       "community_name": "auth.py",
       "external": true,
       "file_type": "concept",
-      "norm_label": "hashlib",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "json",
-      "label": "json",
-      "_origin": "semantic",
-      "community": 0,
-      "community_name": "auth.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "json",
+      "norm_label": "hmac",
       "source_file": "",
       "type": "external"
     },
@@ -6333,6 +6454,18 @@
       "type": "external"
     },
     {
+      "id": "sqlalchemy_exc",
+      "label": "sqlalchemy_exc",
+      "_origin": "semantic",
+      "community": 0,
+      "community_name": "auth.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "sqlalchemy_exc",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "sqlalchemy_orm",
       "label": "sqlalchemy_orm",
       "_origin": "semantic",
@@ -6417,18 +6550,6 @@
       "type": "external"
     },
     {
-      "id": "urllib_parse",
-      "label": "urllib_parse",
-      "_origin": "semantic",
-      "community": 0,
-      "community_name": "auth.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "urllib_parse",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "contextlib",
       "label": "contextlib",
       "_origin": "semantic",
@@ -6485,30 +6606,6 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "fastapi_templating",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "hmac",
-      "label": "hmac",
-      "_origin": "semantic",
-      "community": 1,
-      "community_name": "main.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "hmac",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "sqlalchemy_exc",
-      "label": "sqlalchemy_exc",
-      "_origin": "semantic",
-      "community": 1,
-      "community_name": "main.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "sqlalchemy_exc",
       "source_file": "",
       "type": "external"
     },
@@ -6609,18 +6706,6 @@
       "type": "external"
     },
     {
-      "id": "typing",
-      "label": "typing",
-      "_origin": "semantic",
-      "community": 15,
-      "community_name": "scheduler.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "typing",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "ipaddress",
       "label": "ipaddress",
       "_origin": "semantic",
@@ -6681,6 +6766,54 @@
       "type": "external"
     },
     {
+      "id": "hashlib",
+      "label": "hashlib",
+      "_origin": "semantic",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "hashlib",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "json",
+      "label": "json",
+      "_origin": "semantic",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "json",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "typing",
+      "label": "typing",
+      "_origin": "semantic",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "typing",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "urllib_parse",
+      "label": "urllib_parse",
+      "_origin": "semantic",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "urllib_parse",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "base64",
       "label": "base64",
       "_origin": "semantic",
@@ -6709,7 +6842,7 @@
       "label": "httpx",
       "_origin": "semantic",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "external": true,
       "file_type": "concept",
       "norm_label": "httpx",
@@ -6721,7 +6854,7 @@
       "label": "logging",
       "_origin": "semantic",
       "community": 9,
-      "community_name": "app/service.py",
+      "community_name": "TelegramSendResult",
       "external": true,
       "file_type": "concept",
       "norm_label": "logging",
@@ -6835,7 +6968,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L904",
+      "source_location": "L920",
       "weight": 1.0
     },
     {
@@ -6847,7 +6980,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L940",
+      "source_location": "L956",
       "weight": 1.0
     },
     {
@@ -6895,7 +7028,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1136",
+      "source_location": "L1152",
       "weight": 1.0
     },
     {
@@ -6907,7 +7040,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1138",
+      "source_location": "L1154",
       "weight": 1.0
     },
     {
@@ -6931,7 +7064,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L666",
+      "source_location": "L682",
       "weight": 1.0
     },
     {
@@ -6943,7 +7076,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L668",
+      "source_location": "L684",
       "weight": 1.0
     },
     {
@@ -6955,7 +7088,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L684",
+      "source_location": "L700",
       "weight": 1.0
     },
     {
@@ -6967,7 +7100,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L685",
+      "source_location": "L701",
       "weight": 1.0
     },
     {
@@ -6979,7 +7112,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L689",
+      "source_location": "L705",
       "weight": 1.0
     },
     {
@@ -6991,7 +7124,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L692",
+      "source_location": "L708",
       "weight": 1.0
     },
     {
@@ -7003,7 +7136,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L705",
+      "source_location": "L721",
       "weight": 1.0
     },
     {
@@ -7015,7 +7148,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L719",
+      "source_location": "L735",
       "weight": 1.0
     },
     {
@@ -7027,7 +7160,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L730",
+      "source_location": "L746",
       "weight": 1.0
     },
     {
@@ -7039,7 +7172,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1165",
+      "source_location": "L1181",
       "weight": 1.0
     },
     {
@@ -7051,7 +7184,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1179",
+      "source_location": "L1195",
       "weight": 1.0
     },
     {
@@ -7123,7 +7256,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1282",
+      "source_location": "L1298",
       "weight": 1.0
     },
     {
@@ -7135,7 +7268,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1285",
+      "source_location": "L1301",
       "weight": 1.0
     },
     {
@@ -7147,7 +7280,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L995",
+      "source_location": "L1011",
       "weight": 1.0
     },
     {
@@ -7159,7 +7292,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1256",
+      "source_location": "L1272",
       "weight": 1.0
     },
     {
@@ -7171,7 +7304,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1251",
+      "source_location": "L1267",
       "weight": 1.0
     },
     {
@@ -7195,7 +7328,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1124",
+      "source_location": "L1140",
       "weight": 1.0
     },
     {
@@ -7207,7 +7340,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L798",
+      "source_location": "L814",
       "weight": 1.0
     },
     {
@@ -7219,7 +7352,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L801",
+      "source_location": "L817",
       "weight": 1.0
     },
     {
@@ -7231,7 +7364,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L808",
+      "source_location": "L824",
       "weight": 1.0
     },
     {
@@ -7243,7 +7376,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L820",
+      "source_location": "L836",
       "weight": 1.0
     },
     {
@@ -7255,7 +7388,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L853",
+      "source_location": "L869",
       "weight": 1.0
     },
     {
@@ -7267,7 +7400,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L860",
+      "source_location": "L876",
+      "weight": 1.0
+    },
+    {
+      "source": "app_main_get_openclaw_approval_decision",
+      "target": "app_task_spec_taskspecification_model_validate_json",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "app/main.py",
+      "source_location": "L880",
       "weight": 1.0
     },
     {
@@ -7279,7 +7424,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L865",
+      "source_location": "L881",
       "weight": 1.0
     },
     {
@@ -7291,7 +7436,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L866",
+      "source_location": "L882",
       "weight": 1.0
     },
     {
@@ -7315,7 +7460,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1188",
+      "source_location": "L1204",
       "weight": 1.0
     },
     {
@@ -7327,7 +7472,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1188",
+      "source_location": "L1204",
       "weight": 1.0
     },
     {
@@ -7387,7 +7532,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L780",
+      "source_location": "L796",
       "weight": 1.0
     },
     {
@@ -7411,7 +7556,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1152",
+      "source_location": "L1168",
       "weight": 1.0
     },
     {
@@ -7603,7 +7748,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1239",
+      "source_location": "L1255",
       "weight": 1.0
     },
     {
@@ -7615,7 +7760,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1240",
+      "source_location": "L1256",
       "weight": 1.0
     },
     {
@@ -7663,7 +7808,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1096",
+      "source_location": "L1112",
       "weight": 1.0
     },
     {
@@ -7675,7 +7820,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1262",
+      "source_location": "L1278",
       "weight": 1.0
     },
     {
@@ -7687,7 +7832,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1266",
+      "source_location": "L1282",
       "weight": 1.0
     },
     {
@@ -7699,7 +7844,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1268",
+      "source_location": "L1284",
       "weight": 1.0
     },
     {
@@ -7735,7 +7880,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1017",
+      "source_location": "L1033",
       "weight": 1.0
     },
     {
@@ -7747,7 +7892,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1023",
+      "source_location": "L1039",
+      "weight": 1.0
+    },
+    {
+      "source": "app_main_task_binding_is_valid",
+      "target": "app_task_spec_taskspecification_model_validate_json",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "app/main.py",
+      "source_location": "L634",
       "weight": 1.0
     },
     {
@@ -7783,7 +7940,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L884",
+      "source_location": "L900",
       "weight": 1.0
     },
     {
@@ -7795,7 +7952,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L894",
+      "source_location": "L910",
       "weight": 1.0
     },
     {
@@ -7807,7 +7964,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1197",
+      "source_location": "L1213",
       "weight": 1.0
     },
     {
@@ -7819,7 +7976,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1210",
+      "source_location": "L1226",
       "weight": 1.0
     },
     {
@@ -7831,7 +7988,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/main.py",
-      "source_location": "L1230",
+      "source_location": "L1246",
       "weight": 1.0
     },
     {
@@ -8336,6 +8493,18 @@
       "context": "call",
       "source_file": "app/service.py",
       "source_location": "L86",
+      "weight": 1.0
+    },
+    {
+      "source": "app_task_spec_taskspecification_model_validate_json",
+      "target": "app_task_spec_taskspecification_model_validate",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "app/task_spec.py",
+      "source_location": "L98",
       "weight": 1.0
     },
     {
@@ -9739,7 +9908,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L426",
+      "source_location": "L509",
       "weight": 1.0
     },
     {
@@ -9751,7 +9920,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L464",
+      "source_location": "L547",
       "weight": 1.0
     },
     {
@@ -9799,7 +9968,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L320",
+      "source_location": "L403",
       "weight": 1.0
     },
     {
@@ -9839,6 +10008,18 @@
       "weight": 1.0
     },
     {
+      "source": "tests_test_openclaw_task_compat_openclawtaskcompatibilitytests_test_core_and_watchtower_normalize_url_inputs_identically",
+      "target": "app_task_spec_taskspecification_model_validate",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "tests/test_openclaw_task_compat.py",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
       "source": "tests_test_openclaw_task_compat_openclawtaskcompatibilitytests_test_invalid_shared_vectors_are_rejected_by_both_implementations",
       "target": "tests_openclaw_core_reference_parse_task_spec",
       "relation": "calls",
@@ -9851,6 +10032,18 @@
       "weight": 1.0
     },
     {
+      "source": "tests_test_openclaw_task_compat_openclawtaskcompatibilitytests_test_invalid_shared_vectors_are_rejected_by_both_implementations",
+      "target": "app_task_spec_taskspecification_model_validate",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "tests/test_openclaw_task_compat.py",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
       "source": "tests_test_openclaw_task_compat_openclawtaskcompatibilitytests_test_valid_shared_vectors_match_both_implementations_and_fixed_digests",
       "target": "tests_openclaw_core_reference_parse_task_spec",
       "relation": "calls",
@@ -9860,6 +10053,18 @@
       "context": "call",
       "source_file": "tests/test_openclaw_task_compat.py",
       "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_openclaw_task_compat_openclawtaskcompatibilitytests_test_valid_shared_vectors_match_both_implementations_and_fixed_digests",
+      "target": "app_task_spec_taskspecification_model_validate",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "tests/test_openclaw_task_compat.py",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -11143,7 +11348,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/main.py",
-      "source_location": "L897",
+      "source_location": "L913",
       "weight": 1.0
     },
     {
@@ -11155,7 +11360,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/main.py",
-      "source_location": "L1129",
+      "source_location": "L1145",
       "weight": 1.0
     },
     {
@@ -11179,7 +11384,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/main.py",
-      "source_location": "L664",
+      "source_location": "L680",
       "weight": 1.0
     },
     {
@@ -11191,7 +11396,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/main.py",
-      "source_location": "L1157",
+      "source_location": "L1173",
       "weight": 1.0
     },
     {
@@ -11227,7 +11432,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/main.py",
-      "source_location": "L1278",
+      "source_location": "L1294",
       "weight": 1.0
     },
     {
@@ -11239,7 +11444,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/main.py",
-      "source_location": "L948",
+      "source_location": "L964",
       "weight": 1.0
     },
     {
@@ -11251,7 +11456,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/main.py",
-      "source_location": "L1254",
+      "source_location": "L1270",
       "weight": 1.0
     },
     {
@@ -11263,7 +11468,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/main.py",
-      "source_location": "L1249",
+      "source_location": "L1265",
       "weight": 1.0
     },
     {
@@ -11299,7 +11504,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/main.py",
-      "source_location": "L1116",
+      "source_location": "L1132",
       "weight": 1.0
     },
     {
@@ -11311,7 +11516,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/main.py",
-      "source_location": "L790",
+      "source_location": "L806",
       "weight": 1.0
     },
     {
@@ -11323,7 +11528,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/main.py",
-      "source_location": "L813",
+      "source_location": "L829",
       "weight": 1.0
     },
     {
@@ -11347,7 +11552,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/main.py",
-      "source_location": "L1184",
+      "source_location": "L1200",
       "weight": 1.0
     },
     {
@@ -11383,7 +11588,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/main.py",
-      "source_location": "L733",
+      "source_location": "L749",
       "weight": 1.0
     },
     {
@@ -11407,7 +11612,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/main.py",
-      "source_location": "L1147",
+      "source_location": "L1163",
       "weight": 1.0
     },
     {
@@ -11515,7 +11720,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/main.py",
-      "source_location": "L999",
+      "source_location": "L1015",
       "weight": 1.0
     },
     {
@@ -11563,7 +11768,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/main.py",
-      "source_location": "L1235",
+      "source_location": "L1251",
       "weight": 1.0
     },
     {
@@ -11611,7 +11816,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/main.py",
-      "source_location": "L1004",
+      "source_location": "L1020",
       "weight": 1.0
     },
     {
@@ -11623,7 +11828,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/main.py",
-      "source_location": "L882",
+      "source_location": "L898",
       "weight": 1.0
     },
     {
@@ -11659,7 +11864,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/main.py",
-      "source_location": "L1193",
+      "source_location": "L1209",
       "weight": 1.0
     },
     {
@@ -11712,7 +11917,7 @@
     },
     {
       "source": "app_schemas_passwordchange_passwords_match",
-      "target": "model_validator",
+      "target": "app_schemas_py_model_validator",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -11724,7 +11929,7 @@
     },
     {
       "source": "app_schemas_passwordreset_passwords_match",
-      "target": "model_validator",
+      "target": "app_schemas_py_model_validator",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -11748,7 +11953,7 @@
     },
     {
       "source": "app_schemas_usercreate_passwords_match",
-      "target": "model_validator",
+      "target": "app_schemas_py_model_validator",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -11819,7 +12024,19 @@
       "weight": 1.0
     },
     {
-      "source": "app_task_spec_taskspecification_normalize_public_url",
+      "source": "app_task_spec_businessactiontask_bounded_parameters",
+      "target": "app_task_spec_py_model_validator",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "decorator",
+      "source_file": "app/task_spec.py",
+      "source_location": "L71",
+      "weight": 1.0
+    },
+    {
+      "source": "app_task_spec_businessactiontask_nonblank",
       "target": "app_task_spec_py_field_validator",
       "relation": "references",
       "_origin": "ast",
@@ -11827,11 +12044,11 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/task_spec.py",
-      "source_location": "L30",
+      "source_location": "L64",
       "weight": 1.0
     },
     {
-      "source": "app_task_spec_taskspecification_supported_task",
+      "source": "app_task_spec_publicwebsiteinspectiontask_normalize_public_url",
       "target": "app_task_spec_py_field_validator",
       "relation": "references",
       "_origin": "ast",
@@ -11839,11 +12056,11 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "app/task_spec.py",
-      "source_location": "L23",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
-      "source": "app_task_spec_taskspecification_supported_version",
+      "source": "app_task_spec_taskbase_supported_version",
       "target": "app_task_spec_py_field_validator",
       "relation": "references",
       "_origin": "ast",
@@ -12380,6 +12597,18 @@
       "context": "import",
       "source_file": "app/main.py",
       "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "app_main",
+      "target": "app_task_spec_businessactiontask",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "app/main.py",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -13235,18 +13464,6 @@
       "weight": 1.0
     },
     {
-      "source": "app_schemas",
-      "target": "app_task_spec_taskspecification",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "app/schemas.py",
-      "source_location": "L4",
-      "weight": 1.0
-    },
-    {
       "source": "app_service",
       "target": "logging",
       "relation": "imports",
@@ -13656,6 +13873,18 @@
     },
     {
       "source": "tests_test_notifications_center",
+      "target": "tempfile",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_notifications_center",
       "target": "app_notifications_service_create_notification",
       "relation": "imports",
       "_origin": "ast",
@@ -13663,7 +13892,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L425",
+      "source_location": "L508",
       "weight": 1.0
     },
     {
@@ -13675,19 +13904,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L455",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_notifications_center",
-      "target": "tempfile",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "tests/test_notifications_center.py",
-      "source_location": "L5",
+      "source_location": "L538",
       "weight": 1.0
     },
     {
@@ -15504,7 +15721,7 @@
     },
     {
       "source": "app_task_spec",
-      "target": "urllib_parse",
+      "target": "typing",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -15516,6 +15733,18 @@
     },
     {
       "source": "app_task_spec",
+      "target": "urllib_parse",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "app/task_spec.py",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "app_task_spec",
       "target": "pydantic",
       "relation": "imports_from",
       "_origin": "ast",
@@ -15523,7 +15752,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "app/task_spec.py",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -16711,7 +16940,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L949",
+      "source_location": "L965",
       "weight": 1.0
     },
     {
@@ -16735,7 +16964,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L791",
+      "source_location": "L807",
       "weight": 1.0
     },
     {
@@ -16771,7 +17000,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L734",
+      "source_location": "L750",
       "weight": 1.0
     },
     {
@@ -17016,14 +17245,14 @@
     },
     {
       "source": "app_task_spec_canonical_task_json",
-      "target": "app_task_spec_taskspecification",
+      "target": "app_task_spec_taskbase",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "app/task_spec.py",
-      "source_location": "L70",
+      "source_location": "L103",
       "weight": 1.0
     },
     {
@@ -17704,7 +17933,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L1000",
+      "source_location": "L1016",
       "weight": 1.0
     },
     {
@@ -17715,7 +17944,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L1005",
+      "source_location": "L1021",
       "weight": 1.0
     },
     {
@@ -17726,7 +17955,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L1090",
+      "source_location": "L1106",
       "weight": 1.0
     },
     {
@@ -17737,7 +17966,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L1102",
+      "source_location": "L1118",
       "weight": 1.0
     },
     {
@@ -17748,7 +17977,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L1109",
+      "source_location": "L1125",
       "weight": 1.0
     },
     {
@@ -17759,7 +17988,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L1117",
+      "source_location": "L1133",
       "weight": 1.0
     },
     {
@@ -17770,7 +17999,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L1130",
+      "source_location": "L1146",
       "weight": 1.0
     },
     {
@@ -17781,7 +18010,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L1148",
+      "source_location": "L1164",
       "weight": 1.0
     },
     {
@@ -17792,18 +18021,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L1158",
-      "weight": 1.0
-    },
-    {
-      "source": "app_main",
-      "target": "app_main_get_user",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "app/main.py",
-      "source_location": "L1185",
+      "source_location": "L1174",
       "weight": 1.0
     },
     {
@@ -17819,24 +18037,24 @@
     },
     {
       "source": "app_main",
+      "target": "app_main_get_user",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/main.py",
+      "source_location": "L1201",
+      "weight": 1.0
+    },
+    {
+      "source": "app_main",
       "target": "app_main_update_user",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L1194",
-      "weight": 1.0
-    },
-    {
-      "source": "app_main",
-      "target": "app_main_reset_user_password",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "app/main.py",
-      "source_location": "L1236",
+      "source_location": "L1210",
       "weight": 1.0
     },
     {
@@ -17852,13 +18070,24 @@
     },
     {
       "source": "app_main",
+      "target": "app_main_reset_user_password",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/main.py",
+      "source_location": "L1252",
+      "weight": 1.0
+    },
+    {
+      "source": "app_main",
       "target": "app_main_enable_user",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L1250",
+      "source_location": "L1266",
       "weight": 1.0
     },
     {
@@ -17869,7 +18098,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L1255",
+      "source_location": "L1271",
       "weight": 1.0
     },
     {
@@ -17880,7 +18109,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L1259",
+      "source_location": "L1275",
       "weight": 1.0
     },
     {
@@ -17891,7 +18120,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L1279",
+      "source_location": "L1295",
       "weight": 1.0
     },
     {
@@ -18342,7 +18571,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L665",
+      "source_location": "L681",
       "weight": 1.0
     },
     {
@@ -18353,7 +18582,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L734",
+      "source_location": "L750",
       "weight": 1.0
     },
     {
@@ -18364,7 +18593,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L791",
+      "source_location": "L807",
       "weight": 1.0
     },
     {
@@ -18375,7 +18604,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L814",
+      "source_location": "L830",
       "weight": 1.0
     },
     {
@@ -18397,7 +18626,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L883",
+      "source_location": "L899",
       "weight": 1.0
     },
     {
@@ -18408,7 +18637,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L898",
+      "source_location": "L914",
       "weight": 1.0
     },
     {
@@ -18430,7 +18659,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L944",
+      "source_location": "L960",
       "weight": 1.0
     },
     {
@@ -18441,7 +18670,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L949",
+      "source_location": "L965",
       "weight": 1.0
     },
     {
@@ -18952,24 +19181,13 @@
     },
     {
       "source": "app_task_spec",
-      "target": "app_task_spec_taskspecification",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "app/task_spec.py",
-      "source_location": "L10",
-      "weight": 1.0
-    },
-    {
-      "source": "app_task_spec",
       "target": "app_task_spec_canonical_task_json",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/task_spec.py",
-      "source_location": "L70",
+      "source_location": "L103",
       "weight": 1.0
     },
     {
@@ -18980,7 +19198,51 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/task_spec.py",
-      "source_location": "L81",
+      "source_location": "L109",
+      "weight": 1.0
+    },
+    {
+      "source": "app_task_spec",
+      "target": "app_task_spec_taskbase",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/task_spec.py",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "app_task_spec",
+      "target": "app_task_spec_publicwebsiteinspectiontask",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/task_spec.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "app_task_spec",
+      "target": "app_task_spec_businessactiontask",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/task_spec.py",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "app_task_spec",
+      "target": "app_task_spec_taskspecification",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/task_spec.py",
+      "source_location": "L82",
       "weight": 1.0
     },
     {
@@ -19057,7 +19319,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/openclaw-approval-contract.md",
-      "source_location": "L103",
+      "source_location": "L122",
       "weight": 1.0
     },
     {
@@ -19068,7 +19330,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/openclaw-approval-contract.md",
-      "source_location": "L112",
+      "source_location": "L131",
       "weight": 1.0
     },
     {
@@ -19101,7 +19363,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/openclaw-approval-contract.md",
-      "source_location": "L66",
+      "source_location": "L81",
       "weight": 1.0
     },
     {
@@ -19838,7 +20100,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L944",
+      "source_location": "L960",
       "weight": 1.0
     },
     {
@@ -20084,14 +20346,36 @@
       "weight": 1.0
     },
     {
-      "source": "app_task_spec_taskspecification",
+      "source": "app_task_spec_businessactiontask",
+      "target": "app_task_spec_taskbase",
+      "relation": "inherits",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/task_spec.py",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "app_task_spec_publicwebsiteinspectiontask",
+      "target": "app_task_spec_taskbase",
+      "relation": "inherits",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/task_spec.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "app_task_spec_taskbase",
       "target": "app_task_spec_py_basemodel",
       "relation": "inherits",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/task_spec.py",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -20326,8 +20610,41 @@
       "weight": 1.0
     },
     {
-      "source": "app_task_spec_taskspecification",
-      "target": "app_task_spec_taskspecification_supported_version",
+      "source": "app_task_spec_businessactiontask",
+      "target": "app_task_spec_businessactiontask_nonblank",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/task_spec.py",
+      "source_location": "L66",
+      "weight": 1.0
+    },
+    {
+      "source": "app_task_spec_businessactiontask",
+      "target": "app_task_spec_businessactiontask_bounded_parameters",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/task_spec.py",
+      "source_location": "L72",
+      "weight": 1.0
+    },
+    {
+      "source": "app_task_spec_publicwebsiteinspectiontask",
+      "target": "app_task_spec_publicwebsiteinspectiontask_normalize_public_url",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/task_spec.py",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "app_task_spec_taskbase",
+      "target": "app_task_spec_taskbase_supported_version",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20338,24 +20655,24 @@
     },
     {
       "source": "app_task_spec_taskspecification",
-      "target": "app_task_spec_taskspecification_supported_task",
+      "target": "app_task_spec_taskspecification_model_validate",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/task_spec.py",
-      "source_location": "L25",
+      "source_location": "L85",
       "weight": 1.0
     },
     {
       "source": "app_task_spec_taskspecification",
-      "target": "app_task_spec_taskspecification_normalize_public_url",
+      "target": "app_task_spec_taskspecification_model_validate_json",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/task_spec.py",
-      "source_location": "L32",
+      "source_location": "L96",
       "weight": 1.0
     },
     {
@@ -20624,7 +20941,7 @@
     },
     {
       "source": "tests_test_notifications_center_notificationcentertests",
-      "target": "tests_test_notifications_center_notificationcentertests_test_task_bound_creation_rejects_unsupported_or_unsafe_specs_and_client_decisions",
+      "target": "tests_test_notifications_center_notificationcentertests_test_business_action_is_exactly_bound_and_human_decidable",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20635,13 +20952,46 @@
     },
     {
       "source": "tests_test_notifications_center_notificationcentertests",
+      "target": "tests_test_notifications_center_notificationcentertests_test_business_action_rejects_malformed_specifications",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L299",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_notifications_center_notificationcentertests",
+      "target": "tests_test_notifications_center_notificationcentertests_test_openapi_describes_both_task_specification_variants",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L314",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_notifications_center_notificationcentertests",
+      "target": "tests_test_notifications_center_notificationcentertests_test_task_bound_creation_rejects_unsupported_or_unsafe_specs_and_client_decisions",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L322",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_notifications_center_notificationcentertests",
       "target": "tests_test_notifications_center_notificationcentertests_test_task_binding_corruption_fails_closed",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L257",
+      "source_location": "L340",
       "weight": 1.0
     },
     {
@@ -20652,7 +21002,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L272",
+      "source_location": "L355",
       "weight": 1.0
     },
     {
@@ -20663,7 +21013,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L289",
+      "source_location": "L372",
       "weight": 1.0
     },
     {
@@ -20674,7 +21024,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L300",
+      "source_location": "L383",
       "weight": 1.0
     },
     {
@@ -20685,51 +21035,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L366",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_notifications_center_notificationcentertests",
-      "target": "tests_test_notifications_center_notificationcentertests_test_expired_approval_cannot_be_retrieved_or_approved",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_notifications_center.py",
-      "source_location": "L398",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_notifications_center_notificationcentertests",
-      "target": "tests_test_notifications_center_notificationcentertests_test_legacy_approval_without_binding_metadata_is_not_authorized",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_notifications_center.py",
-      "source_location": "L424",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_notifications_center_notificationcentertests",
-      "target": "tests_test_notifications_center_notificationcentertests_test_approval_expiration_must_be_future_and_non_approval_cannot_set_expiry",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_notifications_center.py",
-      "source_location": "L438",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_notifications_center_notificationcentertests",
-      "target": "tests_test_notifications_center_notificationcentertests_test_migration_adds_nullable_approval_fields_without_backfilling_legacy_rows",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_notifications_center.py",
-      "source_location": "L454",
+      "source_location": "L449",
       "weight": 1.0
     },
     {
@@ -20745,13 +21051,46 @@
     },
     {
       "source": "tests_test_notifications_center_notificationcentertests",
-      "target": "tests_test_notifications_center_notificationcentertests_test_openclaw_approval_request_can_be_denied_with_reason",
+      "target": "tests_test_notifications_center_notificationcentertests_test_expired_approval_cannot_be_retrieved_or_approved",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_notifications_center.py",
-      "source_location": "L474",
+      "source_location": "L481",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_notifications_center_notificationcentertests",
+      "target": "tests_test_notifications_center_notificationcentertests_test_legacy_approval_without_binding_metadata_is_not_authorized",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L507",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_notifications_center_notificationcentertests",
+      "target": "tests_test_notifications_center_notificationcentertests_test_approval_expiration_must_be_future_and_non_approval_cannot_set_expiry",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L521",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_notifications_center_notificationcentertests",
+      "target": "tests_test_notifications_center_notificationcentertests_test_migration_adds_nullable_approval_fields_without_backfilling_legacy_rows",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L537",
       "weight": 1.0
     },
     {
@@ -20763,6 +21102,17 @@
       "confidence_score": 1.0,
       "source_file": "tests/test_notifications_center.py",
       "source_location": "L54",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_notifications_center_notificationcentertests",
+      "target": "tests_test_notifications_center_notificationcentertests_test_openclaw_approval_request_can_be_denied_with_reason",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L557",
       "weight": 1.0
     },
     {
@@ -21723,14 +22073,14 @@
       "weight": 1.0
     },
     {
-      "source": "app_main_rationale_819",
+      "source": "app_main_rationale_835",
       "target": "app_main_get_openclaw_approval_decision",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/main.py",
-      "source_location": "L819",
+      "source_location": "L835",
       "weight": 1.0
     },
     {
@@ -21833,14 +22183,25 @@
       "weight": 1.0
     },
     {
-      "source": "app_task_spec_rationale_71",
+      "source": "app_task_spec_rationale_104",
       "target": "app_task_spec_canonical_task_json",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/task_spec.py",
-      "source_location": "L71",
+      "source_location": "L104",
+      "weight": 1.0
+    },
+    {
+      "source": "app_task_spec_rationale_83",
+      "target": "app_task_spec_taskspecification",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/task_spec.py",
+      "source_location": "L83",
       "weight": 1.0
     },
     {
@@ -22004,7 +22365,7 @@
       "confidence_score": 0.95,
       "context": "canonical_json",
       "source_file": "docs/openclaw-approval-contract.md",
-      "source_location": "L118",
+      "source_location": "L137",
       "weight": 1.0
     },
     {
@@ -22028,7 +22389,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L898",
+      "source_location": "L914",
       "weight": 0.8
     },
     {
@@ -22040,7 +22401,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L1130",
+      "source_location": "L1146",
       "weight": 0.8
     },
     {
@@ -22052,7 +22413,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L1130",
+      "source_location": "L1146",
       "weight": 0.8
     },
     {
@@ -22064,7 +22425,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L665",
+      "source_location": "L681",
       "weight": 0.8
     },
     {
@@ -22076,7 +22437,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L1158",
+      "source_location": "L1174",
       "weight": 0.8
     },
     {
@@ -22088,7 +22449,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L1158",
+      "source_location": "L1174",
       "weight": 0.8
     },
     {
@@ -22100,7 +22461,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L1279",
+      "source_location": "L1295",
       "weight": 0.8
     },
     {
@@ -22112,7 +22473,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L952",
+      "source_location": "L968",
       "weight": 0.8
     },
     {
@@ -22124,7 +22485,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L1255",
+      "source_location": "L1271",
       "weight": 0.8
     },
     {
@@ -22136,7 +22497,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L1250",
+      "source_location": "L1266",
       "weight": 0.8
     },
     {
@@ -22148,7 +22509,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L1109",
+      "source_location": "L1125",
       "weight": 0.8
     },
     {
@@ -22160,7 +22521,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L1117",
+      "source_location": "L1133",
       "weight": 0.8
     },
     {
@@ -22172,7 +22533,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L735",
+      "source_location": "L751",
       "weight": 0.8
     },
     {
@@ -22184,7 +22545,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L1236",
+      "source_location": "L1252",
       "weight": 0.8
     },
     {
@@ -22196,7 +22557,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L1236",
+      "source_location": "L1252",
       "weight": 0.8
     },
     {
@@ -22232,7 +22593,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L1090",
+      "source_location": "L1106",
       "weight": 0.8
     },
     {
@@ -22244,7 +22605,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L1259",
+      "source_location": "L1275",
       "weight": 0.8
     },
     {
@@ -22260,18 +22621,6 @@
       "weight": 0.8
     },
     {
-      "source": "app_main_task_notification_copy",
-      "target": "app_task_spec_taskspecification",
-      "relation": "uses",
-      "_origin": "ast",
-      "confidence": "INFERRED",
-      "confidence_score": 0.95,
-      "context": "parameter_type",
-      "source_file": "app/main.py",
-      "source_location": "L649",
-      "weight": 0.8
-    },
-    {
       "source": "app_main_test_notification",
       "target": "app_auth_principal",
       "relation": "uses",
@@ -22280,7 +22629,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L883",
+      "source_location": "L899",
       "weight": 0.8
     },
     {
@@ -22292,7 +22641,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L1194",
+      "source_location": "L1210",
       "weight": 0.8
     },
     {
@@ -22304,7 +22653,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "app/main.py",
-      "source_location": "L1194",
+      "source_location": "L1210",
       "weight": 0.8
     },
     {
@@ -22352,7 +22701,7 @@
       "confidence_score": 0.95,
       "context": "return_type",
       "source_file": "app/main.py",
-      "source_location": "L1102",
+      "source_location": "L1118",
       "weight": 0.8
     },
     {
@@ -22376,7 +22725,7 @@
       "confidence_score": 0.95,
       "context": "verify_approval",
       "source_file": "docs/openclaw-approval-contract.md",
-      "source_location": "L99",
+      "source_location": "L118",
       "weight": 1.0
     },
     {
@@ -22388,7 +22737,7 @@
       "confidence_score": 0.95,
       "context": "verify_approval",
       "source_file": "docs/openclaw-approval-contract.md",
-      "source_location": "L118",
+      "source_location": "L137",
       "weight": 1.0
     },
     {
@@ -22410,7 +22759,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "app/main.py",
-      "source_location": "L903",
+      "source_location": "L919",
       "weight": 0.8
     },
     {
@@ -22432,7 +22781,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "app/main.py",
-      "source_location": "L1133",
+      "source_location": "L1149",
       "weight": 0.8
     },
     {
@@ -22443,7 +22792,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "app/main.py",
-      "source_location": "L1161",
+      "source_location": "L1177",
       "weight": 0.8
     },
     {
@@ -22454,7 +22803,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "app/main.py",
-      "source_location": "L963",
+      "source_location": "L979",
       "weight": 0.8
     },
     {
@@ -22487,7 +22836,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "app/main.py",
-      "source_location": "L1120",
+      "source_location": "L1136",
       "weight": 0.8
     },
     {
@@ -22498,7 +22847,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "app/main.py",
-      "source_location": "L805",
+      "source_location": "L821",
       "weight": 0.8
     },
     {
@@ -22509,7 +22858,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "app/main.py",
-      "source_location": "L830",
+      "source_location": "L846",
       "weight": 0.8
     },
     {
@@ -22520,7 +22869,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "app/main.py",
-      "source_location": "L864",
+      "source_location": "L880",
       "weight": 0.8
     },
     {
@@ -22542,7 +22891,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "app/main.py",
-      "source_location": "L746",
+      "source_location": "L762",
       "weight": 0.8
     },
     {
@@ -22564,7 +22913,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "app/main.py",
-      "source_location": "L1151",
+      "source_location": "L1167",
       "weight": 0.8
     },
     {
@@ -22597,7 +22946,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "app/main.py",
-      "source_location": "L1008",
+      "source_location": "L1024",
       "weight": 0.8
     },
     {
@@ -22608,7 +22957,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "app/main.py",
-      "source_location": "L1010",
+      "source_location": "L1026",
       "weight": 0.8
     },
     {
@@ -22623,6 +22972,17 @@
       "weight": 0.8
     },
     {
+      "source": "app_main_task_notification_copy",
+      "target": "app_task_spec_businessactiontask",
+      "relation": "uses",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "app/main.py",
+      "source_location": "L651",
+      "weight": 0.8
+    },
+    {
       "source": "app_main_update_user",
       "target": "app_models_user",
       "relation": "uses",
@@ -22630,7 +22990,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "app/main.py",
-      "source_location": "L1204",
+      "source_location": "L1220",
       "weight": 0.8
     },
     {
@@ -22708,17 +23068,6 @@
       "confidence_score": 0.95,
       "source_file": "app/providers/ubuntu.py",
       "source_location": "L9",
-      "weight": 0.8
-    },
-    {
-      "source": "app_schemas_notificationcreate",
-      "target": "app_task_spec_taskspecification",
-      "relation": "uses",
-      "_origin": "ast",
-      "confidence": "INFERRED",
-      "confidence_score": 0.95,
-      "source_file": "app/schemas.py",
-      "source_location": "L141",
       "weight": 0.8
     },
     {
@@ -23386,5 +23735,5 @@
       "source_file": ".codex/skills/graphify/SKILL.md"
     }
   ],
-  "built_at_commit": "f6f04096f459bd31d95eb424af777e6a6e9c50b1"
+  "built_at_commit": "69ad3ba32048540665eb487ea37b3ef5cf4318d1"
 }

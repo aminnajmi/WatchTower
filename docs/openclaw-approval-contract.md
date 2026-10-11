@@ -63,13 +63,32 @@ ASCII, lose a trailing dot, must be fully qualified and label-valid, and cannot
 be IP literals. The path is preserved, or becomes `/` when empty. DNS answers,
 redirects, and egress safety remain the executor's responsibility.
 
+Generic business automation uses this exact shape:
+
+```json
+{"version":1,"task_type":"business_action","system":"operavps","action":"reply_to_ticket","target":"ticket-12345","parameters":{"reply_text":"Dear Customer, your server is now accessible."}}
+```
+
+Business actions require non-empty `system`, `action`, and `target` strings and
+a JSON object for `parameters`. Unknown fields and unsupported task types or
+versions are rejected. WatchTower stores the complete specification as
+canonical JSON, binds its SHA-256 digest to both `action_id` and the creating
+OpenClaw key, and returns the original object through the authenticated
+approval endpoint. A changed target, action, or parameter changes the digest.
+Notifications show the target, exact `reply_text` when present, and other
+change parameters. Agent-authored notification prose and metadata stay hidden.
+
 ## Canonical JSON and digest
 
 Canonicalization matches `TaskSpec.canonical_json()` in the supplied execution
-core: serialize the three-field object with ASCII escapes enabled, keys sorted
+core: serialize the complete task object with ASCII escapes enabled, keys sorted
 lexicographically, compact `,` and `:` separators, and no extra fields; encode
 that string as UTF-8 and calculate lowercase hexadecimal SHA-256. The normalized
-URL and all task fields stored by WatchTower are the bytes covered by the hash.
+URL or exact business action and all task fields stored by WatchTower are the
+bytes covered by the hash.
+
+The generated OpenAPI document exposes `task_spec` as a discriminated union of
+the website inspection and business action schemas.
 
 Python reference:
 

@@ -236,6 +236,89 @@ class NotificationCenterTests(unittest.TestCase):
         )
         self.assertIsNotNone(expiry.tzinfo)
 
+    def test_business_action_is_exactly_bound_and_human_decidable(self):
+        headers = {"Authorization": "Bearer openclaw-test-key"}
+        specification = {
+            "version": 1, "task_type": "business_action", "system": "operavps",
+            "action": "reply_to_ticket", "target": "ticket-12345",
+            "parameters": {"reply_text": "Dear Customer, your server is now accessible."},
+        }
+        created = self.client.post("/api/v1/notifications", headers=headers, json={
+            "source": "openclaw", "title": "Agent supplied title", "message": "Agent supplied message",
+            "requires_approval": True, "task_spec": specification,
+        })
+        self.assertEqual(created.status_code, 201, created.text)
+        item = created.json()
+        canonical = json.dumps(specification, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
+        digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+        self.assertEqual(item["task_spec"], specification)
+        self.assertEqual(item["task_specification"], specification)
+        self.assertEqual(item["task_spec_sha256"], digest)
+        self.assertEqual(item["action_id"], digest)
+        self.assertIn("ticket-12345", item["message"])
+        self.assertIn(specification["parameters"]["reply_text"], item["message"])
+        self.assertNotIn("sha256", item["message"])
+
+        approval_path = f"/api/v1/notifications/{item['id']}/approval?action_id={digest}"
+        self.assertEqual(self.client.get(approval_path, headers=headers).json()["task_specification"], specification)
+        self.assertEqual(self.client.post(f"/api/v1/notifications/{item['id']}/approve", headers=self.user_headers).status_code, 200)
+        decision = self.client.get(approval_path, headers=headers)
+        self.assertEqual(decision.status_code, 200, decision.text)
+        self.assertEqual(decision.json()["approval_status"], "approved")
+        self.assertEqual(decision.json()["task_spec_sha256"], digest)
+        self.assertEqual(self.client.get(f"/api/v1/notifications/{item['id']}/approval?action_id={'0' * 64}", headers=headers).status_code, 404)
+
+        variants = [
+            {**specification, "parameters": {"reply_text": "Different reply."}},
+            {**specification, "target": "ticket-54321"},
+            {**specification, "action": "close_ticket"},
+        ]
+        for variant in variants:
+            variant_canonical = json.dumps(variant, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
+            self.assertNotEqual(hashlib.sha256(variant_canonical.encode()).hexdigest(), digest)
+            altered = self.client.post("/api/v1/notifications", headers=headers, json={
+                "source": "openclaw", "title": "Action", "message": "Review", "requires_approval": True,
+                "task_spec": specification,
+            }).json()
+            with self.sessions.begin() as db:
+                row = db.get(models.Notification, altered["id"])
+                changed = json.loads(row.task_specification)
+                changed.update(variant)
+                row.task_specification = json.dumps(changed, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
+            rejected = self.client.get(f"/api/v1/notifications/{altered['id']}/approval", headers=headers)
+            self.assertEqual(rejected.status_code, 409)
+
+        denied = self.client.post("/api/v1/notifications", headers=headers, json={
+            "source": "openclaw", "title": "Approve", "message": "Review", "requires_approval": True,
+            "task_spec": {**specification, "target": "ticket-denied"},
+        }).json()
+        result = self.client.post(f"/api/v1/notifications/{denied['id']}/deny", headers=self.user_headers, json={"reason": "No"})
+        self.assertEqual(result.status_code, 200, result.text)
+        self.assertEqual(result.json()["approval_status"], "denied")
+
+    def test_business_action_rejects_malformed_specifications(self):
+        headers = {"Authorization": "Bearer openclaw-test-key"}
+        base = {"source": "openclaw", "title": "Action", "message": "Review", "requires_approval": True}
+        valid = {"version": 1, "task_type": "business_action", "system": "operavps", "action": "reply_to_ticket",
+                 "target": "ticket-12345", "parameters": {"reply_text": "Hello"}}
+        invalid = [
+            {**valid, "version": 2}, {**valid, "system": " "}, {**valid, "action": ""},
+            {**valid, "target": ""}, {**valid, "parameters": "Hello"},
+            {key: value for key, value in valid.items() if key != "target"},
+            {**valid, "unexpected": True}, {**valid, "task_type": "unsupported"},
+        ]
+        for specification in invalid:
+            response = self.client.post("/api/v1/notifications", headers=headers, json={**base, "task_spec": specification})
+            self.assertEqual(response.status_code, 422, response.text)
+
+    def test_openapi_describes_both_task_specification_variants(self):
+        schema = main.app.openapi()
+        create_schema = schema["components"]["schemas"]["NotificationCreate"]
+        specification = create_schema["properties"]["task_spec"]["anyOf"][0]
+        self.assertEqual(specification["discriminator"]["propertyName"], "task_type")
+        refs = {item["$ref"].rsplit("/", 1)[-1] for item in specification["oneOf"]}
+        self.assertEqual(refs, {"PublicWebsiteInspectionTask", "BusinessActionTask"})
+
     def test_task_bound_creation_rejects_unsupported_or_unsafe_specs_and_client_decisions(self):
         headers = {"Authorization": "Bearer openclaw-test-key"}
         base = {"source": "openclaw", "title": "Inspect", "message": "Review", "requires_approval": True}
