@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="/static/css/app.css">
   {% block head %}{% endblock %}
 </head>
-<body data-page="{{ active|default('') }}" data-os-index="{{ os_index|default(false)|lower }}">
+<body data-page="{{ active|default('') }}" data-os-index="{{ os_index|default(false)|lower }}" data-session-expires-at="{{ session_expires_at|default('') }}">
   <div class="app-shell">
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
       <a class="brand" href="{{ '/dashboard' if is_admin else '/notification-center' }}">

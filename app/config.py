@@ -12,7 +12,7 @@ class Settings(BaseSettings):
 
     # JWT authentication for users/Swagger.
     jwt_secret: str = ""
-    access_token_expire_minutes: int = 60
+    session_timeout_hours: int = 8
     admin_username: str = "admin"
     admin_password_hash: str = ""
     admin_password_salt: str = ""

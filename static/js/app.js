@@ -7,6 +7,38 @@
     ubuntu: 'Ubuntu', almalinux: 'AlmaLinux', fedora: 'Fedora',
     rockylinux: 'Rocky Linux', debian: 'Debian', archlinux: 'Arch Linux', centos: 'CentOS Stream'
   };
+  let sessionLogoutStarted = false;
+
+  async function expireBrowserSession() {
+    if (sessionLogoutStarted) return;
+    sessionLogoutStarted = true;
+    try {
+      await fetch('/logout', { method: 'POST', credentials: 'same-origin', redirect: 'manual' });
+    } catch (error) {
+      console.warn('WatchTower could not clear the expired browser session.', error);
+    }
+    window.location.assign('/login?expired=1');
+  }
+
+  function initializeSessionExpiration() {
+    const expiresAt = Number(document.body.dataset.sessionExpiresAt) * 1000;
+    if (!Number.isFinite(expiresAt) || expiresAt <= 0) return;
+    const check = () => {
+      const remaining = expiresAt - Date.now();
+      if (remaining <= 0) {
+        expireBrowserSession();
+        return;
+      }
+      window.setTimeout(check, Math.min(remaining, 2147483647));
+    };
+    check();
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && Date.now() >= expiresAt) expireBrowserSession();
+    });
+    window.addEventListener('focus', () => {
+      if (Date.now() >= expiresAt) expireBrowserSession();
+    });
+  }
 
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, char => ({
@@ -17,8 +49,8 @@
   async function api(path, options = {}) {
     const response = await fetch(path, { credentials: 'same-origin', ...options });
     if (response.status === 401) {
-      window.location.assign('/login');
-      throw new Error('Your session has expired. Please sign in again.');
+      expireBrowserSession();
+      throw new Error('Your session has expired. Please log in again.');
     }
     const contentType = response.headers.get('content-type') || '';
     const body = contentType.includes('application/json') ? await response.json() : null;
@@ -981,6 +1013,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    initializeSessionExpiration();
     initializeTheme();
     initializeMobileMenu();
     initializeLogin();

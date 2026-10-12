@@ -6,6 +6,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
+import jwt
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -83,6 +84,8 @@ class WebDashboardTests(unittest.TestCase):
         self.assertIn("/api/v1/auth/token", script)
         self.assertIn("/web/session", script)
         self.assertIn("Cannot connect to WatchTower", script)
+        self.assertIn("Your session has expired. Please log in again.", script)
+        self.assertIn("initializeSessionExpiration", script)
         self.assertEqual(self.client.get("/static/js/app.js").status_code, 200)
         self.sign_in()
         cookie = self.client.cookies.get(SESSION_COOKIE_NAME)
@@ -96,7 +99,7 @@ class WebDashboardTests(unittest.TestCase):
              patch.object(settings, "admin_username", "watchtower-test-admin"), \
              patch.object(settings, "admin_password_hash", password_hash), \
              patch.object(settings, "admin_password_salt", password_salt), \
-             patch.object(settings, "access_token_expire_minutes", 60):
+             patch.object(settings, "session_timeout_hours", 1):
             rejected = self.client.post(
                 "/api/v1/auth/token",
                 data={"username": "watchtower-test-admin", "password": "wrong-password"},
@@ -120,6 +123,35 @@ class WebDashboardTests(unittest.TestCase):
             self.assertNotIn("; secure", cookie_header)
             self.assertEqual(self.client.get("/dashboard").status_code, 200)
             self.assertEqual(self.client.get("/api/v1/status").status_code, 200)
+
+    def test_default_session_lifetime_is_eight_hours_and_expired_token_is_rejected(self):
+        secret = "watchtower-test-secret-with-at-least-32-bytes"
+        with patch.object(settings, "jwt_secret", secret), patch.object(settings, "session_timeout_hours", 8):
+            token = create_access_token(settings.admin_username)
+            claims = jwt.decode(token, secret, algorithms=["HS256"])
+            self.assertEqual(claims["exp"] - claims["iat"], 8 * 60 * 60)
+            self.assertEqual(self.client.get("/api/v1/status", headers={"Authorization": f"Bearer {token}"}).status_code, 200)
+            session_response = self.client.post("/web/session", json={"access_token": token})
+            self.assertEqual(session_response.status_code, 200)
+            self.assertIn("max-age=28800", session_response.headers["set-cookie"].lower())
+            dashboard = self.client.get("/dashboard")
+            self.assertEqual(dashboard.status_code, 200)
+            self.assertIn(f'data-session-expires-at="{claims["exp"]}"', dashboard.text)
+            self.assertEqual(self.client.cookies.get(SESSION_COOKIE_NAME), token)
+            self.assertEqual(self.client.get("/api/v1/status").status_code, 200)
+            self.assertEqual(self.client.cookies.get(SESSION_COOKIE_NAME), token)
+
+            self.client.post("/logout")
+            expired_page = self.client.get("/login?expired=1")
+            self.assertIn("Your session has expired. Please log in again.", expired_page.text)
+
+            expired = jwt.encode(
+                {"sub": settings.admin_username, "iat": claims["iat"] - 9 * 60 * 60, "exp": claims["iat"] - 1},
+                secret,
+                algorithm="HS256",
+            )
+            response = self.client.get("/api/v1/status", headers={"Authorization": f"Bearer {expired}"})
+            self.assertEqual(response.status_code, 401)
 
     def test_html_form_fallback_posts_credentials_without_putting_them_in_url(self):
         password = "temporary-post-fallback-password"

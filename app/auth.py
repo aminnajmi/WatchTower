@@ -88,9 +88,20 @@ def verify_password(password: str) -> bool:
 
 
 def create_access_token(username: str) -> str:
-    expires = datetime.now(timezone.utc) + timedelta(minutes=settings.access_token_expire_minutes)
-    payload = {"sub": username, "exp": expires, "iat": datetime.now(timezone.utc)}
+    issued_at = datetime.now(timezone.utc)
+    expires = issued_at + timedelta(hours=settings.session_timeout_hours)
+    payload = {"sub": username, "exp": expires, "iat": issued_at}
     return jwt.encode(payload, settings.jwt_secret, algorithm="HS256")
+
+
+def access_token_expiration(token: str) -> int | None:
+    """Return the validated JWT expiration for the browser's logout timer."""
+    try:
+        payload = jwt.decode(token, settings.jwt_secret, algorithms=["HS256"])
+    except jwt.PyJWTError:
+        return None
+    expires = payload.get("exp")
+    return expires if isinstance(expires, int) else None
 
 
 def verify_access_token(token: str) -> str | None:

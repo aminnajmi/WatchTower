@@ -23,6 +23,7 @@ from sqlalchemy.exc import IntegrityError, OperationalError
 
 from .auth import (
     SESSION_COOKIE_NAME,
+    access_token_expiration,
     authenticate_token,
     configure_session_factory_provider,
     create_access_token,
@@ -144,7 +145,7 @@ async def login(username: str = Form(...), password: str = Form(...)):
     return {
         "access_token": create_access_token(username),
         "token_type": "bearer",
-        "expires_in": settings.access_token_expire_minutes * 60,
+        "expires_in": settings.session_timeout_hours * 3600,
         "user": {"username": principal.username, "role": principal.role},
     }
 
@@ -198,6 +199,7 @@ def _render_page(request: Request, template: str, active: str, **context):
     principal = _web_principal(request)
     if not principal:
         return RedirectResponse("/login", status_code=303)
+    token = request.cookies.get(SESSION_COOKIE_NAME)
     return templates.TemplateResponse(
         request=request,
         name=template,
@@ -206,6 +208,7 @@ def _render_page(request: Request, template: str, active: str, **context):
             "current_user": principal.username,
             "current_role": principal.role,
             "is_admin": principal.role == "admin",
+            "session_expires_at": access_token_expiration(token) if token else "",
             **context,
         },
     )
@@ -216,7 +219,10 @@ def login_page(request: Request):
     principal = _web_principal(request)
     if principal:
         return RedirectResponse("/dashboard" if principal.role == "admin" else "/notification-center", status_code=303)
-    return templates.TemplateResponse(request=request, name="login.html", context={})
+    return templates.TemplateResponse(
+        request=request, name="login.html",
+        context={"session_expired": request.query_params.get("expired") == "1"},
+    )
 
 
 @app.post("/login", response_class=HTMLResponse, include_in_schema=False)
@@ -242,7 +248,7 @@ def _set_session_cookie(response, access_token: str, request: Request) -> None:
     response.set_cookie(
         SESSION_COOKIE_NAME,
         access_token,
-        max_age=settings.access_token_expire_minutes * 60,
+        max_age=settings.session_timeout_hours * 3600,
         httponly=True,
         secure=secure_cookie,
         samesite="strict",
