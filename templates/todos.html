@@ -1,38 +1,48 @@
 {% extends "base.html" %}
-{% block title %}To-Do List · WatchTower{% endblock %}
+{% block title %}To-Dos · WatchTower{% endblock %}
 {% block content %}
-<section class="page-heading todo-heading">
-  <div><span class="eyebrow">TEAM PRODUCTIVITY</span><h1>To-Do List</h1><p class="muted">Organize, assign, and track your team's tasks.</p></div>
-  <button class="button button-primary" id="todo-new"><span aria-hidden="true">＋</span> New Task</button>
-</section>
-
-<section class="todo-summary" id="todo-summary" aria-label="Task summary">
-  <article class="todo-summary-card"><span class="todo-summary-icon todo-icon-blue" aria-hidden="true">✓</span><span class="todo-summary-label">My Pending Tasks</span><strong id="todo-stat-mine">—</strong></article>
-  <article class="todo-summary-card"><span class="todo-summary-icon todo-icon-violet" aria-hidden="true">↗</span><span class="todo-summary-label">Assigned by Me</span><strong id="todo-stat-created">—</strong></article>
-  <article class="todo-summary-card"><span class="todo-summary-icon todo-icon-green" aria-hidden="true">☑</span><span class="todo-summary-label">Completed Tasks</span><strong id="todo-stat-completed">—</strong></article>
-</section>
-
-<section class="todo-panel">
-  <div class="todo-toolbar">
-    <div class="todo-filters" role="tablist" aria-label="Filter tasks">
-      <button class="todo-filter active" data-view="all" role="tab" aria-selected="true">All Tasks <span data-count="all">—</span></button>
-      <button class="todo-filter" data-view="my" role="tab" aria-selected="false">My Tasks <span data-count="my">—</span></button>
-      <button class="todo-filter" data-view="assigned_by_me" role="tab" aria-selected="false">Assigned by Me <span data-count="assigned_by_me">—</span></button>
-      <button class="todo-filter" data-view="completed" role="tab" aria-selected="false">Completed <span data-count="completed">—</span></button>
+<section class="todo-workspace" aria-labelledby="todo-page-title">
+  <header class="todo-heading">
+    <h1 id="todo-page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="m8 12 3 3 5-7"/></svg>To-Dos</h1>
+  </header>
+  <div class="todo-toolbar" aria-label="Task controls">
+    <span class="todo-view-label"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12v10H2zM2 6h12M6 6v7"/></svg>Tasks <span id="todo-count"></span></span>
+    <div class="todo-toolbar-controls">
+      <label class="todo-tool todo-tool-select" title="Filter: All Tasks"><span>Filter</span><select id="todo-filter" aria-label="Filter tasks"><option value="all">All Tasks</option><option value="my">My Tasks</option><option value="assigned_by_me">Assigned by Me</option><option value="pending">Pending</option><option value="completed">Completed</option></select></label>
+      <label class="todo-tool todo-tool-select" title="Sort: Due Date"><span>Sort</span><select id="todo-sort" aria-label="Sort tasks"><option value="due_date">Due Date</option><option value="title">Task Name</option><option value="created_at">Created Date</option><option value="assignee">Assignee</option></select></label>
+      <button type="button" class="todo-tool todo-search-toggle" id="todo-search-toggle" aria-label="Search tasks" aria-expanded="false" aria-controls="todo-search"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg></button>
+      <input type="search" id="todo-search" class="todo-search-input" placeholder="Search tasks…" aria-label="Search title and description" hidden>
     </div>
-    <label class="todo-search"><span aria-hidden="true">⌕</span><input type="search" id="todo-search" placeholder="Search tasks" aria-label="Search tasks"><kbd>⌘ K</kbd></label>
   </div>
-
-  <form id="todo-quick-form" class="todo-quick-form">
-    <span class="todo-quick-plus" aria-hidden="true">＋</span>
-    <input id="todo-quick-title" maxlength="200" placeholder="Add a task…" aria-label="Quick add task title" required>
-    <button class="button button-primary" type="submit">Add task</button>
-  </form>
-
-  <div id="todo-loading" class="todo-loading">Loading your tasks…</div>
-  <div id="todo-list" class="todo-list" aria-live="polite"></div>
-  <div id="todo-pagination" class="pagination"></div>
+  <p id="todo-feedback" class="todo-feedback" role="status" hidden></p>
+  <div class="todo-table-scroll" tabindex="0" role="region" aria-label="Task table, scroll horizontally on smaller screens">
+    <table class="todo-table">
+      <caption class="todo-sr-only">Team tasks. Click a task name, assignee, or due date to edit.</caption>
+      <colgroup><col class="todo-col-check"><col class="todo-col-title"><col class="todo-col-assign"><col class="todo-col-due"><col class="todo-col-actions"></colgroup>
+      <thead><tr>
+        <th scope="col"><span class="todo-sr-only">Completed</span><span aria-hidden="true">☑</span></th>
+        <th scope="col"><span class="todo-column-icon" aria-hidden="true">Aa</span>Task Name</th>
+        <th scope="col"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5" r="2.5"/><path d="M3 14v-2a5 5 0 0 1 10 0v2"/></svg>Assign</th>
+        <th scope="col"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4h10v10H3zM5 2v4m6-4v4M3 8h10"/></svg>Due</th>
+        <th scope="col"><span class="todo-sr-only">Actions</span></th>
+      </tr></thead>
+      <tbody id="todo-list"><tr><td colspan="5" class="todo-table-message">Loading tasks…</td></tr></tbody>
+      <tfoot>
+        <tr id="todo-draft" hidden>
+          <td><span class="todo-draft-marker" aria-hidden="true">＋</span></td>
+          <td><input id="todo-draft-title" form="todo-create-form" maxlength="200" placeholder="Task name" aria-label="New task name" required></td>
+          <td><select id="todo-draft-assignee" form="todo-create-form" aria-label="Assign new task"><option value="">Unassigned</option></select></td>
+          <td><input id="todo-draft-due" form="todo-create-form" type="date" aria-label="New task due date"></td>
+          <td class="todo-draft-actions"><button type="submit" form="todo-create-form" id="todo-draft-save" aria-label="Save new task" title="Save (Enter)">✓</button><button type="button" id="todo-draft-cancel" aria-label="Cancel new task" title="Cancel (Escape)">×</button></td>
+        </tr>
+        <tr id="todo-new-row"><td colspan="5"><button type="button" id="todo-new" class="todo-new-button"><span aria-hidden="true">＋</span> New Task</button></td></tr>
+      </tfoot>
+    </table>
+  </div>
+  <form id="todo-create-form"></form>
+  <div id="todo-pagination" class="todo-pagination"></div>
 </section>
+<div id="todo-popover" class="todo-popover" role="dialog" aria-label="Task options" hidden></div>
 
 <dialog id="todo-dialog" class="todo-dialog" aria-labelledby="todo-dialog-title">
   <form id="todo-form" novalidate>

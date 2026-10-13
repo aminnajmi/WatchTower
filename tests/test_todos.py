@@ -98,6 +98,26 @@ class TodoTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.client.get("/api/v1/todos", headers=self.tokens["admin"]).json()["total"], 1)
 
+    def test_sorting_pagination_and_pending_filter_preserve_visibility(self):
+        first = self.create(title="Zulu", assigned_to_user_id=self.ids["alice"], due_date="2030-06-03T12:00:00Z").json()
+        second = self.create(title="alpha", assigned_to_user_id=self.ids["carol"], due_date="2030-06-01T12:00:00Z").json()
+        third = self.create(title="Beta", assigned_to_user_id=self.ids["bob"]).json()
+        self.create(who="carol", title="Hidden", due_date="2029-01-01T12:00:00Z")
+        for sort, expected in {
+            "title": [second, third, first],
+            "due_date": [second, first, third],
+            "created_at": [third, second, first],
+            "assignee": [first, third, second],
+        }.items():
+            with self.subTest(sort=sort):
+                pages = [self.client.get(f"/api/v1/todos?sort={sort}&limit=1&offset={offset}", headers=self.tokens["alice"]).json() for offset in range(3)]
+                self.assertEqual([page["items"][0]["id"] for page in pages], [item["id"] for item in expected])
+                self.assertTrue(all(page["total"] == 3 for page in pages))
+        self.client.patch(f"/api/v1/todos/{second['id']}", headers=self.tokens["admin"], json={"is_completed": True})
+        pending = self.client.get("/api/v1/todos?view=pending&q=rollout&sort=title", headers=self.tokens["alice"]).json()
+        self.assertEqual([item["id"] for item in pending["items"]], [third["id"], first["id"]])
+        self.assertEqual(self.client.get("/api/v1/todos?sort=invalid", headers=self.tokens["alice"]).status_code, 422)
+
     def test_additive_schema_preserves_users_and_old_tables(self):
         with self.sessions() as db:
             db.add(Todo(title="Existing record", created_by_user_id=self.ids["alice"], created_by_name="alice"))

@@ -118,9 +118,12 @@ def _visible_query(user):
 
 @router.get("")
 def list_todos(principal: Principal = Depends(authenticate_token), view: str = "all",
-               q: str | None = None, limit: int = Query(50, ge=1, le=100), offset: int = Query(0, ge=0)):
-    if view not in {"all", "my", "assigned_by_me", "completed"}:
+               q: str | None = None, sort: str | None = None,
+               limit: int = Query(50, ge=1, le=100), offset: int = Query(0, ge=0)):
+    if view not in {"all", "my", "assigned_by_me", "pending", "completed"}:
         raise HTTPException(422, "Invalid to-do view")
+    if sort not in {None, "due_date", "title", "created_at", "assignee"}:
+        raise HTTPException(422, "Invalid to-do sort")
     db = SessionLocal()
     try:
         user = _user(db, principal)
@@ -131,11 +134,22 @@ def list_todos(principal: Principal = Depends(authenticate_token), view: str = "
             stmt = stmt.where(Todo.created_by_user_id == user.id)
         elif view == "completed":
             stmt = stmt.where(Todo.is_completed.is_(True))
+        elif view == "pending":
+            stmt = stmt.where(Todo.is_completed.is_(False))
         if q and q.strip():
             needle = f"%{q.strip()}%"
             stmt = stmt.where(or_(Todo.title.ilike(needle), Todo.description.ilike(needle)))
         total = db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
-        rows = db.scalars(stmt.order_by(Todo.is_completed.asc(), Todo.due_date.asc().nullslast(), Todo.created_at.desc())
+        ordering = {
+            None: [Todo.is_completed.asc(), Todo.due_date.asc().nullslast(), Todo.created_at.desc()],
+            "due_date": [Todo.due_date.asc().nullslast()],
+            "title": [func.lower(Todo.title).asc()],
+            "created_at": [Todo.created_at.desc()],
+            "assignee": [func.lower(User.username).asc().nullslast()],
+        }[sort]
+        if sort == "assignee":
+            stmt = stmt.outerjoin(User, Todo.assigned_to_user_id == User.id)
+        rows = db.scalars(stmt.order_by(*ordering, Todo.id.desc())
                           .offset(offset).limit(limit)).all()
         return {"items": [_serialize(db, todo, user) for todo in rows], "total": total, "limit": limit, "offset": offset}
     finally:

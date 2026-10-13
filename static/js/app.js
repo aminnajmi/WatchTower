@@ -1014,209 +1014,380 @@
 
   async function initializeTodos() {
     const list = $('#todo-list');
-    if (!list) return;
+    if (!list || list.dataset.initialized) return;
+    list.dataset.initialized = 'true';
     const dialog = $('#todo-dialog');
-    const currentUserId = Number(document.body.dataset.userId);
+    const popover = $('#todo-popover');
+    const draft = $('#todo-draft');
     const pageSize = 50;
-    let view = 'all';
+    let items = new Map();
+    let users = [];
+    let usersLoaded = false;
+    let userRequest;
     let offset = 0;
+    let requestId = 0;
     let searchTimer;
-
+    let popoverAnchor;
+    let draftSaving = false;
+    const saving = new Set();
     const esc = escapeHtml;
-    const dateOnly = value => {
+    const localDate = value => {
       if (!value) return '';
       const date = parseApiDate(value);
-      if (Number.isNaN(date.valueOf())) return '';
-      return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' }).format(date);
+      return Number.isNaN(date.valueOf()) ? '' : new Date(date.valueOf() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
     };
-    const localInputDate = value => {
-      if (!value) return '';
-      const date = parseApiDate(value);
-      if (Number.isNaN(date.valueOf())) return '';
-      return new Date(date.valueOf() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    const dueValue = value => value ? new Date(`${value}T23:59:59`).toISOString() : null;
+    const initials = name => esc(name.slice(0, 2).toUpperCase());
+    const avatar = name => `<span class="todo-avatar" aria-hidden="true">${initials(name)}</span>`;
+    const userOptions = (todo = null) => {
+      const current = todo?.assigned_to;
+      const missing = current?.id && !users.some(user => user.id === current.id);
+      return '<option value="">Unassigned</option>' + (missing ? `<option value="${current.id}">${esc(current.username)} (inactive)</option>` : '') + users.map(user => `<option value="${user.id}">${esc(user.username)}</option>`).join('');
     };
-    const overdue = todo => todo.due_date && parseApiDate(todo.due_date) < new Date() && !todo.is_completed;
 
-    async function refreshSummary() {
-      const summary = await api('/api/v1/todos/summary');
-      $('#todo-stat-mine').textContent = summary.my_pending;
-      $('#todo-stat-created').textContent = summary.assigned_by_me;
-      $('#todo-stat-completed').textContent = summary.completed;
-      $('[data-count="my"]').textContent = summary.my_total;
-      $('[data-count="assigned_by_me"]').textContent = summary.assigned_by_me_total;
-      $('[data-count="completed"]').textContent = summary.completed;
-      $('[data-count="all"]').textContent = summary.total;
+    function feedback(message = '') {
+      $('#todo-feedback').textContent = message;
+      $('#todo-feedback').hidden = !message;
     }
 
-    function todoRow(todo) {
-      const late = overdue(todo);
+    async function getUsers() {
+      if (usersLoaded) return;
+      if (!userRequest) userRequest = api('/api/v1/todos/assignees').then(result => {
+        users = result;
+        usersLoaded = true;
+      }).finally(() => { userRequest = null; });
+      await userRequest;
+    }
+
+    function row(todo) {
+      const late = todo.due_date && !todo.is_completed && parseApiDate(todo.due_date) < new Date();
       const assigned = todo.assigned_to?.username;
-      const creator = todo.created_by?.username;
-      const assignedMeta = assigned
-        ? `<span class="avatar todo-avatar" aria-hidden="true">${esc(assigned.slice(0, 1).toUpperCase())}</span><span>${esc(assigned)}</span>`
-        : '<span class="todo-unassigned">Unassigned</span>';
-      return `<article class="todo-row ${todo.is_completed ? 'is-completed' : ''} ${late ? 'is-overdue' : ''}" data-todo-id="${todo.id}">
-        <label class="todo-check"><input type="checkbox" data-complete="${todo.id}" ${todo.is_completed ? 'checked' : ''} ${todo.can_complete ? '' : 'disabled'} aria-label="${todo.is_completed ? 'Reopen' : 'Complete'} ${esc(todo.title)}"><span class="todo-checkmark" aria-hidden="true"></span></label>
-        <button class="todo-main" type="button" data-edit="${todo.id}" ${todo.can_edit ? '' : 'aria-label="View task details"'}><strong>${esc(todo.title)}</strong>${todo.description ? `<span>${esc(todo.description)}</span>` : ''}<small>Created by ${esc(creator || 'Deleted user')}</small></button>
-        <span class="todo-assignee">${assignedMeta}</span>
-        <span class="todo-due ${late ? 'late' : ''}">${todo.due_date ? `${late ? '<b>Overdue</b> · ' : ''}${dateOnly(todo.due_date)}` : '<span class="todo-no-date">No due date</span>'}</span>
-        <details class="todo-actions"><summary aria-label="Task actions">•••</summary><div><button type="button" data-edit="${todo.id}" ${todo.can_edit ? '' : 'disabled'}>Edit</button><button type="button" data-delete="${todo.id}" ${todo.can_delete ? '' : 'disabled'}>Delete</button></div></details>
-      </article>`;
+      const date = todo.due_date ? new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', year: 'numeric' }).format(parseApiDate(todo.due_date)) : '';
+      return `<tr data-todo-id="${todo.id}" class="${todo.is_completed ? 'is-completed' : ''}">
+        <td class="todo-check-cell"><input type="checkbox" data-complete="${todo.id}" ${todo.is_completed ? 'checked' : ''} ${todo.can_complete ? '' : 'disabled'} aria-label="${todo.is_completed ? 'Reopen' : 'Complete'} ${esc(todo.title)}"></td>
+        <td class="todo-title-cell"><button type="button" class="todo-cell-button todo-title-button" data-inline="title" ${todo.can_edit ? '' : 'disabled'} title="${esc(todo.description || todo.title)}">${esc(todo.title)}</button></td>
+        <td><button type="button" class="todo-cell-button todo-person" data-inline="assignee" ${todo.can_edit ? '' : 'disabled'} aria-label="Assign ${esc(todo.title)}" aria-haspopup="dialog">${assigned ? `${avatar(assigned)}<span>${esc(assigned)}</span>` : '<span class="todo-placeholder">Unassigned</span>'}</button></td>
+        <td><button type="button" class="todo-cell-button todo-date ${late ? 'is-overdue' : ''}" data-inline="due" ${todo.can_edit ? '' : 'disabled'} aria-label="Due date for ${esc(todo.title)}" title="${late ? 'Overdue · ' : ''}${esc(todo.due_date ? dateText(todo.due_date) : 'Set due date')}">${date || '<span class="todo-placeholder">—</span>'}${late ? '<span class="todo-overdue-dot" aria-label="Overdue"></span>' : ''}</button></td>
+        <td class="todo-actions-cell"><button type="button" class="todo-row-actions" data-actions="${todo.id}" aria-label="Actions for ${esc(todo.title)}" aria-haspopup="dialog">···</button></td>
+      </tr>`;
     }
 
-    function bindRows() {
-      $$('[data-edit]', list).forEach(button => button.addEventListener('click', () => openTodo(Number(button.dataset.edit))));
-      $$('[data-delete]', list).forEach(button => button.addEventListener('click', async () => {
-        const id = Number(button.dataset.delete);
-        if (!window.confirm('Delete this task? This action cannot be undone.')) return;
-        button.disabled = true;
-        try {
-          await api(`/api/v1/todos/${id}`, { method: 'DELETE' });
-          toast('Task deleted.');
-          await load();
-        } catch (error) {
-          button.disabled = false;
-          toast(error.message);
+    function replaceRow(todo) {
+      const old = $(`[data-todo-id="${todo.id}"]`, list);
+      if (old) old.outerHTML = row(todo);
+    }
+
+    function closePopover(restoreFocus = false) {
+      popover.hidden = true;
+      popover.innerHTML = '';
+      popoverAnchor?.setAttribute('aria-expanded', 'false');
+      if (restoreFocus && popoverAnchor?.isConnected) popoverAnchor.focus();
+      popoverAnchor = null;
+    }
+
+    function placePopover() {
+      if (!popoverAnchor || popover.hidden) return;
+      const rect = popoverAnchor.getBoundingClientRect();
+      const width = popover.offsetWidth;
+      const height = popover.offsetHeight;
+      const top = rect.bottom + height + 8 > window.innerHeight ? rect.top - height - 4 : rect.bottom + 4;
+      popover.style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - width - 8))}px`;
+      popover.style.top = `${Math.max(8, top)}px`;
+    }
+
+    function showPopover(anchor, label, html) {
+      closePopover();
+      popoverAnchor = anchor;
+      anchor.setAttribute('aria-expanded', 'true');
+      popover.setAttribute('aria-label', label);
+      popover.innerHTML = html;
+      popover.hidden = false;
+      placePopover();
+      $('button:not(:disabled)', popover)?.focus();
+    }
+
+    async function patchTodo(todo, changes, message = 'Task updated.') {
+      if (saving.has(todo.id)) return false;
+      saving.add(todo.id);
+      const tr = $(`[data-todo-id="${todo.id}"]`, list);
+      const focusColumn = tr?.contains(document.activeElement) ? document.activeElement.closest('td')?.cellIndex : null;
+      const restoreFocus = () => {
+        if (focusColumn == null || document.activeElement !== document.body) return;
+        const cell = $(`[data-todo-id="${todo.id}"]`, list)?.cells[focusColumn];
+        if (cell) $('button:not(:disabled), input:not(:disabled)', cell)?.focus();
+      };
+      tr?.setAttribute('aria-busy', 'true');
+      if (tr) $$('button, input', tr).forEach(control => { control.disabled = true; });
+      try {
+        const updated = await api(`/api/v1/todos/${todo.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(changes) });
+        items.set(todo.id, updated);
+        replaceRow(updated);
+        feedback();
+        toast(message);
+        await load();
+        restoreFocus();
+        return true;
+      } catch (error) {
+        replaceRow(todo);
+        feedback(error.message);
+        toast(error.message);
+        restoreFocus();
+        return false;
+      } finally { saving.delete(todo.id); }
+    }
+
+    function editCell(button, todo, field) {
+      if (!todo.can_edit || saving.has(todo.id)) return;
+      closePopover();
+      const cell = button.parentElement;
+      const original = field === 'title' ? todo.title : localDate(todo.due_date).slice(0, 10);
+      const input = document.createElement('input');
+      input.className = 'todo-inline-input';
+      input.type = field === 'title' ? 'text' : 'date';
+      input.value = original;
+      input.setAttribute('aria-label', field === 'title' ? 'Edit task name' : 'Edit due date');
+      if (field === 'title') input.maxLength = 200;
+      cell.replaceChildren(input);
+      input.focus();
+      if (field === 'title') input.select();
+      let finished = false;
+      const cancel = () => {
+        if (finished) return;
+        finished = true;
+        cell.replaceChildren(button);
+        button.focus();
+        feedback();
+      };
+      const commit = async () => {
+        if (finished) return;
+        const value = input.value.trim();
+        if (field === 'title' && !value) {
+          input.setAttribute('aria-invalid', 'true');
+          feedback('Enter a task name. Press Escape to cancel.');
+          input.focus();
+          return;
         }
-      }));
-      $$('[data-complete]', list).forEach(input => input.addEventListener('change', async () => {
-        const id = Number(input.dataset.complete);
-        const previous = !input.checked;
-        const desired = input.checked;
-        const row = input.closest('.todo-row');
-        row.classList.toggle('is-completed', desired);
-        input.disabled = true;
-        try {
-          await api(`/api/v1/todos/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_completed: desired }) });
-          toast(desired ? 'Task completed.' : 'Task reopened.');
-          await load();
-        } catch (error) {
-          input.checked = previous;
-          row.classList.toggle('is-completed', previous);
-          input.disabled = false;
-          toast(error.message);
-        }
-      }));
+        if (value === original) { cancel(); return; }
+        finished = true;
+        await patchTodo(todo, field === 'title' ? { title: value } : { due_date: dueValue(value) });
+      };
+      input.addEventListener('keydown', event => {
+        if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); cancel(); }
+        if (event.key === 'Enter') { event.preventDefault(); commit(); }
+      });
+      input.addEventListener('blur', commit);
+      if (field === 'due') {
+        input.addEventListener('change', commit);
+        try { input.showPicker?.(); } catch { /* Keyboard entry remains available. */ }
+      }
     }
 
     async function load() {
-      $('#todo-loading').hidden = false;
-      list.innerHTML = '';
+      const serial = ++requestId;
+      closePopover();
+      list.setAttribute('aria-busy', 'true');
+      const params = new URLSearchParams({ view: $('#todo-filter').value, sort: $('#todo-sort').value, limit: String(pageSize), offset: String(offset) });
+      const query = $('#todo-search').value.trim();
+      if (query) params.set('q', query);
       try {
-        const params = new URLSearchParams({ view, limit: String(pageSize), offset: String(offset) });
-        if ($('#todo-search').value.trim()) params.set('q', $('#todo-search').value.trim());
-        const [result] = await Promise.all([
-          api(`/api/v1/todos?${params}`), refreshSummary()
-        ]);
-        $('#todo-loading').hidden = true;
-        const pending = result.items.filter(todo => !todo.is_completed);
-        const completed = result.items.filter(todo => todo.is_completed);
-        if (!result.items.length) {
-          const hasSearch = $('#todo-search').value.trim();
-          list.innerHTML = `<div class="todo-empty"><span aria-hidden="true">${hasSearch ? '⌕' : '✓'}</span><strong>${hasSearch ? 'No matching tasks' : 'You’re all caught up'}</strong><p>${hasSearch ? 'Try another search or switch filters.' : 'Create a task to get started.'}</p>${!hasSearch ? '<button type="button" class="button button-primary" id="todo-empty-new">New Task</button>' : ''}</div>`;
-          $('#todo-empty-new')?.addEventListener('click', () => openTodo());
-          $('#todo-pagination').innerHTML = '';
-          return;
+        const result = await api(`/api/v1/todos?${params}`);
+        if (serial !== requestId) return;
+        if (offset && !result.items.length && result.total <= offset) {
+          offset = Math.max(0, Math.ceil(result.total / pageSize) * pageSize - pageSize);
+          return load();
         }
-        list.innerHTML = `
-          <section class="todo-section"><header><h2>Pending <span>${pending.length}</span></h2></header>${pending.length ? pending.map(todoRow).join('') : '<p class="todo-section-empty">No pending tasks.</p>'}</section>
-          ${completed.length ? `<section class="todo-section completed-section"><header><h2>Completed <span>${completed.length}</span></h2></header>${completed.map(todoRow).join('')}</section>` : ''}`;
-        bindRows();
-        $('#todo-pagination').innerHTML = `<span>Showing ${offset + 1}–${Math.min(offset + result.items.length, result.total)} of ${result.total}</span><div><button class="button button-secondary" id="todo-prev" ${offset === 0 ? 'disabled' : ''}>Previous</button><button class="button button-secondary" id="todo-next" ${offset + pageSize >= result.total ? 'disabled' : ''}>Next</button></div>`;
-        $('#todo-prev').addEventListener('click', () => { offset = Math.max(0, offset - pageSize); load(); });
-        $('#todo-next').addEventListener('click', () => { offset += pageSize; load(); });
+        items = new Map(result.items.map(todo => [todo.id, todo]));
+        list.innerHTML = result.items.length ? result.items.map(row).join('') : `<tr><td colspan="5" class="todo-table-message">${query || $('#todo-filter').value !== 'all' ? 'No tasks match this view.' : 'No tasks yet. Add your first task below.'}</td></tr>`;
+        $('#todo-count').textContent = result.total;
+        $('#todo-pagination').innerHTML = result.total > pageSize ? `<span>${offset + 1}–${Math.min(offset + pageSize, result.total)} of ${result.total}</span><div><button type="button" data-page="prev" ${offset === 0 ? 'disabled' : ''}>Previous</button><button type="button" data-page="next" ${offset + pageSize >= result.total ? 'disabled' : ''}>Next</button></div>` : `<span>${result.total} ${result.total === 1 ? 'task' : 'tasks'}</span>`;
       } catch (error) {
-        $('#todo-loading').hidden = true;
-        list.innerHTML = `<div class="todo-empty"><strong>Could not load tasks</strong><p>${esc(error.message)}</p></div>`;
-      }
+        if (serial !== requestId) return;
+        feedback(error.message);
+        if (!items.size) list.innerHTML = '<tr><td colspan="5" class="todo-table-message">Could not load tasks. <button type="button" data-retry>Try again</button></td></tr>';
+      } finally { if (serial === requestId) list.removeAttribute('aria-busy'); }
     }
 
-    async function openTodo(id = null) {
+    async function openDetails(todo) {
+      closePopover();
+      try { await getUsers(); } catch (error) { feedback(error.message); return; }
       $('#todo-form').reset();
-      $('#todo-id').value = id || '';
-      $('#todo-form-error').textContent = '';
+      $('#todo-id').value = todo.id;
+      $('#todo-dialog-title').textContent = todo.can_edit ? 'Edit Task' : 'Task Details';
+      $('#todo-title').value = todo.title;
+      $('#todo-description').value = todo.description || '';
+      $('#todo-assignee').innerHTML = userOptions(todo);
+      $('#todo-assignee').value = todo.assigned_to_user_id || '';
+      $('#todo-due').value = localDate(todo.due_date);
       $('#todo-title-error').textContent = '';
-      $('#todo-dialog-title').textContent = id ? 'Edit Task' : 'New Task';
-      $('#todo-save').textContent = id ? 'Save Changes' : 'Save Task';
+      $('#todo-form-error').textContent = '';
+      for (const field of ['todo-title', 'todo-description', 'todo-assignee', 'todo-due']) $('#'+field).disabled = !todo.can_edit;
+      $('#todo-save').hidden = !todo.can_edit;
       $('#todo-save').disabled = false;
-      if (id) {
-        try {
-          const todo = await api(`/api/v1/todos/${id}`);
-          $('#todo-title').value = todo.title;
-          $('#todo-description').value = todo.description || '';
-          $('#todo-assignee').value = todo.assigned_to_user_id || '';
-          $('#todo-due').value = localInputDate(todo.due_date);
-          for (const field of ['todo-title', 'todo-description', 'todo-assignee', 'todo-due']) $('#'+field).disabled = !todo.can_edit;
-          $('#todo-save').hidden = !todo.can_edit;
-        } catch (error) { toast(error.message); return; }
-      } else {
-        for (const field of ['todo-title', 'todo-description', 'todo-assignee', 'todo-due']) $('#'+field).disabled = false;
-        $('#todo-save').hidden = false;
-      }
+      $('#todo-save').textContent = 'Save Changes';
       dialog.showModal();
-      $('#todo-title').focus();
     }
 
-    async function saveTodo(event) {
+    list.addEventListener('click', async event => {
+      const button = event.target.closest('button');
+      if (!button || button.disabled) return;
+      if (button.hasAttribute('data-retry')) { load(); return; }
+      const todo = items.get(Number(button.closest('[data-todo-id]')?.dataset.todoId));
+      if (!todo || saving.has(todo.id)) return;
+      if (button.dataset.inline === 'title' || button.dataset.inline === 'due') editCell(button, todo, button.dataset.inline);
+      if (button.dataset.inline === 'assignee') {
+        try { await getUsers(); } catch (error) { feedback(error.message); return; }
+        if (!button.isConnected) return;
+        showPopover(button, 'Assign task', `<span class="todo-popover-label">Assign to</span><button type="button" data-assign="" data-id="${todo.id}">Unassigned</button>` + users.map(user => `<button type="button" data-assign="${user.id}" data-id="${todo.id}" aria-pressed="${user.id === todo.assigned_to_user_id}">${avatar(user.username)}<span>${esc(user.username)}</span>${user.id === todo.assigned_to_user_id ? '<span class="todo-selected">✓</span>' : ''}</button>`).join(''));
+      }
+      if (button.dataset.actions) showPopover(button, 'Task actions', `<button type="button" data-detail="${todo.id}">${todo.can_edit ? 'Edit task details' : 'View task details'}</button>${todo.can_delete ? `<button type="button" class="todo-delete" data-delete="${todo.id}">Delete task</button>` : ''}`);
+    });
+
+    list.addEventListener('change', async event => {
+      const input = event.target.closest('[data-complete]');
+      if (!input) return;
+      const todo = items.get(Number(input.dataset.complete));
+      if (!todo || saving.has(todo.id)) return;
+      input.closest('tr').classList.toggle('is-completed', input.checked);
+      await patchTodo(todo, { is_completed: input.checked }, input.checked ? 'Task completed.' : 'Task reopened.');
+    });
+
+    popover.addEventListener('click', async event => {
+      const button = event.target.closest('button');
+      if (!button) return;
+      if (button.hasAttribute('data-assign')) {
+        const todo = items.get(Number(button.dataset.id));
+        const assigned = button.dataset.assign ? Number(button.dataset.assign) : null;
+        closePopover(true);
+        if (todo && todo.assigned_to_user_id !== assigned) await patchTodo(todo, { assigned_to_user_id: assigned }, 'Assignment updated.');
+      } else if (button.dataset.detail) {
+        const todo = items.get(Number(button.dataset.detail));
+        if (todo) openDetails(todo);
+      } else if (button.dataset.delete) {
+        const id = Number(button.dataset.delete);
+        closePopover(true);
+        if (!window.confirm('Delete this task? This action cannot be undone.')) return;
+        if (saving.has(id)) return;
+        saving.add(id);
+        try {
+          await api(`/api/v1/todos/${id}`, { method: 'DELETE' });
+          toast('Task deleted.');
+          feedback();
+          await load();
+        } catch (error) { feedback(error.message); toast(error.message); }
+        finally { saving.delete(id); }
+      }
+    });
+    popover.addEventListener('keydown', event => {
+      const buttons = $$('button', popover);
+      const index = buttons.indexOf(document.activeElement);
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        buttons[(index + (event.key === 'ArrowDown' ? 1 : -1) + buttons.length) % buttons.length]?.focus();
+      }
+    });
+    document.addEventListener('pointerdown', event => {
+      if (!popover.hidden && !popover.contains(event.target) && !popoverAnchor?.contains(event.target)) closePopover();
+    });
+    document.addEventListener('focusin', event => {
+      if (!popover.hidden && !popover.contains(event.target) && !popoverAnchor?.contains(event.target)) closePopover();
+    });
+    window.addEventListener('resize', placePopover);
+    $('.todo-table-scroll').addEventListener('scroll', () => closePopover());
+    window.addEventListener('scroll', () => closePopover(), { passive: true });
+
+    function cancelDraft() {
+      if (draftSaving) return;
+      draft.hidden = true;
+      $('#todo-new-row').hidden = false;
+      $('#todo-create-form').reset();
+      $('#todo-new').focus();
+      feedback();
+    }
+    $('#todo-new').addEventListener('click', async () => {
+      try { await getUsers(); } catch (error) { feedback(error.message); return; }
+      $('#todo-draft-assignee').innerHTML = userOptions();
+      $('#todo-draft-assignee').value = document.body.dataset.userId || '';
+      draft.hidden = false;
+      $('#todo-new-row').hidden = true;
+      $('#todo-draft-title').focus();
+    });
+    $('#todo-draft-cancel').addEventListener('click', cancelDraft);
+    draft.addEventListener('keydown', event => {
+      if (event.key === 'Escape') { event.preventDefault(); cancelDraft(); }
+      if (event.key === 'Enter' && event.target.tagName === 'INPUT') { event.preventDefault(); $('#todo-create-form').requestSubmit(); }
+    });
+    $('#todo-create-form').addEventListener('submit', async event => {
       event.preventDefault();
-      const button = $('#todo-save');
+      if (draftSaving) return;
+      const title = $('#todo-draft-title').value.trim();
+      if (!title) { feedback('Enter a task name.'); $('#todo-draft-title').focus(); return; }
+      const payload = { title, assigned_to_user_id: Number($('#todo-draft-assignee').value) || null, due_date: dueValue($('#todo-draft-due').value) };
+      draftSaving = true;
+      $$('input, select, button', draft).forEach(control => { control.disabled = true; });
+      try {
+        await api('/api/v1/todos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        draftSaving = false;
+        cancelDraft();
+        toast('Task created.');
+        offset = 0;
+        await load();
+      } catch (error) { feedback(error.message); toast(error.message); }
+      finally {
+        draftSaving = false;
+        $$('input, select, button', draft).forEach(control => { control.disabled = false; });
+      }
+    });
+
+    $('#todo-form').addEventListener('submit', async event => {
+      event.preventDefault();
       const title = $('#todo-title').value.trim();
       if (!title) { $('#todo-title-error').textContent = 'Enter a task title.'; $('#todo-title').focus(); return; }
-      const id = $('#todo-id').value;
-      const payload = {
-        title,
-        description: $('#todo-description').value.trim(),
-        assigned_to_user_id: $('#todo-assignee').value ? Number($('#todo-assignee').value) : null,
-        due_date: $('#todo-due').value ? new Date($('#todo-due').value).toISOString() : null,
-      };
+      const button = $('#todo-save');
+      if (button.disabled) return;
       button.disabled = true;
       button.textContent = 'Saving…';
-      $('#todo-form-error').textContent = '';
+      const payload = { title, description: $('#todo-description').value.trim(), assigned_to_user_id: Number($('#todo-assignee').value) || null, due_date: $('#todo-due').value ? new Date($('#todo-due').value).toISOString() : null };
       try {
-        await api(id ? `/api/v1/todos/${id}` : '/api/v1/todos', {
-          method: id ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
-        });
+        await api(`/api/v1/todos/${$('#todo-id').value}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         dialog.close();
-        toast(id ? 'Task updated.' : 'Task created.');
+        toast('Task updated.');
         await load();
-      } catch (error) {
-        $('#todo-form-error').textContent = error.message;
-      } finally {
-        button.disabled = false;
-        button.textContent = id ? 'Save Changes' : 'Save Task';
-      }
-    }
-
-    try {
-      const users = await api('/api/v1/todos/assignees');
-      $('#todo-assignee').insertAdjacentHTML('beforeend', users.map(user => `<option value="${user.id}">${esc(user.username)}</option>`).join(''));
-    } catch (error) { toast(error.message); }
-
-    $$('.todo-filter').forEach(button => button.addEventListener('click', () => {
-      view = button.dataset.view; offset = 0;
-      $$('.todo-filter').forEach(item => { const active = item === button; item.classList.toggle('active', active); item.setAttribute('aria-selected', String(active)); });
-      load();
-    }));
-    $('#todo-search').addEventListener('input', () => { offset = 0; clearTimeout(searchTimer); searchTimer = setTimeout(load, 250); });
-    $('#todo-new').addEventListener('click', () => openTodo());
+      } catch (error) { $('#todo-form-error').textContent = error.message; }
+      finally { button.disabled = false; button.textContent = 'Save Changes'; }
+    });
     $('#todo-close').addEventListener('click', () => dialog.close());
     $('#todo-cancel').addEventListener('click', () => dialog.close());
-    $('#todo-form').addEventListener('submit', saveTodo);
-    $('#todo-quick-form').addEventListener('submit', async event => {
-      event.preventDefault();
-      const input = $('#todo-quick-title');
-      const button = event.currentTarget.querySelector('button');
-      const title = input.value.trim();
-      if (!title) { input.focus(); return; }
-      button.disabled = true; button.textContent = 'Adding…';
-      try {
-        await api('/api/v1/todos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, assigned_to_user_id: currentUserId || null }) });
-        input.value = ''; offset = 0; toast('Task added.'); await load();
-      } catch (error) { toast(error.message); }
-      finally { button.disabled = false; button.textContent = 'Add task'; }
+    for (const selector of ['#todo-filter', '#todo-sort']) $(selector).addEventListener('change', event => {
+      const select = event.currentTarget;
+      select.parentElement.title = `${selector === '#todo-filter' ? 'Filter' : 'Sort'}: ${select.selectedOptions[0].text}`;
+      select.parentElement.dataset.active = String(select.selectedIndex !== 0);
+      offset = 0;
+      feedback();
+      load();
     });
+    $('#todo-pagination').addEventListener('click', event => {
+      const button = event.target.closest('[data-page]');
+      if (!button || button.disabled) return;
+      offset = Math.max(0, offset + (button.dataset.page === 'next' ? pageSize : -pageSize));
+      load();
+    });
+    function toggleSearch(force = null) {
+      const input = $('#todo-search');
+      const open = force ?? input.hidden;
+      input.hidden = !open;
+      $('#todo-search-toggle').setAttribute('aria-expanded', String(open));
+      if (open) input.focus();
+      else {
+        $('#todo-search-toggle').focus();
+        if (input.value) { input.value = ''; clearTimeout(searchTimer); offset = 0; load(); }
+      }
+    }
+    $('#todo-search-toggle').addEventListener('click', () => toggleSearch());
+    $('#todo-search').addEventListener('input', () => { offset = 0; clearTimeout(searchTimer); searchTimer = setTimeout(load, 200); });
+    $('#todo-search').addEventListener('keydown', event => { if (event.key === 'Escape') toggleSearch(false); });
     document.addEventListener('keydown', event => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); $('#todo-search').focus(); }
+      if (event.key === 'Escape' && !popover.hidden) { event.preventDefault(); closePopover(true); }
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k' && !dialog.open) { event.preventDefault(); toggleSearch(true); }
     });
     await load();
   }
