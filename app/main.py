@@ -18,7 +18,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import BaseModel
-from sqlalchemy import func, select, update
+from sqlalchemy import func, select, update, or_
 from sqlalchemy.exc import IntegrityError, OperationalError
 
 from .auth import (
@@ -37,6 +37,7 @@ from .auth import (
 )
 from .config import settings
 from .models import init_db, SessionLocal, OSRelease, ReleaseHistory, ReleaseEvent, User, Notification
+from .tasks import router as tasks_router
 from .schemas import UserCreate, UserUpdate, PasswordReset, PasswordChange, NotificationCreate
 from .task_spec import BusinessActionTask, TaskSpecification, canonical_task_json, task_digest
 from .notifications.telegram import (
@@ -68,6 +69,7 @@ async def lifespan(_app: FastAPI):
 
 
 app = FastAPI(title="WatchTower", version="2.0.0", lifespan=lifespan)
+app.include_router(tasks_router)
 logger = logging.getLogger(__name__)
 # Compatibility seam for tests/integrations that inject a scheduler instance.
 # Normal operation always reads the lifecycle-owned scheduler from its module.
@@ -206,6 +208,7 @@ def _render_page(request: Request, template: str, active: str, **context):
         context={
             "active": active,
             "current_user": principal.username,
+            "current_user_id": principal.id or 0,
             "current_role": principal.role,
             "is_admin": principal.role == "admin",
             "session_expires_at": access_token_expiration(token) if token else "",
@@ -341,6 +344,11 @@ def users_page(request: Request):
 @app.get("/account", response_class=HTMLResponse, include_in_schema=False)
 def account_page(request: Request):
     return _render_page(request, "account.html", "account")
+
+
+@app.get("/tasks", response_class=HTMLResponse, include_in_schema=False)
+def tasks_page(request: Request):
+    return _render_page(request, "tasks.html", "tasks")
 
 
 @app.get("/notification-center", response_class=HTMLResponse, include_in_schema=False)
@@ -759,8 +767,10 @@ def list_notifications(
 ):
     db = SessionLocal()
     try:
-        stmt = select(Notification)
-        count_stmt = select(func.count(Notification.id))
+        scope = [Notification.recipient == "all_human_agents", Notification.recipient == principal.username]
+        task_notice_scope = or_(Notification.task_id.is_(None), Notification.source != "watchtower", or_(*scope))
+        stmt = select(Notification).where(task_notice_scope)
+        count_stmt = select(func.count(Notification.id)).where(task_notice_scope)
         filters = []
         if source:
             source = source.strip().lower()
@@ -789,7 +799,7 @@ def list_notifications(
             count_stmt = count_stmt.where(*filters)
         total = db.scalar(count_stmt) or 0
         unread_count = db.scalar(
-            select(func.count(Notification.id)).where(Notification.status == "new")
+            select(func.count(Notification.id)).where(Notification.status == "new", task_notice_scope)
         ) or 0
         rows = db.scalars(stmt.order_by(Notification.created_at.desc(), Notification.id.desc()).offset(offset).limit(limit)).all()
         return {
@@ -821,6 +831,10 @@ def get_notification(
         notification = db.get(Notification, notification_id)
         if notification is None:
             raise HTTPException(status_code=404, detail="Notification not found")
+        if notification.source == "watchtower" and notification.task_id is not None and notification.recipient != "all_human_agents":
+            principal = _web_principal(request)
+            if not principal or principal.username != notification.recipient:
+                raise HTTPException(status_code=404, detail="Notification not found")
         return _serialize_notification(notification)
     finally:
         db.close()

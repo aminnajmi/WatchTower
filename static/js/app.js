@@ -1012,6 +1012,70 @@
     });
   }
 
+  async function initializeTasks() {
+    const list = $('#task-list'); if (!list) return;
+    let view = 'my'; let board = false; let people = []; let rows = []; let offset = 0; const pageSize = 25; let total = 0;
+    const dialog = $('#task-dialog');
+    const message = text => { $('#task-message').textContent = text || ''; };
+    const selected = select => Array.from(select.selectedOptions).map(option => Number(option.value));
+    const esc = escapeHtml;
+    const statusName = value => ({todo:'To Do',in_progress:'In Progress',on_hold:'On Hold',completed:'Completed',cancelled:'Cancelled'})[value] || value;
+    const isOverdue = task => task.due_at && new Date(task.due_at) < new Date() && !['completed','cancelled'].includes(task.status);
+    async function load() {
+      list.innerHTML = '<div class="loading-state">Loading tasks…</div>';
+      try {
+        const params = new URLSearchParams({view, limit:String(pageSize), offset:String(offset)});
+        const [sort,direction]=$('#task-sort').value.split(':');params.set('sort',sort);params.set('direction',direction);
+        if ($('#task-search').value.trim()) params.set('q', $('#task-search').value.trim());
+        if ($('#task-status-filter').value) params.set('status', $('#task-status-filter').value);
+        if ($('#task-assignee-filter').value) params.set('assignee_id', $('#task-assignee-filter').value);
+        if ($('#task-creator-filter').value) params.set('creator_id', $('#task-creator-filter').value);
+        if ($('#task-priority-filter').value) params.set('priority', $('#task-priority-filter').value);
+        if ($('#task-due-filter').value) params.set('due', $('#task-due-filter').value);
+        const result = await api(`/api/v1/tasks?${params}`); rows = result.items; total = result.total;
+        const stats = await api('/api/v1/tasks/summary');
+        const done = stats.completed;
+        $('#task-stats').innerHTML = `<article><strong>${stats.active}</strong><span>Active tasks</span></article><article><strong>${stats.my_pending}</strong><span>My pending</span></article><article><strong>${stats.in_progress}</strong><span>In progress</span></article><article><strong>${stats.overdue}</strong><span>Overdue</span></article><article><strong>${done}</strong><span>Completed</span></article><div class="task-progress"><span>${done} of ${stats.total} complete</span><progress max="${Math.max(stats.total,1)}" value="${done}"></progress></div>`;
+        if (!rows.length) { list.innerHTML = '<div class="empty-state">No tasks here yet. Create a task to get started.</div>'; $('#task-pagination').innerHTML=''; return; }
+        if (board) renderBoard(); else renderList();
+        $('#task-pagination').innerHTML=`<span>Showing ${offset+1}–${Math.min(offset+rows.length,total)} of ${total}</span><div><button class="button button-secondary" id="task-prev" ${offset===0?'disabled':''}>Previous</button><button class="button button-secondary" id="task-next" ${offset+pageSize>=total?'disabled':''}>Next</button></div>`;
+        $('#task-prev').addEventListener('click',()=>{offset=Math.max(0,offset-pageSize);load();});$('#task-next').addEventListener('click',()=>{offset+=pageSize;load();});
+      } catch (error) { list.innerHTML = `<div class="empty-state">Could not load tasks: ${esc(error.message)}</div>`; }
+    }
+    function taskCard(task) {
+      const late = isOverdue(task);
+      return `<article class="task-card ${late?'task-overdue':''}" data-id="${task.id}" draggable="${board}"><button class="task-open" data-open="${task.id}"><span class="task-priority priority-${esc(task.priority)}"></span><strong>${esc(task.title)}</strong></button><span class="status-badge">${esc(statusName(task.status))}</span><div class="task-assignees">${task.assignees.map(a=>`<span class="avatar" title="${esc(a.username)}">${esc(a.username.slice(0,1).toUpperCase())}</span>`).join('')||'<span class="muted">Unassigned</span>'}</div><span class="task-deadline ${late?'late':''}">${late?'Overdue · ':''}${dateText(task.due_at)}</span><span class="muted small">by ${esc(task.creator?.username||'Unknown')}</span><select class="quick-status" data-status="${task.id}" aria-label="Change status">${['todo','in_progress','on_hold','completed','cancelled'].map(s=>`<option value="${s}" ${task.status===s?'selected':''}>${esc(statusName(s))}</option>`).join('')}</select></article>`;
+    }
+    function bindCards() {
+      $$('[data-open]', list).forEach(button=>button.addEventListener('click',()=>openTask(Number(button.dataset.open))));
+      $$('.quick-status', list).forEach(select=>select.addEventListener('change',async()=>{try{await api(`/api/v1/tasks/${select.dataset.status}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:select.value})});await load();}catch(e){toast(e.message);}}));
+      if(board) $$('.task-card',list).forEach(card=>{card.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',card.dataset.id));});
+      if(board) $$('.task-column',list).forEach(column=>{column.addEventListener('dragover',e=>e.preventDefault());column.addEventListener('drop',async e=>{e.preventDefault();const id=e.dataTransfer.getData('text/plain');try{await api(`/api/v1/tasks/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:column.dataset.status})});await load();}catch(err){toast(err.message);}});});
+    }
+    function renderList(){list.className='task-list';const header='<div class="task-table-head"><span>Task</span><span>Status</span><span>Assignees</span><span>Due date</span><span>Creator</span><span></span></div>';if(view==='my'){const overdue=rows.filter(isOverdue),completed=rows.filter(t=>t.status==='completed'),upcoming=rows.filter(t=>!isOverdue(t)&&t.status!=='completed');list.innerHTML=header+[['Overdue',overdue],['Upcoming',upcoming],['Completed',completed]].map(([label,items])=>`<h2 class="task-group-heading">${label}<span>${items.length}</span></h2>${items.map(taskCard).join('')||`<p class="muted small task-group-empty">No ${label.toLowerCase()} tasks.</p>`}`).join('');}else list.innerHTML=header+rows.map(taskCard).join('');bindCards();}
+    function renderBoard(){list.className='task-board';list.innerHTML=['todo','in_progress','on_hold','completed','cancelled'].map(s=>`<section class="task-column" data-status="${s}"><h3>${esc(statusName(s))}<span>${rows.filter(t=>t.status===s).length}</span></h3>${rows.filter(t=>t.status===s).map(taskCard).join('')}</section>`).join('');bindCards();}
+    async function openTask(id=null) {
+      $('#task-form').reset(); $('#task-id').value=id||''; $('#task-detail-extra').innerHTML='';
+      const edit = id ? await api(`/api/v1/tasks/${id}`) : null;
+      dialog.dataset.canEdit=edit?String(edit.can_edit):'true';
+      $('#task-dialog-title').textContent=edit?'Task details':'Create task';
+      for(const input of ['task-title','task-description','task-priority','task-due']) $('#'+input).disabled=Boolean(edit && !edit.can_edit);
+      $('#task-state').disabled=Boolean(edit && !edit.can_edit && !edit.assignees.some(a=>a.id===Number(document.body.dataset.userId)));
+      if(edit){$('#task-title').value=edit.title;$('#task-description').value=edit.description;$('#task-priority').value=edit.priority;$('#task-state').value=edit.status;$('#task-due').value=edit.due_at?new Date(edit.due_at).toISOString().slice(0,16):'';for(const o of $('#task-assignees').options)o.selected=edit.assignees.some(a=>a.id===Number(o.value));}
+      $('#task-assignees').disabled=Boolean(edit && !edit.can_edit); $('#task-delete').hidden=!edit || !edit.can_edit;
+      if(edit){$('#task-detail-extra').innerHTML=`<p class="muted small">Created ${dateText(edit.created_at)} · ${edit.completed_at?'Completed '+dateText(edit.completed_at):'Not completed'}</p><h3>Comments</h3><div class="task-comments">${edit.comments.map(c=>`<p><strong>${esc(c.user)}</strong> · ${dateText(c.created_at)}<br>${esc(c.body)}</p>`).join('')||'<p class="muted">No comments yet.</p>'}</div><form id="task-comment-form"><input id="task-comment" maxlength="10000" placeholder="Write a comment…" required><button class="button button-secondary">Comment</button></form><h3>Activity</h3><ul class="task-activity">${edit.activity.map(a=>`<li><strong>${esc(a.user)}</strong> ${esc(a.action)} ${esc(a.detail)} <small>${dateText(a.created_at)}</small></li>`).join('')}</ul>`;$('#task-comment-form').addEventListener('submit',async e=>{e.preventDefault();try{await api(`/api/v1/tasks/${id}/comments`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({body:$('#task-comment').value})});await openTask(id);toast('Comment added.');}catch(err){toast(err.message);}});}
+      dialog.showModal();
+    }
+    try { people=await api('/api/v1/tasks/users'); $('#task-assignees').innerHTML=people.map(p=>`<option value="${p.id}">${esc(p.username)}</option>`).join('');const options=people.map(p=>`<option value="${p.id}">${esc(p.username)}</option>`).join('');$('#task-assignee-filter').insertAdjacentHTML('beforeend',options);$('#task-creator-filter').insertAdjacentHTML('beforeend',options); } catch(e){toast(e.message);}
+    for(const tab of $$('.task-tab')){try{const count=await api(`/api/v1/tasks?view=${tab.dataset.view}&limit=1`);tab.innerHTML=`${esc(tab.textContent)} <span class="task-tab-count">${count.total}</span>`;}catch(_){}tab.addEventListener('click',()=>{$$('.task-tab').forEach(t=>t.classList.toggle('active',t===tab));view=tab.dataset.view;offset=0;load();});}
+    $('#task-search').addEventListener('input',()=>{offset=0;clearTimeout(window.taskSearchTimer);window.taskSearchTimer=setTimeout(load,250);});['#task-status-filter','#task-assignee-filter','#task-creator-filter','#task-priority-filter','#task-due-filter','#task-sort'].forEach(sel=>$(sel).addEventListener('change',()=>{offset=0;load();}));
+    $('#task-layout').addEventListener('click',()=>{board=!board;$('#task-layout').textContent=board?'List View':'Board View';load();});
+    $('#task-create').addEventListener('click',()=>openTask()); $('#task-cancel').addEventListener('click',()=>dialog.close());
+    $('#task-form').addEventListener('submit',async e=>{e.preventDefault();const id=$('#task-id').value;const full={title:$('#task-title').value,description:$('#task-description').value,assignee_ids:selected($('#task-assignees')),priority:$('#task-priority').value,status:$('#task-state').value,due_at:$('#task-due').value?new Date($('#task-due').value).toISOString():null};const payload=id&&dialog.dataset.canEdit!=='true'?{status:full.status}:full;try{await api(id?`/api/v1/tasks/${id}`:'/api/v1/tasks',{method:id?'PATCH':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});dialog.close();message('Task saved.');await load();}catch(err){toast(err.message);}});
+    $('#task-delete').addEventListener('click',async()=>{const id=$('#task-id').value;if(id&&window.confirm('Delete this task and its comments?'))try{await api(`/api/v1/tasks/${id}`,{method:'DELETE'});dialog.close();await load();toast('Task deleted.');}catch(e){toast(e.message);}});
+    await load();
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     initializeSessionExpiration();
     initializeTheme();
@@ -1025,6 +1089,7 @@
     if ($('#users-table-body')) { initializeUserManagement(); loadUsers(); }
     if ($('#account-password-form')) initializeAccount();
     if ($('#notification-feed')) initializeNotificationCenter();
+    if ($('#task-list')) initializeTasks();
   });
 
   window.addEventListener('load', () => {

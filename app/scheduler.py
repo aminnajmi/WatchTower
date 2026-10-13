@@ -9,6 +9,7 @@ from apscheduler.schedulers.base import STATE_PAUSED
 from apscheduler.triggers.cron import CronTrigger
 
 from .service import check_all
+from .tasks import check_task_deadlines
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -110,6 +111,10 @@ def start_scheduler():
     global scheduler
 
     if scheduler is not None and scheduler.running:
+        if scheduler.get_job("task-deadline-check") is None:
+            scheduler.add_job(check_task_deadlines, "interval", minutes=15,
+                              id="task-deadline-check", replace_existing=True,
+                              coalesce=True, max_instances=1)
         job = scheduler.get_job(JOB_ID)
         if job is None:
             job = _add_check_job(scheduler)
@@ -137,6 +142,9 @@ def start_scheduler():
     )
 
     job = _add_check_job(scheduler)
+    scheduler.add_job(check_task_deadlines, "interval", minutes=15,
+                      id="task-deadline-check", replace_existing=True,
+                      coalesce=True, max_instances=1)
     scheduler.start()
 
     logger.info("Scheduler started")
