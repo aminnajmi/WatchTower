@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}To-Do List · WatchTower{% endblock %}
+{% block content %}
+<section class="page-heading todo-heading">
+  <div><span class="eyebrow">TEAM PRODUCTIVITY</span><h1>To-Do List</h1><p class="muted">Organize, assign, and track your team's tasks.</p></div>
+  <button class="button button-primary" id="todo-new"><span aria-hidden="true">＋</span> New Task</button>
+</section>
+
+<section class="todo-summary" id="todo-summary" aria-label="Task summary">
+  <article class="todo-summary-card"><span class="todo-summary-icon todo-icon-blue" aria-hidden="true">✓</span><span class="todo-summary-label">My Pending Tasks</span><strong id="todo-stat-mine">—</strong></article>
+  <article class="todo-summary-card"><span class="todo-summary-icon todo-icon-violet" aria-hidden="true">↗</span><span class="todo-summary-label">Assigned by Me</span><strong id="todo-stat-created">—</strong></article>
+  <article class="todo-summary-card"><span class="todo-summary-icon todo-icon-green" aria-hidden="true">☑</span><span class="todo-summary-label">Completed Tasks</span><strong id="todo-stat-completed">—</strong></article>
+</section>
+
+<section class="todo-panel">
+  <div class="todo-toolbar">
+    <div class="todo-filters" role="tablist" aria-label="Filter tasks">
+      <button class="todo-filter active" data-view="all" role="tab" aria-selected="true">All Tasks <span data-count="all">—</span></button>
+      <button class="todo-filter" data-view="my" role="tab" aria-selected="false">My Tasks <span data-count="my">—</span></button>
+      <button class="todo-filter" data-view="assigned_by_me" role="tab" aria-selected="false">Assigned by Me <span data-count="assigned_by_me">—</span></button>
+      <button class="todo-filter" data-view="completed" role="tab" aria-selected="false">Completed <span data-count="completed">—</span></button>
+    </div>
+    <label class="todo-search"><span aria-hidden="true">⌕</span><input type="search" id="todo-search" placeholder="Search tasks" aria-label="Search tasks"><kbd>⌘ K</kbd></label>
+  </div>
+
+  <form id="todo-quick-form" class="todo-quick-form">
+    <span class="todo-quick-plus" aria-hidden="true">＋</span>
+    <input id="todo-quick-title" maxlength="200" placeholder="Add a task…" aria-label="Quick add task title" required>
+    <button class="button button-primary" type="submit">Add task</button>
+  </form>
+
+  <div id="todo-loading" class="todo-loading">Loading your tasks…</div>
+  <div id="todo-list" class="todo-list" aria-live="polite"></div>
+  <div id="todo-pagination" class="pagination"></div>
+</section>
+
+<dialog id="todo-dialog" class="todo-dialog" aria-labelledby="todo-dialog-title">
+  <form id="todo-form" novalidate>
+    <div class="todo-dialog-heading"><div><span class="eyebrow">TASK DETAILS</span><h2 id="todo-dialog-title">New Task</h2></div><button type="button" class="icon-button" id="todo-close" aria-label="Close dialog">×</button></div>
+    <input id="todo-id" type="hidden">
+    <label class="todo-field">Task title<input id="todo-title" maxlength="200" required placeholder="What needs to be done?"><small class="todo-error" id="todo-title-error"></small></label>
+    <label class="todo-field">Description <span class="muted">Optional</span><textarea id="todo-description" rows="3" maxlength="12000" placeholder="Add a little more detail…"></textarea></label>
+    <div class="todo-field-grid">
+      <label class="todo-field">Assigned to<select id="todo-assignee"><option value="">Unassigned</option></select></label>
+      <label class="todo-field">Due date<input id="todo-due" type="datetime-local"></label>
+    </div>
+    <p id="todo-form-error" class="todo-error" role="alert"></p>
+    <div class="todo-dialog-actions"><button type="button" id="todo-cancel" class="button button-secondary">Cancel</button><button type="submit" id="todo-save" class="button button-primary">Save Task</button></div>
+  </form>
+</dialog>
+{% endblock %}

@@ -1,12 +1,12 @@
 # Graph Report - WatchTower  (2026-10-13)
 
 ## Corpus Check
-- 56 files · ~42,103 words
+- 56 files · ~42,184 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 9 file(s) not represented in the graph (top: (none) 5, .example 1, .db-shm 1)
 
 ## Summary
-- 628 nodes · 1696 edges · 46 communities (15 shown, 31 thin omitted)
+- 632 nodes · 1702 edges · 45 communities (14 shown, 31 thin omitted)
 - Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 146 edges (avg confidence: 0.94)
 - Token cost: 0 input · 0 output
 
@@ -17,15 +17,14 @@
 
 ## Community Hubs (Navigation)
 - auth.py
-- ProductionConfigTests
-- get
+- DeploymentWorkflowSafetyTests
+- Release
 - app.js
-- TaskManagementTests
 - Graphify Instructions
 - cryptography_fernet
 - Dashboard Templates and Docs
 - DeploymentHealthCheckTests
-- TelegramSendResult
+- Notification
 - schemas.py
 - main.py
 - Compose Configuration
@@ -93,19 +92,15 @@
 ## Hyperedges (group relationships)
 - **Graphify Build Pipeline** — _codex_skills_graphify_skill_graphify, _codex_skills_graphify_references_extraction_spec_graphify, _codex_skills_graphify_references_github_and_merge_graphify [EXTRACTED 1.00]
 
-## Communities (46 total, 31 thin omitted)
+## Communities (45 total, 31 thin omitted)
 
 ### Community 0 - "auth.py"
-Cohesion: 0.08
-Nodes (49): generate_password_hash(), _hash_password(), verify_password(), verify_user_password(), Base, _configure_sqlite_connection(), ensure_sqlite_directory(), init_db() (+41 more)
+Cohesion: 0.07
+Nodes (50): generate_password_hash(), _hash_password(), hash_user_password(), verify_password(), verify_user_password(), Base, _configure_sqlite_connection(), OSRelease (+42 more)
 
-### Community 1 - "ProductionConfigTests"
-Cohesion: 0.27
-Nodes (4): Fail startup on missing/unsafe credentials in production mode., Settings, BaseSettings, ProductionConfigTests
-
-### Community 2 - "get"
-Cohesion: 0.09
-Nodes (43): ABC, access_token_expiration(), Return the validated JWT expiration for the browser's logout timer., account_page(), dashboard_page(), events(), events_page(), home() (+35 more)
+### Community 2 - "Release"
+Cohesion: 0.18
+Nodes (15): ABC, AlmaLinuxProvider, ArchLinuxProvider, Provider, Release, CentOSProvider, DebianProvider, FedoraProvider (+7 more)
 
 ### Community 3 - "app.js"
 Cohesion: 0.11
@@ -119,9 +114,9 @@ Nodes (14): Add and Watch Reference, Exports Reference, Extraction Specification
 Cohesion: 0.20
 Nodes (11): FastAPI Release Tracking Service, OS Release Tracker README, Release Semantics, Web Dashboard, Shared Dashboard Layout, Dashboard and Operating Systems Index, Release Events Page, Login Page (+3 more)
 
-### Community 9 - "TelegramSendResult"
-Cohesion: 0.09
-Nodes (18): send(), notify(), Deliver to configured channels independently; report aggregate success., _failure(), Send a Telegram message without exposing credentials in errors or logs., Send only to the independently configured Support-Sales group., send(), send_support_sales() (+10 more)
+### Community 9 - "Notification"
+Cohesion: 0.08
+Nodes (13): Notification, send(), notify(), Deliver to configured channels independently; report aggregate success., create_notification(), metadata_for(), Any, datetime (+5 more)
 
 ### Community 10 - "schemas.py"
 Cohesion: 0.16
@@ -129,27 +124,27 @@ Nodes (10): CheckResult, NotificationCreate, PasswordChange, PasswordReset, Base
 
 ### Community 11 - "main.py"
 Cohesion: 0.05
-Nodes (75): configure_session_factory_provider(), Allow the app's configured DB session factory to be injected in tests., require_admin(), verify_access_token(), _approval_action_id(), approve_notification(), _authenticate_login(), check() (+67 more)
+Nodes (100): access_token_expiration(), authenticate_token(), configure_session_factory_provider(), Principal, principal_for_username(), Request, Allow the app's configured DB session factory to be injected in tests., Resolve every request against current DB state so disable takes effect… (+92 more)
 
 ### Community 15 - "scheduler.py"
-Cohesion: 0.16
-Nodes (15): status(), _add_check_job(), get_scheduler(), Create and start one scheduler on FastAPI's currently running loop., Run the shared check service without taking down APScheduler., Record real APScheduler lifecycle events for the tracked job., _record_job_event(), scheduled_check() (+7 more)
+Cohesion: 0.07
+Nodes (26): Fail startup on missing/unsafe credentials in production mode., Settings, lifespan(), ensure_sqlite_directory(), init_db(), _migrate_notification_approval_fields(), Add nullable approval-binding fields without granting legacy rows access., _add_check_job() (+18 more)
 
 ### Community 17 - "deployment-health-check.sh"
 Cohesion: 1.00
 Nodes (3): diagnose(), run_docker(), deployment-health-check.sh script
 
 ### Community 19 - "tasks.py"
-Cohesion: 0.12
-Nodes (46): authenticate_token(), Principal, principal_for_username(), Request, Resolve every request against current DB state so disable takes effect…, _request_origin(), change_own_password(), get_account() (+38 more)
+Cohesion: 0.13
+Nodes (39): Task, TaskActivity, TaskAssignment, TaskComment, TaskNotification, User, _accessible(), _activity() (+31 more)
 
 ### Community 22 - "task_spec.py"
 Cohesion: 0.07
 Nodes (37): get_openclaw_approval_decision(), Return only an OpenClaw request's action-bound approval decision., _task_binding_is_valid(), BusinessActionTask, canonical_task_json(), PublicWebsiteInspectionTask, BaseModel, field_validator (+29 more)
 
 ### Community 23 - "create_access_token"
-Cohesion: 0.05
-Nodes (6): create_access_token(), hash_user_password(), NotificationCenterTests, ApplicationStartupTests, SupportSalesTelegramEndpointTests, UserManagementTests
+Cohesion: 0.06
+Nodes (14): create_access_token(), _failure(), Send a Telegram message without exposing credentials in errors or logs., Send only to the independently configured Support-Sales group., send(), send_support_sales(), send_support_sales_test(), send_test() (+6 more)
 
 ### Community 47 - "SchedulerExecutionTests"
 Cohesion: 0.15
@@ -163,11 +158,11 @@ Nodes (5): FakeProvider, SchedulerExecutionTests, latest(), latest(), _done()
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Release` connect `get` to `auth.py`, `TelegramSendResult`, `WebDashboardTests`, `SchedulerExecutionTests`?**
-  _High betweenness centrality (0.050) - this node is a cross-community bridge._
-- **Why does `NotificationCenterTests` connect `create_access_token` to `auth.py`, `task_spec.py`?**
+- **Why does `Release` connect `Release` to `auth.py`, `create_access_token`, `WebDashboardTests`, `SchedulerExecutionTests`?**
+  _High betweenness centrality (0.049) - this node is a cross-community bridge._
+- **Why does `NotificationCenterTests` connect `create_access_token` to `auth.py`, `task_spec.py`, `scheduler.py`?**
   _High betweenness centrality (0.046) - this node is a cross-community bridge._
-- **Why does `create_access_token()` connect `create_access_token` to `auth.py`, `TelegramSendResult`, `main.py`, `SchedulerExecutionTests`?**
+- **Why does `create_access_token()` connect `create_access_token` to `auth.py`, `Notification`, `main.py`, `SchedulerExecutionTests`?**
   _High betweenness centrality (0.042) - this node is a cross-community bridge._
 - **Are the 14 inferred relationships involving `Release` (e.g. with `AlmaLinuxProvider` and `ArchLinuxProvider`) actually correct?**
   _`Release` has 14 INFERRED edges - model-reasoned connections that need verification._

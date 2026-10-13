@@ -52,8 +52,7 @@ class ApplicationStartupTests(unittest.TestCase):
 
                 next_run = job.next_run_time
                 main.start_scheduler()
-                self.assertEqual(len(scheduler_module.get_scheduler().get_jobs()), 2)
-                self.assertIsNotNone(scheduler_module.get_scheduler().get_job("task-deadline-check"))
+                self.assertEqual(len(scheduler_module.get_scheduler().get_jobs()), 1)
                 self.assertEqual(scheduler_module.get_scheduler().get_job("os-release-check").next_run_time, next_run)
 
                 scheduler_module.get_scheduler().pause_job("os-release-check")
@@ -71,7 +70,7 @@ class ApplicationStartupTests(unittest.TestCase):
                 self.assertFalse(missing_status["scheduler"]["job_exists"])
                 self.assertFalse(missing_status["scheduler"]["running"])
                 main.start_scheduler()
-                self.assertEqual(len(scheduler_module.get_scheduler().get_jobs()), 2)
+                self.assertEqual(len(scheduler_module.get_scheduler().get_jobs()), 1)
             self.assertIsNone(scheduler_module.get_scheduler())
             engine.dispose()
 

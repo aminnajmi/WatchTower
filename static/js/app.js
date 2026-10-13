@@ -1012,67 +1012,212 @@
     });
   }
 
-  async function initializeTasks() {
-    const list = $('#task-list'); if (!list) return;
-    let view = 'my'; let board = false; let people = []; let rows = []; let offset = 0; const pageSize = 25; let total = 0;
-    const dialog = $('#task-dialog');
-    const message = text => { $('#task-message').textContent = text || ''; };
-    const selected = select => Array.from(select.selectedOptions).map(option => Number(option.value));
+  async function initializeTodos() {
+    const list = $('#todo-list');
+    if (!list) return;
+    const dialog = $('#todo-dialog');
+    const currentUserId = Number(document.body.dataset.userId);
+    const pageSize = 50;
+    let view = 'all';
+    let offset = 0;
+    let searchTimer;
+
     const esc = escapeHtml;
-    const statusName = value => ({todo:'To Do',in_progress:'In Progress',on_hold:'On Hold',completed:'Completed',cancelled:'Cancelled'})[value] || value;
-    const isOverdue = task => task.due_at && new Date(task.due_at) < new Date() && !['completed','cancelled'].includes(task.status);
+    const dateOnly = value => {
+      if (!value) return '';
+      const date = parseApiDate(value);
+      if (Number.isNaN(date.valueOf())) return '';
+      return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' }).format(date);
+    };
+    const localInputDate = value => {
+      if (!value) return '';
+      const date = parseApiDate(value);
+      if (Number.isNaN(date.valueOf())) return '';
+      return new Date(date.valueOf() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    };
+    const overdue = todo => todo.due_date && parseApiDate(todo.due_date) < new Date() && !todo.is_completed;
+
+    async function refreshSummary() {
+      const summary = await api('/api/v1/todos/summary');
+      $('#todo-stat-mine').textContent = summary.my_pending;
+      $('#todo-stat-created').textContent = summary.assigned_by_me;
+      $('#todo-stat-completed').textContent = summary.completed;
+      $('[data-count="my"]').textContent = summary.my_total;
+      $('[data-count="assigned_by_me"]').textContent = summary.assigned_by_me_total;
+      $('[data-count="completed"]').textContent = summary.completed;
+      $('[data-count="all"]').textContent = summary.total;
+    }
+
+    function todoRow(todo) {
+      const late = overdue(todo);
+      const assigned = todo.assigned_to?.username;
+      const creator = todo.created_by?.username;
+      const assignedMeta = assigned
+        ? `<span class="avatar todo-avatar" aria-hidden="true">${esc(assigned.slice(0, 1).toUpperCase())}</span><span>${esc(assigned)}</span>`
+        : '<span class="todo-unassigned">Unassigned</span>';
+      return `<article class="todo-row ${todo.is_completed ? 'is-completed' : ''} ${late ? 'is-overdue' : ''}" data-todo-id="${todo.id}">
+        <label class="todo-check"><input type="checkbox" data-complete="${todo.id}" ${todo.is_completed ? 'checked' : ''} ${todo.can_complete ? '' : 'disabled'} aria-label="${todo.is_completed ? 'Reopen' : 'Complete'} ${esc(todo.title)}"><span class="todo-checkmark" aria-hidden="true"></span></label>
+        <button class="todo-main" type="button" data-edit="${todo.id}" ${todo.can_edit ? '' : 'aria-label="View task details"'}><strong>${esc(todo.title)}</strong>${todo.description ? `<span>${esc(todo.description)}</span>` : ''}<small>Created by ${esc(creator || 'Deleted user')}</small></button>
+        <span class="todo-assignee">${assignedMeta}</span>
+        <span class="todo-due ${late ? 'late' : ''}">${todo.due_date ? `${late ? '<b>Overdue</b> · ' : ''}${dateOnly(todo.due_date)}` : '<span class="todo-no-date">No due date</span>'}</span>
+        <details class="todo-actions"><summary aria-label="Task actions">•••</summary><div><button type="button" data-edit="${todo.id}" ${todo.can_edit ? '' : 'disabled'}>Edit</button><button type="button" data-delete="${todo.id}" ${todo.can_delete ? '' : 'disabled'}>Delete</button></div></details>
+      </article>`;
+    }
+
+    function bindRows() {
+      $$('[data-edit]', list).forEach(button => button.addEventListener('click', () => openTodo(Number(button.dataset.edit))));
+      $$('[data-delete]', list).forEach(button => button.addEventListener('click', async () => {
+        const id = Number(button.dataset.delete);
+        if (!window.confirm('Delete this task? This action cannot be undone.')) return;
+        button.disabled = true;
+        try {
+          await api(`/api/v1/todos/${id}`, { method: 'DELETE' });
+          toast('Task deleted.');
+          await load();
+        } catch (error) {
+          button.disabled = false;
+          toast(error.message);
+        }
+      }));
+      $$('[data-complete]', list).forEach(input => input.addEventListener('change', async () => {
+        const id = Number(input.dataset.complete);
+        const previous = !input.checked;
+        const desired = input.checked;
+        const row = input.closest('.todo-row');
+        row.classList.toggle('is-completed', desired);
+        input.disabled = true;
+        try {
+          await api(`/api/v1/todos/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_completed: desired }) });
+          toast(desired ? 'Task completed.' : 'Task reopened.');
+          await load();
+        } catch (error) {
+          input.checked = previous;
+          row.classList.toggle('is-completed', previous);
+          input.disabled = false;
+          toast(error.message);
+        }
+      }));
+    }
+
     async function load() {
-      list.innerHTML = '<div class="loading-state">Loading tasks…</div>';
+      $('#todo-loading').hidden = false;
+      list.innerHTML = '';
       try {
-        const params = new URLSearchParams({view, limit:String(pageSize), offset:String(offset)});
-        const [sort,direction]=$('#task-sort').value.split(':');params.set('sort',sort);params.set('direction',direction);
-        if ($('#task-search').value.trim()) params.set('q', $('#task-search').value.trim());
-        if ($('#task-status-filter').value) params.set('status', $('#task-status-filter').value);
-        if ($('#task-assignee-filter').value) params.set('assignee_id', $('#task-assignee-filter').value);
-        if ($('#task-creator-filter').value) params.set('creator_id', $('#task-creator-filter').value);
-        if ($('#task-priority-filter').value) params.set('priority', $('#task-priority-filter').value);
-        if ($('#task-due-filter').value) params.set('due', $('#task-due-filter').value);
-        const result = await api(`/api/v1/tasks?${params}`); rows = result.items; total = result.total;
-        const stats = await api('/api/v1/tasks/summary');
-        const done = stats.completed;
-        $('#task-stats').innerHTML = `<article><strong>${stats.active}</strong><span>Active tasks</span></article><article><strong>${stats.my_pending}</strong><span>My pending</span></article><article><strong>${stats.in_progress}</strong><span>In progress</span></article><article><strong>${stats.overdue}</strong><span>Overdue</span></article><article><strong>${done}</strong><span>Completed</span></article><div class="task-progress"><span>${done} of ${stats.total} complete</span><progress max="${Math.max(stats.total,1)}" value="${done}"></progress></div>`;
-        if (!rows.length) { list.innerHTML = '<div class="empty-state">No tasks here yet. Create a task to get started.</div>'; $('#task-pagination').innerHTML=''; return; }
-        if (board) renderBoard(); else renderList();
-        $('#task-pagination').innerHTML=`<span>Showing ${offset+1}–${Math.min(offset+rows.length,total)} of ${total}</span><div><button class="button button-secondary" id="task-prev" ${offset===0?'disabled':''}>Previous</button><button class="button button-secondary" id="task-next" ${offset+pageSize>=total?'disabled':''}>Next</button></div>`;
-        $('#task-prev').addEventListener('click',()=>{offset=Math.max(0,offset-pageSize);load();});$('#task-next').addEventListener('click',()=>{offset+=pageSize;load();});
-      } catch (error) { list.innerHTML = `<div class="empty-state">Could not load tasks: ${esc(error.message)}</div>`; }
+        const params = new URLSearchParams({ view, limit: String(pageSize), offset: String(offset) });
+        if ($('#todo-search').value.trim()) params.set('q', $('#todo-search').value.trim());
+        const [result] = await Promise.all([
+          api(`/api/v1/todos?${params}`), refreshSummary()
+        ]);
+        $('#todo-loading').hidden = true;
+        const pending = result.items.filter(todo => !todo.is_completed);
+        const completed = result.items.filter(todo => todo.is_completed);
+        if (!result.items.length) {
+          const hasSearch = $('#todo-search').value.trim();
+          list.innerHTML = `<div class="todo-empty"><span aria-hidden="true">${hasSearch ? '⌕' : '✓'}</span><strong>${hasSearch ? 'No matching tasks' : 'You’re all caught up'}</strong><p>${hasSearch ? 'Try another search or switch filters.' : 'Create a task to get started.'}</p>${!hasSearch ? '<button type="button" class="button button-primary" id="todo-empty-new">New Task</button>' : ''}</div>`;
+          $('#todo-empty-new')?.addEventListener('click', () => openTodo());
+          $('#todo-pagination').innerHTML = '';
+          return;
+        }
+        list.innerHTML = `
+          <section class="todo-section"><header><h2>Pending <span>${pending.length}</span></h2></header>${pending.length ? pending.map(todoRow).join('') : '<p class="todo-section-empty">No pending tasks.</p>'}</section>
+          ${completed.length ? `<section class="todo-section completed-section"><header><h2>Completed <span>${completed.length}</span></h2></header>${completed.map(todoRow).join('')}</section>` : ''}`;
+        bindRows();
+        $('#todo-pagination').innerHTML = `<span>Showing ${offset + 1}–${Math.min(offset + result.items.length, result.total)} of ${result.total}</span><div><button class="button button-secondary" id="todo-prev" ${offset === 0 ? 'disabled' : ''}>Previous</button><button class="button button-secondary" id="todo-next" ${offset + pageSize >= result.total ? 'disabled' : ''}>Next</button></div>`;
+        $('#todo-prev').addEventListener('click', () => { offset = Math.max(0, offset - pageSize); load(); });
+        $('#todo-next').addEventListener('click', () => { offset += pageSize; load(); });
+      } catch (error) {
+        $('#todo-loading').hidden = true;
+        list.innerHTML = `<div class="todo-empty"><strong>Could not load tasks</strong><p>${esc(error.message)}</p></div>`;
+      }
     }
-    function taskCard(task) {
-      const late = isOverdue(task);
-      return `<article class="task-card ${late?'task-overdue':''}" data-id="${task.id}" draggable="${board}"><button class="task-open" data-open="${task.id}"><span class="task-priority priority-${esc(task.priority)}"></span><strong>${esc(task.title)}</strong></button><span class="status-badge">${esc(statusName(task.status))}</span><div class="task-assignees">${task.assignees.map(a=>`<span class="avatar" title="${esc(a.username)}">${esc(a.username.slice(0,1).toUpperCase())}</span>`).join('')||'<span class="muted">Unassigned</span>'}</div><span class="task-deadline ${late?'late':''}">${late?'Overdue · ':''}${dateText(task.due_at)}</span><span class="muted small">by ${esc(task.creator?.username||'Unknown')}</span><select class="quick-status" data-status="${task.id}" aria-label="Change status">${['todo','in_progress','on_hold','completed','cancelled'].map(s=>`<option value="${s}" ${task.status===s?'selected':''}>${esc(statusName(s))}</option>`).join('')}</select></article>`;
-    }
-    function bindCards() {
-      $$('[data-open]', list).forEach(button=>button.addEventListener('click',()=>openTask(Number(button.dataset.open))));
-      $$('.quick-status', list).forEach(select=>select.addEventListener('change',async()=>{try{await api(`/api/v1/tasks/${select.dataset.status}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:select.value})});await load();}catch(e){toast(e.message);}}));
-      if(board) $$('.task-card',list).forEach(card=>{card.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',card.dataset.id));});
-      if(board) $$('.task-column',list).forEach(column=>{column.addEventListener('dragover',e=>e.preventDefault());column.addEventListener('drop',async e=>{e.preventDefault();const id=e.dataTransfer.getData('text/plain');try{await api(`/api/v1/tasks/${id}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:column.dataset.status})});await load();}catch(err){toast(err.message);}});});
-    }
-    function renderList(){list.className='task-list';const header='<div class="task-table-head"><span>Task</span><span>Status</span><span>Assignees</span><span>Due date</span><span>Creator</span><span></span></div>';if(view==='my'){const overdue=rows.filter(isOverdue),completed=rows.filter(t=>t.status==='completed'),upcoming=rows.filter(t=>!isOverdue(t)&&t.status!=='completed');list.innerHTML=header+[['Overdue',overdue],['Upcoming',upcoming],['Completed',completed]].map(([label,items])=>`<h2 class="task-group-heading">${label}<span>${items.length}</span></h2>${items.map(taskCard).join('')||`<p class="muted small task-group-empty">No ${label.toLowerCase()} tasks.</p>`}`).join('');}else list.innerHTML=header+rows.map(taskCard).join('');bindCards();}
-    function renderBoard(){list.className='task-board';list.innerHTML=['todo','in_progress','on_hold','completed','cancelled'].map(s=>`<section class="task-column" data-status="${s}"><h3>${esc(statusName(s))}<span>${rows.filter(t=>t.status===s).length}</span></h3>${rows.filter(t=>t.status===s).map(taskCard).join('')}</section>`).join('');bindCards();}
-    async function openTask(id=null) {
-      $('#task-form').reset(); $('#task-id').value=id||''; $('#task-detail-extra').innerHTML='';
-      const edit = id ? await api(`/api/v1/tasks/${id}`) : null;
-      dialog.dataset.canEdit=edit?String(edit.can_edit):'true';
-      $('#task-dialog-title').textContent=edit?'Task details':'Create task';
-      for(const input of ['task-title','task-description','task-priority','task-due']) $('#'+input).disabled=Boolean(edit && !edit.can_edit);
-      $('#task-state').disabled=Boolean(edit && !edit.can_edit && !edit.assignees.some(a=>a.id===Number(document.body.dataset.userId)));
-      if(edit){$('#task-title').value=edit.title;$('#task-description').value=edit.description;$('#task-priority').value=edit.priority;$('#task-state').value=edit.status;$('#task-due').value=edit.due_at?new Date(edit.due_at).toISOString().slice(0,16):'';for(const o of $('#task-assignees').options)o.selected=edit.assignees.some(a=>a.id===Number(o.value));}
-      $('#task-assignees').disabled=Boolean(edit && !edit.can_edit); $('#task-delete').hidden=!edit || !edit.can_edit;
-      if(edit){$('#task-detail-extra').innerHTML=`<p class="muted small">Created ${dateText(edit.created_at)} · ${edit.completed_at?'Completed '+dateText(edit.completed_at):'Not completed'}</p><h3>Comments</h3><div class="task-comments">${edit.comments.map(c=>`<p><strong>${esc(c.user)}</strong> · ${dateText(c.created_at)}<br>${esc(c.body)}</p>`).join('')||'<p class="muted">No comments yet.</p>'}</div><form id="task-comment-form"><input id="task-comment" maxlength="10000" placeholder="Write a comment…" required><button class="button button-secondary">Comment</button></form><h3>Activity</h3><ul class="task-activity">${edit.activity.map(a=>`<li><strong>${esc(a.user)}</strong> ${esc(a.action)} ${esc(a.detail)} <small>${dateText(a.created_at)}</small></li>`).join('')}</ul>`;$('#task-comment-form').addEventListener('submit',async e=>{e.preventDefault();try{await api(`/api/v1/tasks/${id}/comments`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({body:$('#task-comment').value})});await openTask(id);toast('Comment added.');}catch(err){toast(err.message);}});}
+
+    async function openTodo(id = null) {
+      $('#todo-form').reset();
+      $('#todo-id').value = id || '';
+      $('#todo-form-error').textContent = '';
+      $('#todo-title-error').textContent = '';
+      $('#todo-dialog-title').textContent = id ? 'Edit Task' : 'New Task';
+      $('#todo-save').textContent = id ? 'Save Changes' : 'Save Task';
+      $('#todo-save').disabled = false;
+      if (id) {
+        try {
+          const todo = await api(`/api/v1/todos/${id}`);
+          $('#todo-title').value = todo.title;
+          $('#todo-description').value = todo.description || '';
+          $('#todo-assignee').value = todo.assigned_to_user_id || '';
+          $('#todo-due').value = localInputDate(todo.due_date);
+          for (const field of ['todo-title', 'todo-description', 'todo-assignee', 'todo-due']) $('#'+field).disabled = !todo.can_edit;
+          $('#todo-save').hidden = !todo.can_edit;
+        } catch (error) { toast(error.message); return; }
+      } else {
+        for (const field of ['todo-title', 'todo-description', 'todo-assignee', 'todo-due']) $('#'+field).disabled = false;
+        $('#todo-save').hidden = false;
+      }
       dialog.showModal();
+      $('#todo-title').focus();
     }
-    try { people=await api('/api/v1/tasks/users'); $('#task-assignees').innerHTML=people.map(p=>`<option value="${p.id}">${esc(p.username)}</option>`).join('');const options=people.map(p=>`<option value="${p.id}">${esc(p.username)}</option>`).join('');$('#task-assignee-filter').insertAdjacentHTML('beforeend',options);$('#task-creator-filter').insertAdjacentHTML('beforeend',options); } catch(e){toast(e.message);}
-    for(const tab of $$('.task-tab')){try{const count=await api(`/api/v1/tasks?view=${tab.dataset.view}&limit=1`);tab.innerHTML=`${esc(tab.textContent)} <span class="task-tab-count">${count.total}</span>`;}catch(_){}tab.addEventListener('click',()=>{$$('.task-tab').forEach(t=>t.classList.toggle('active',t===tab));view=tab.dataset.view;offset=0;load();});}
-    $('#task-search').addEventListener('input',()=>{offset=0;clearTimeout(window.taskSearchTimer);window.taskSearchTimer=setTimeout(load,250);});['#task-status-filter','#task-assignee-filter','#task-creator-filter','#task-priority-filter','#task-due-filter','#task-sort'].forEach(sel=>$(sel).addEventListener('change',()=>{offset=0;load();}));
-    $('#task-layout').addEventListener('click',()=>{board=!board;$('#task-layout').textContent=board?'List View':'Board View';load();});
-    $('#task-create').addEventListener('click',()=>openTask()); $('#task-cancel').addEventListener('click',()=>dialog.close());
-    $('#task-form').addEventListener('submit',async e=>{e.preventDefault();const id=$('#task-id').value;const full={title:$('#task-title').value,description:$('#task-description').value,assignee_ids:selected($('#task-assignees')),priority:$('#task-priority').value,status:$('#task-state').value,due_at:$('#task-due').value?new Date($('#task-due').value).toISOString():null};const payload=id&&dialog.dataset.canEdit!=='true'?{status:full.status}:full;try{await api(id?`/api/v1/tasks/${id}`:'/api/v1/tasks',{method:id?'PATCH':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});dialog.close();message('Task saved.');await load();}catch(err){toast(err.message);}});
-    $('#task-delete').addEventListener('click',async()=>{const id=$('#task-id').value;if(id&&window.confirm('Delete this task and its comments?'))try{await api(`/api/v1/tasks/${id}`,{method:'DELETE'});dialog.close();await load();toast('Task deleted.');}catch(e){toast(e.message);}});
+
+    async function saveTodo(event) {
+      event.preventDefault();
+      const button = $('#todo-save');
+      const title = $('#todo-title').value.trim();
+      if (!title) { $('#todo-title-error').textContent = 'Enter a task title.'; $('#todo-title').focus(); return; }
+      const id = $('#todo-id').value;
+      const payload = {
+        title,
+        description: $('#todo-description').value.trim(),
+        assigned_to_user_id: $('#todo-assignee').value ? Number($('#todo-assignee').value) : null,
+        due_date: $('#todo-due').value ? new Date($('#todo-due').value).toISOString() : null,
+      };
+      button.disabled = true;
+      button.textContent = 'Saving…';
+      $('#todo-form-error').textContent = '';
+      try {
+        await api(id ? `/api/v1/todos/${id}` : '/api/v1/todos', {
+          method: id ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+        });
+        dialog.close();
+        toast(id ? 'Task updated.' : 'Task created.');
+        await load();
+      } catch (error) {
+        $('#todo-form-error').textContent = error.message;
+      } finally {
+        button.disabled = false;
+        button.textContent = id ? 'Save Changes' : 'Save Task';
+      }
+    }
+
+    try {
+      const users = await api('/api/v1/todos/assignees');
+      $('#todo-assignee').insertAdjacentHTML('beforeend', users.map(user => `<option value="${user.id}">${esc(user.username)}</option>`).join(''));
+    } catch (error) { toast(error.message); }
+
+    $$('.todo-filter').forEach(button => button.addEventListener('click', () => {
+      view = button.dataset.view; offset = 0;
+      $$('.todo-filter').forEach(item => { const active = item === button; item.classList.toggle('active', active); item.setAttribute('aria-selected', String(active)); });
+      load();
+    }));
+    $('#todo-search').addEventListener('input', () => { offset = 0; clearTimeout(searchTimer); searchTimer = setTimeout(load, 250); });
+    $('#todo-new').addEventListener('click', () => openTodo());
+    $('#todo-close').addEventListener('click', () => dialog.close());
+    $('#todo-cancel').addEventListener('click', () => dialog.close());
+    $('#todo-form').addEventListener('submit', saveTodo);
+    $('#todo-quick-form').addEventListener('submit', async event => {
+      event.preventDefault();
+      const input = $('#todo-quick-title');
+      const button = event.currentTarget.querySelector('button');
+      const title = input.value.trim();
+      if (!title) { input.focus(); return; }
+      button.disabled = true; button.textContent = 'Adding…';
+      try {
+        await api('/api/v1/todos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, assigned_to_user_id: currentUserId || null }) });
+        input.value = ''; offset = 0; toast('Task added.'); await load();
+      } catch (error) { toast(error.message); }
+      finally { button.disabled = false; button.textContent = 'Add task'; }
+    });
+    document.addEventListener('keydown', event => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); $('#todo-search').focus(); }
+    });
     await load();
   }
 
@@ -1089,7 +1234,7 @@
     if ($('#users-table-body')) { initializeUserManagement(); loadUsers(); }
     if ($('#account-password-form')) initializeAccount();
     if ($('#notification-feed')) initializeNotificationCenter();
-    if ($('#task-list')) initializeTasks();
+    if ($('#todo-list')) initializeTodos();
   });
 
   window.addEventListener('load', () => {

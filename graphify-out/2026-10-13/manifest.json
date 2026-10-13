@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "app/tasks.py": {
-    "mtime": 1791905778.783058,
-    "seen": 1791905842.1602602,
-    "ast_hash": "4874101590ce5f3aa29945eaf8ce5666",
+    "mtime": 1791905954.577659,
+    "seen": 1791905977.7839282,
+    "ast_hash": "18439cee0ef9a272fcfbdd0951ea0ba0",
     "semantic_hash": ""
   },
   "tests/test_tasks.py": {
