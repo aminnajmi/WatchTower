@@ -36,7 +36,7 @@ html[data-theme="dark"]{color-scheme:dark;--bg:#101722;--surface:#182230;--surfa
 .notification-message{min-width:0;line-height:1.65;white-space:normal;overflow-wrap:anywhere}.notification-message>p{margin:0 0 10px}.notification-message>p:last-child{margin-bottom:0}.notification-message h1,.notification-message h2,.notification-message h3,.notification-message h4,.notification-message h5,.notification-message h6{color:var(--ink);font-family:'Manrope',sans-serif;line-height:1.35;margin:14px 0 7px}.notification-message h1{font-size:18px}.notification-message h2{font-size:16px}.notification-message h3{font-size:14px}.notification-message h4,.notification-message h5,.notification-message h6{font-size:12px}.notification-message ul,.notification-message ol{margin:5px 0 12px;padding-left:22px}.notification-message li{padding-left:3px;margin:3px 0}.notification-message a{color:var(--accent-dark);text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}.notification-table-wrap{max-width:100%;margin:12px 0;overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface);overscroll-behavior-x:contain}.notification-table{width:100%;min-width:max-content;border-collapse:separate;border-spacing:0;color:var(--ink);font-size:11px;line-height:1.45}.notification-table th,.notification-table td{padding:9px 11px;text-align:left;vertical-align:top;white-space:nowrap;border-bottom:1px solid var(--line)}.notification-table th{position:sticky;top:0;background:var(--surface-alt);color:var(--ink);font-size:10px;font-weight:800;letter-spacing:.25px}.notification-table tbody tr:last-child td{border-bottom:0}.notification-table tbody tr:nth-child(even){background:var(--surface-soft)}.notification-table td{color:var(--muted)}.notification-table td a{overflow-wrap:anywhere}
 .button-secondary{background:var(--surface);border-color:var(--line);color:var(--ink)}.button-danger{background:var(--danger-bg);border-color:var(--line);color:var(--danger)}
 /* Compact task database, using the shared WatchTower palette. */
-.todo-workspace{max-width:940px;margin:12px auto 0}
+.todo-workspace{width:min(100%,940px);max-width:940px;margin:12px 0 0}
 .todo-workspace [hidden],.todo-popover[hidden]{display:none!important}
 .todo-heading{margin:0 0 12px}
 .todo-heading h1{display:flex;align-items:center;gap:11px;margin:0;font-family:'Manrope',sans-serif;font-size:27px;font-weight:750;letter-spacing:-.8px;line-height:1.4}
@@ -70,7 +70,8 @@ html[data-theme="dark"]{color-scheme:dark;--bg:#101722;--surface:#182230;--surfa
 .todo-check-cell input:disabled{cursor:default;opacity:.4}
 .todo-cell-button{display:flex;align-items:center;gap:7px;width:100%;height:27px;padding:0 8px;border:0;border-radius:0;background:transparent;color:inherit;font-size:13px;line-height:1.4;text-align:left;white-space:nowrap;overflow:hidden}
 .todo-cell-button:disabled{cursor:default;opacity:1}
-.todo-title-button{display:block;overflow:hidden;text-overflow:ellipsis;font-weight:500;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.todo-title-button{display:block;overflow:hidden;text-overflow:ellipsis;font-weight:500;text-decoration:none;cursor:pointer}
+.todo-title-button:not(:disabled):hover{text-decoration:underline;text-decoration-color:var(--muted);text-underline-offset:3px}
 .todo-cell-button:focus-visible{outline-offset:-3px}
 .todo-person>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .todo-avatar{display:inline-grid;place-items:center;flex:0 0 18px;width:18px;height:18px;border:1px solid var(--line);border-radius:50%;background:var(--surface-soft);color:var(--muted);font-size:9px;font-weight:650;letter-spacing:.2px}
