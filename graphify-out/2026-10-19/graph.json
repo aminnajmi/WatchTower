@@ -20,19 +20,6 @@
   },
   "nodes": [
     {
-      "id": "app_config_settings",
-      "label": "Settings",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "settings",
-      "source_file": "app/config.py",
-      "source_location": "L4"
-    },
-    {
       "id": "app_models_base",
       "label": "Base",
       "_callable": true,
@@ -122,19 +109,6 @@
       "norm_label": "apitests",
       "source_file": "tests/test_api.py",
       "source_location": "L18"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests",
-      "label": "UserManagementTests",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "usermanagementtests",
-      "source_file": "tests/test_users.py",
-      "source_location": "L16"
     },
     {
       "id": "tests_test_versioning_checkservicetests",
@@ -343,19 +317,6 @@
       "norm_label": "todoupdate",
       "source_file": "app/todos.py",
       "source_location": "L31"
-    },
-    {
-      "id": "tests_test_todos_todotests",
-      "label": "TodoTests",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "Principal",
-      "file_type": "code",
-      "norm_label": "todotests",
-      "source_file": "tests/test_todos.py",
-      "source_location": "L17"
     },
     {
       "id": "app_providers_almalinux_almalinuxprovider",
@@ -657,6 +618,19 @@
       "source_location": "L49"
     },
     {
+      "id": "app_config_settings",
+      "label": "Settings",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "ProductionConfigTests",
+      "file_type": "code",
+      "norm_label": "settings",
+      "source_file": "app/config.py",
+      "source_location": "L4"
+    },
+    {
       "id": "tests_test_production_config_productionconfigtests",
       "label": "ProductionConfigTests",
       "_callable": true,
@@ -748,6 +722,32 @@
       "source_location": "L13"
     },
     {
+      "id": "tests_test_startup_applicationstartuptests",
+      "label": "ApplicationStartupTests",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "create_access_token",
+      "file_type": "code",
+      "norm_label": "applicationstartuptests",
+      "source_file": "tests/test_startup.py",
+      "source_location": "L17"
+    },
+    {
+      "id": "tests_test_telegram_telegramtestendpointtests",
+      "label": "TelegramTestEndpointTests",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "create_access_token",
+      "file_type": "code",
+      "norm_label": "telegramtestendpointtests",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L291"
+    },
+    {
       "id": "tests_test_web_webdashboardtests",
       "label": "WebDashboardTests",
       "_callable": true,
@@ -759,6 +759,45 @@
       "norm_label": "webdashboardtests",
       "source_file": "tests/test_web.py",
       "source_location": "L21"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests",
+      "label": "UserManagementTests",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 53,
+      "community_name": "hash_user_password",
+      "file_type": "code",
+      "norm_label": "usermanagementtests",
+      "source_file": "tests/test_users.py",
+      "source_location": "L16"
+    },
+    {
+      "id": "tests_test_todos_todotests",
+      "label": "TodoTests",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 54,
+      "community_name": "TodoTests",
+      "file_type": "code",
+      "norm_label": "todotests",
+      "source_file": "tests/test_todos.py",
+      "source_location": "L17"
+    },
+    {
+      "id": "tests_test_telegram_supportsalestelegramendpointtests",
+      "label": "SupportSalesTelegramEndpointTests",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 55,
+      "community_name": "SupportSalesTelegramEndpointTests",
+      "file_type": "code",
+      "norm_label": "supportsalestelegramendpointtests",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L395"
     },
     {
       "id": "tests_test_deployment_health_deploymenthealthchecktests",
@@ -780,50 +819,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": "notificationcentertests",
       "source_file": "tests/test_notifications_center.py",
       "source_location": "L20"
-    },
-    {
-      "id": "tests_test_startup_applicationstartuptests",
-      "label": "ApplicationStartupTests",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": "applicationstartuptests",
-      "source_file": "tests/test_startup.py",
-      "source_location": "L17"
-    },
-    {
-      "id": "tests_test_telegram_supportsalestelegramendpointtests",
-      "label": "SupportSalesTelegramEndpointTests",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": "supportsalestelegramendpointtests",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L395"
-    },
-    {
-      "id": "tests_test_telegram_telegramtestendpointtests",
-      "label": "TelegramTestEndpointTests",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": "telegramtestendpointtests",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L291"
     },
     {
       "id": "app_auth_generate_password_hash",
@@ -850,18 +850,6 @@
       "source_location": "L75"
     },
     {
-      "id": "app_auth_hash_user_password",
-      "label": "hash_user_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "hash_user_password()",
-      "source_file": "app/auth.py",
-      "source_location": "L155"
-    },
-    {
       "id": "app_auth_verify_password",
       "label": "verify_password()",
       "_callable": true,
@@ -884,18 +872,6 @@
       "norm_label": "verify_user_password()",
       "source_file": "app/auth.py",
       "source_location": "L161"
-    },
-    {
-      "id": "app_config_settings_validate_production_settings",
-      "label": ".validate_production_settings()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".validate_production_settings()",
-      "source_file": "app/config.py",
-      "source_location": "L35"
     },
     {
       "id": "app_models_configure_sqlite_connection",
@@ -970,6 +946,18 @@
       "source_location": "L27"
     },
     {
+      "id": "tests_browser_todos_route_request",
+      "label": "route_request()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": "route_request()",
+      "source_file": "tests/browser_todos.py",
+      "source_location": "L36"
+    },
+    {
       "id": "tests_test_api_apitests_test_health_docs_jwt_check_and_event_filters",
       "label": ".test_health_docs_jwt_check_and_event_filters()",
       "_callable": true,
@@ -1006,78 +994,6 @@
       "source_location": "L34"
     },
     {
-      "id": "tests_test_users_usermanagementtests_setup",
-      "label": ".setUp()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".setup()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L17"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_teardown",
-      "label": ".tearDown()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".teardown()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L45"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_test_admin_and_user_login_disabled_login_and_invalid_credentials",
-      "label": ".test_admin_and_user_login_disabled_login_and_invalid_credentials()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".test_admin_and_user_login_disabled_login_and_invalid_credentials()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L52"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_test_admin_only_routes_and_unauthenticated_rejection",
-      "label": ".test_admin_only_routes_and_unauthenticated_rejection()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".test_admin_only_routes_and_unauthenticated_rejection()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L66"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_test_bad_login_does_not_log_submitted_password",
-      "label": ".test_bad_login_does_not_log_submitted_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".test_bad_login_does_not_log_submitted_password()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L174"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_test_create_edit_password_reset_enable_disable_and_delete",
-      "label": ".test_create_edit_password_reset_enable_disable_and_delete()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".test_create_edit_password_reset_enable_disable_and_delete()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L99"
-    },
-    {
       "id": "tests_test_users_usermanagementtests_test_existing_environment_admin_is_bootstrapped_without_replacing_release_data",
       "label": ".test_existing_environment_admin_is_bootstrapped_without_replacing_release_data()",
       "_callable": true,
@@ -1088,30 +1004,6 @@
       "norm_label": ".test_existing_environment_admin_is_bootstrapped_without_replacing_release_data()",
       "source_file": "tests/test_users.py",
       "source_location": "L180"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_test_last_admin_and_self_protection",
-      "label": ".test_last_admin_and_self_protection()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".test_last_admin_and_self_protection()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L145"
-    },
-    {
-      "id": "tests_test_users_usermanagementtests_test_password_change_and_validation_errors_never_echo_password",
-      "label": ".test_password_change_and_validation_errors_never_echo_password()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": ".test_password_change_and_validation_errors_never_echo_password()",
-      "source_file": "tests/test_users.py",
-      "source_location": "L159"
     },
     {
       "id": "tests_test_versioning_checkservicetests_test_provider_failures_are_included_in_results",
@@ -1927,7 +1819,7 @@
       "file_type": "code",
       "norm_label": "attachment_path()",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L25"
+      "source_location": "L26"
     },
     {
       "id": "app_todo_attachments_register_routes",
@@ -1939,7 +1831,7 @@
       "file_type": "code",
       "norm_label": "register_routes()",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L78"
+      "source_location": "L79"
     },
     {
       "id": "app_todo_attachments_register_routes_delete",
@@ -1951,7 +1843,7 @@
       "file_type": "code",
       "norm_label": "delete()",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L185"
+      "source_location": "L186"
     },
     {
       "id": "app_todo_attachments_register_routes_download",
@@ -1963,7 +1855,7 @@
       "file_type": "code",
       "norm_label": "download()",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L167"
+      "source_location": "L168"
     },
     {
       "id": "app_todo_attachments_register_routes_list_attachments",
@@ -1975,7 +1867,7 @@
       "file_type": "code",
       "norm_label": "list_attachments()",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L83"
+      "source_location": "L84"
     },
     {
       "id": "app_todo_attachments_register_routes_upload",
@@ -1987,7 +1879,7 @@
       "file_type": "code",
       "norm_label": "upload()",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L91"
+      "source_location": "L92"
     },
     {
       "id": "app_todo_attachments_register_routes_upload_receive",
@@ -1999,7 +1891,7 @@
       "file_type": "code",
       "norm_label": "receive()",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L100"
+      "source_location": "L101"
     },
     {
       "id": "app_todo_attachments_serialize",
@@ -2011,7 +1903,7 @@
       "file_type": "code",
       "norm_label": "serialize()",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L66"
+      "source_location": "L67"
     },
     {
       "id": "app_todo_attachments_validate_content",
@@ -2023,7 +1915,7 @@
       "file_type": "code",
       "norm_label": "validate_content()",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L35"
+      "source_location": "L36"
     },
     {
       "id": "app_todos_create_todo",
@@ -2216,102 +2108,6 @@
       "norm_label": "_visible_query()",
       "source_file": "app/todos.py",
       "source_location": "L114"
-    },
-    {
-      "id": "tests_test_todos_todotests_create",
-      "label": ".create()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "Principal",
-      "file_type": "code",
-      "norm_label": ".create()",
-      "source_file": "tests/test_todos.py",
-      "source_location": "L49"
-    },
-    {
-      "id": "tests_test_todos_todotests_setup",
-      "label": ".setUp()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "Principal",
-      "file_type": "code",
-      "norm_label": ".setup()",
-      "source_file": "tests/test_todos.py",
-      "source_location": "L18"
-    },
-    {
-      "id": "tests_test_todos_todotests_teardown",
-      "label": ".tearDown()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "Principal",
-      "file_type": "code",
-      "norm_label": ".teardown()",
-      "source_file": "tests/test_todos.py",
-      "source_location": "L42"
-    },
-    {
-      "id": "tests_test_todos_todotests_test_active_assignee_validation_and_admin_access",
-      "label": ".test_active_assignee_validation_and_admin_access()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "Principal",
-      "file_type": "code",
-      "norm_label": ".test_active_assignee_validation_and_admin_access()",
-      "source_file": "tests/test_todos.py",
-      "source_location": "L94"
-    },
-    {
-      "id": "tests_test_todos_todotests_test_additive_schema_preserves_users_and_old_tables",
-      "label": ".test_additive_schema_preserves_users_and_old_tables()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "Principal",
-      "file_type": "code",
-      "norm_label": ".test_additive_schema_preserves_users_and_old_tables()",
-      "source_file": "tests/test_todos.py",
-      "source_location": "L121"
-    },
-    {
-      "id": "tests_test_todos_todotests_test_auth_visibility_and_assignment_notification_idempotence",
-      "label": ".test_auth_visibility_and_assignment_notification_idempotence()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "Principal",
-      "file_type": "code",
-      "norm_label": ".test_auth_visibility_and_assignment_notification_idempotence()",
-      "source_file": "tests/test_todos.py",
-      "source_location": "L52"
-    },
-    {
-      "id": "tests_test_todos_todotests_test_permissions_completion_reopen_filters_and_summary",
-      "label": ".test_permissions_completion_reopen_filters_and_summary()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "Principal",
-      "file_type": "code",
-      "norm_label": ".test_permissions_completion_reopen_filters_and_summary()",
-      "source_file": "tests/test_todos.py",
-      "source_location": "L76"
-    },
-    {
-      "id": "tests_test_todos_todotests_test_sorting_pagination_and_pending_filter_preserve_visibility",
-      "label": ".test_sorting_pagination_and_pending_filter_preserve_visibility()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "Principal",
-      "file_type": "code",
-      "norm_label": ".test_sorting_pagination_and_pending_filter_preserve_visibility()",
-      "source_file": "tests/test_todos.py",
-      "source_location": "L101"
     },
     {
       "id": "app_providers_almalinux_almalinuxprovider_latest",
@@ -3056,6 +2852,18 @@
       "norm_label": ".test_success_uses_configured_chat_and_expected_message()",
       "source_file": "tests/test_telegram.py",
       "source_location": "L75"
+    },
+    {
+      "id": "app_config_settings_validate_production_settings",
+      "label": ".validate_production_settings()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "ProductionConfigTests",
+      "file_type": "code",
+      "norm_label": ".validate_production_settings()",
+      "source_file": "app/config.py",
+      "source_location": "L35"
     },
     {
       "id": "tests_test_production_config_productionconfigtests_test_production_configuration_accepts_secure_values",
@@ -4390,18 +4198,6 @@
       "source_location": "L979"
     },
     {
-      "id": "tests_browser_todos_route_request",
-      "label": "route_request()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "AttachmentTests",
-      "file_type": "code",
-      "norm_label": "route_request()",
-      "source_file": "tests/browser_todos.py",
-      "source_location": "L22"
-    },
-    {
       "id": "tests_test_todo_attachments_attachmenttests_setup",
       "label": ".setUp()",
       "_callable": true,
@@ -4435,7 +4231,7 @@
       "file_type": "code",
       "norm_label": ".test_filename_safety_and_task_cleanup()",
       "source_file": "tests/test_todo_attachments.py",
-      "source_location": "L81"
+      "source_location": "L82"
     },
     {
       "id": "tests_test_todo_attachments_attachmenttests_test_internal_path_traversal_rejected",
@@ -4447,7 +4243,7 @@
       "file_type": "code",
       "norm_label": ".test_internal_path_traversal_rejected()",
       "source_file": "tests/test_todo_attachments.py",
-      "source_location": "L95"
+      "source_location": "L96"
     },
     {
       "id": "tests_test_todo_attachments_attachmenttests_test_limits_types_and_batch_rollback",
@@ -4471,7 +4267,7 @@
       "file_type": "code",
       "norm_label": ".test_office_archive_and_text_formats()",
       "source_file": "tests/test_todo_attachments.py",
-      "source_location": "L101"
+      "source_location": "L102"
     },
     {
       "id": "tests_test_todo_attachments_attachmenttests_test_permissions_cross_task_and_reassignment",
@@ -4544,6 +4340,150 @@
       "norm_label": "_set_session_cookie()",
       "source_file": "app/main.py",
       "source_location": "L249"
+    },
+    {
+      "id": "app_auth_create_access_token",
+      "label": "create_access_token()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "create_access_token",
+      "file_type": "code",
+      "norm_label": "create_access_token()",
+      "source_file": "app/auth.py",
+      "source_location": "L90"
+    },
+    {
+      "id": "tests_test_notifications_center_notificationcentertests_test_notification_center_has_mandatory_loud_alerts_without_mute_control",
+      "label": ".test_notification_center_has_mandatory_loud_alerts_without_mute_control()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "create_access_token",
+      "file_type": "code",
+      "norm_label": ".test_notification_center_has_mandatory_loud_alerts_without_mute_control()",
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L75"
+    },
+    {
+      "id": "tests_test_notifications_center_notificationcentertests_test_notification_center_requires_human_authentication",
+      "label": ".test_notification_center_requires_human_authentication()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "create_access_token",
+      "file_type": "code",
+      "norm_label": ".test_notification_center_requires_human_authentication()",
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L54"
+    },
+    {
+      "id": "tests_test_notifications_center_notificationcentertests_test_only_admin_sees_notification_center_test_button",
+      "label": ".test_only_admin_sees_notification_center_test_button()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "create_access_token",
+      "file_type": "code",
+      "norm_label": ".test_only_admin_sees_notification_center_test_button()",
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L66"
+    },
+    {
+      "id": "tests_test_notifications_center_notificationcentertests_test_openclaw_approval_decision_endpoint_is_key_owned_action_bound_and_read_only",
+      "label": ".test_openclaw_approval_decision_endpoint_is_key_owned_action_bound_and_read_only()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "create_access_token",
+      "file_type": "code",
+      "norm_label": ".test_openclaw_approval_decision_endpoint_is_key_owned_action_bound_and_read_only()",
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L423"
+    },
+    {
+      "id": "tests_test_startup_applicationstartuptests_test_real_startup_scheduler_health_docs_and_status",
+      "label": ".test_real_startup_scheduler_health_docs_and_status()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "create_access_token",
+      "file_type": "code",
+      "norm_label": ".test_real_startup_scheduler_health_docs_and_status()",
+      "source_file": "tests/test_startup.py",
+      "source_location": "L18"
+    },
+    {
+      "id": "tests_test_telegram_telegramtestendpointtests_test_endpoint_handles_unexpected_sender_failure_without_exposing_details",
+      "label": ".test_endpoint_handles_unexpected_sender_failure_without_exposing_details()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "create_access_token",
+      "file_type": "code",
+      "norm_label": ".test_endpoint_handles_unexpected_sender_failure_without_exposing_details()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L325"
+    },
+    {
+      "id": "tests_test_telegram_telegramtestendpointtests_test_endpoint_reports_disabled_and_does_not_send",
+      "label": ".test_endpoint_reports_disabled_and_does_not_send()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "create_access_token",
+      "file_type": "code",
+      "norm_label": ".test_endpoint_reports_disabled_and_does_not_send()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L310"
+    },
+    {
+      "id": "tests_test_telegram_telegramtestendpointtests_test_endpoint_requires_auth_and_sends_no_release_event",
+      "label": ".test_endpoint_requires_auth_and_sends_no_release_event()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "create_access_token",
+      "file_type": "code",
+      "norm_label": ".test_endpoint_requires_auth_and_sends_no_release_event()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L292"
+    },
+    {
+      "id": "tests_test_telegram_telegramtestendpointtests_test_test_message_is_visibly_marked_as_test",
+      "label": ".test_test_message_is_visibly_marked_as_test()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "create_access_token",
+      "file_type": "code",
+      "norm_label": ".test_test_message_is_visibly_marked_as_test()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L340"
+    },
+    {
+      "id": "tests_test_web_webdashboardtests_test_default_session_lifetime_is_eight_hours_and_expired_token_is_rejected",
+      "label": ".test_default_session_lifetime_is_eight_hours_and_expired_token_is_rejected()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "create_access_token",
+      "file_type": "code",
+      "norm_label": ".test_default_session_lifetime_is_eight_hours_and_expired_token_is_rejected()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L127"
+    },
+    {
+      "id": "tests_test_web_webdashboardtests_test_https_browser_session_marks_cookie_secure",
+      "label": ".test_https_browser_session_marks_cookie_secure()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 51,
+      "community_name": "create_access_token",
+      "file_type": "code",
+      "norm_label": ".test_https_browser_session_marks_cookie_secure()",
+      "source_file": "tests/test_web.py",
+      "source_location": "L196"
     },
     {
       "id": "tests_test_web_webdashboardtests_sign_in",
@@ -4738,6 +4678,282 @@
       "source_location": "L205"
     },
     {
+      "id": "app_auth_hash_user_password",
+      "label": "hash_user_password()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 53,
+      "community_name": "hash_user_password",
+      "file_type": "code",
+      "norm_label": "hash_user_password()",
+      "source_file": "app/auth.py",
+      "source_location": "L155"
+    },
+    {
+      "id": "tests_test_notifications_center_notificationcentertests_setup",
+      "label": ".setUp()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 53,
+      "community_name": "hash_user_password",
+      "file_type": "code",
+      "norm_label": ".setup()",
+      "source_file": "tests/test_notifications_center.py",
+      "source_location": "L21"
+    },
+    {
+      "id": "tests_test_todos_todotests_setup",
+      "label": ".setUp()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 53,
+      "community_name": "hash_user_password",
+      "file_type": "code",
+      "norm_label": ".setup()",
+      "source_file": "tests/test_todos.py",
+      "source_location": "L18"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_setup",
+      "label": ".setUp()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 53,
+      "community_name": "hash_user_password",
+      "file_type": "code",
+      "norm_label": ".setup()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L17"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_teardown",
+      "label": ".tearDown()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 53,
+      "community_name": "hash_user_password",
+      "file_type": "code",
+      "norm_label": ".teardown()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L45"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_test_admin_and_user_login_disabled_login_and_invalid_credentials",
+      "label": ".test_admin_and_user_login_disabled_login_and_invalid_credentials()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 53,
+      "community_name": "hash_user_password",
+      "file_type": "code",
+      "norm_label": ".test_admin_and_user_login_disabled_login_and_invalid_credentials()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L52"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_test_admin_only_routes_and_unauthenticated_rejection",
+      "label": ".test_admin_only_routes_and_unauthenticated_rejection()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 53,
+      "community_name": "hash_user_password",
+      "file_type": "code",
+      "norm_label": ".test_admin_only_routes_and_unauthenticated_rejection()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L66"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_test_bad_login_does_not_log_submitted_password",
+      "label": ".test_bad_login_does_not_log_submitted_password()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 53,
+      "community_name": "hash_user_password",
+      "file_type": "code",
+      "norm_label": ".test_bad_login_does_not_log_submitted_password()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L174"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_test_create_edit_password_reset_enable_disable_and_delete",
+      "label": ".test_create_edit_password_reset_enable_disable_and_delete()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 53,
+      "community_name": "hash_user_password",
+      "file_type": "code",
+      "norm_label": ".test_create_edit_password_reset_enable_disable_and_delete()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L99"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_test_last_admin_and_self_protection",
+      "label": ".test_last_admin_and_self_protection()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 53,
+      "community_name": "hash_user_password",
+      "file_type": "code",
+      "norm_label": ".test_last_admin_and_self_protection()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L145"
+    },
+    {
+      "id": "tests_test_users_usermanagementtests_test_password_change_and_validation_errors_never_echo_password",
+      "label": ".test_password_change_and_validation_errors_never_echo_password()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 53,
+      "community_name": "hash_user_password",
+      "file_type": "code",
+      "norm_label": ".test_password_change_and_validation_errors_never_echo_password()",
+      "source_file": "tests/test_users.py",
+      "source_location": "L159"
+    },
+    {
+      "id": "tests_test_todos_todotests_create",
+      "label": ".create()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 54,
+      "community_name": "TodoTests",
+      "file_type": "code",
+      "norm_label": ".create()",
+      "source_file": "tests/test_todos.py",
+      "source_location": "L49"
+    },
+    {
+      "id": "tests_test_todos_todotests_teardown",
+      "label": ".tearDown()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 54,
+      "community_name": "TodoTests",
+      "file_type": "code",
+      "norm_label": ".teardown()",
+      "source_file": "tests/test_todos.py",
+      "source_location": "L42"
+    },
+    {
+      "id": "tests_test_todos_todotests_test_active_assignee_validation_and_admin_access",
+      "label": ".test_active_assignee_validation_and_admin_access()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 54,
+      "community_name": "TodoTests",
+      "file_type": "code",
+      "norm_label": ".test_active_assignee_validation_and_admin_access()",
+      "source_file": "tests/test_todos.py",
+      "source_location": "L94"
+    },
+    {
+      "id": "tests_test_todos_todotests_test_additive_schema_preserves_users_and_old_tables",
+      "label": ".test_additive_schema_preserves_users_and_old_tables()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 54,
+      "community_name": "TodoTests",
+      "file_type": "code",
+      "norm_label": ".test_additive_schema_preserves_users_and_old_tables()",
+      "source_file": "tests/test_todos.py",
+      "source_location": "L121"
+    },
+    {
+      "id": "tests_test_todos_todotests_test_auth_visibility_and_assignment_notification_idempotence",
+      "label": ".test_auth_visibility_and_assignment_notification_idempotence()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 54,
+      "community_name": "TodoTests",
+      "file_type": "code",
+      "norm_label": ".test_auth_visibility_and_assignment_notification_idempotence()",
+      "source_file": "tests/test_todos.py",
+      "source_location": "L52"
+    },
+    {
+      "id": "tests_test_todos_todotests_test_permissions_completion_reopen_filters_and_summary",
+      "label": ".test_permissions_completion_reopen_filters_and_summary()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 54,
+      "community_name": "TodoTests",
+      "file_type": "code",
+      "norm_label": ".test_permissions_completion_reopen_filters_and_summary()",
+      "source_file": "tests/test_todos.py",
+      "source_location": "L76"
+    },
+    {
+      "id": "tests_test_todos_todotests_test_sorting_pagination_and_pending_filter_preserve_visibility",
+      "label": ".test_sorting_pagination_and_pending_filter_preserve_visibility()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 54,
+      "community_name": "TodoTests",
+      "file_type": "code",
+      "norm_label": ".test_sorting_pagination_and_pending_filter_preserve_visibility()",
+      "source_file": "tests/test_todos.py",
+      "source_location": "L101"
+    },
+    {
+      "id": "tests_test_telegram_supportsalestelegramendpointtests_setup",
+      "label": ".setUp()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 55,
+      "community_name": "SupportSalesTelegramEndpointTests",
+      "file_type": "code",
+      "norm_label": ".setup()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L396"
+    },
+    {
+      "id": "tests_test_telegram_supportsalestelegramendpointtests_teardown",
+      "label": ".tearDown()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 55,
+      "community_name": "SupportSalesTelegramEndpointTests",
+      "file_type": "code",
+      "norm_label": ".teardown()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L406"
+    },
+    {
+      "id": "tests_test_telegram_supportsalestelegramendpointtests_test_disabled_and_in_progress_requests_are_rejected",
+      "label": ".test_disabled_and_in_progress_requests_are_rejected()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 55,
+      "community_name": "SupportSalesTelegramEndpointTests",
+      "file_type": "code",
+      "norm_label": ".test_disabled_and_in_progress_requests_are_rejected()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L430"
+    },
+    {
+      "id": "tests_test_telegram_supportsalestelegramendpointtests_test_endpoint_is_admin_only_and_uses_sales_sender",
+      "label": ".test_endpoint_is_admin_only_and_uses_sales_sender()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 55,
+      "community_name": "SupportSalesTelegramEndpointTests",
+      "file_type": "code",
+      "norm_label": ".test_endpoint_is_admin_only_and_uses_sales_sender()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L412"
+    },
+    {
+      "id": "tests_test_telegram_supportsalestelegramendpointtests_test_sender_errors_are_safe_and_clear",
+      "label": ".test_sender_errors_are_safe_and_clear()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 55,
+      "community_name": "SupportSalesTelegramEndpointTests",
+      "file_type": "code",
+      "norm_label": ".test_sender_errors_are_safe_and_clear()",
+      "source_file": "tests/test_telegram.py",
+      "source_location": "L449"
+    },
+    {
       "id": "app_main_sanitized_validation_error",
       "label": "sanitized_validation_error()",
       "_callable": true,
@@ -4906,36 +5122,12 @@
       "source_location": "L64"
     },
     {
-      "id": "app_auth_create_access_token",
-      "label": "create_access_token()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": "create_access_token()",
-      "source_file": "app/auth.py",
-      "source_location": "L90"
-    },
-    {
-      "id": "tests_test_notifications_center_notificationcentertests_setup",
-      "label": ".setUp()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".setup()",
-      "source_file": "tests/test_notifications_center.py",
-      "source_location": "L21"
-    },
-    {
       "id": "tests_test_notifications_center_notificationcentertests_teardown",
       "label": ".tearDown()",
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": ".teardown()",
       "source_file": "tests/test_notifications_center.py",
@@ -4947,7 +5139,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": ".test_admin_test_notification_uses_normal_feed_and_user_is_forbidden()",
       "source_file": "tests/test_notifications_center.py",
@@ -4959,7 +5151,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": ".test_approval_expiration_must_be_future_and_non_approval_cannot_set_expiry()",
       "source_file": "tests/test_notifications_center.py",
@@ -4971,7 +5163,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": ".test_business_action_is_exactly_bound_and_human_decidable()",
       "source_file": "tests/test_notifications_center.py",
@@ -4983,7 +5175,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": ".test_business_action_rejects_malformed_specifications()",
       "source_file": "tests/test_notifications_center.py",
@@ -4995,7 +5187,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": ".test_concurrent_task_decisions_allow_only_one_transition()",
       "source_file": "tests/test_notifications_center.py",
@@ -5007,7 +5199,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": ".test_duplicate_task_specs_get_unique_pending_action_ids_and_consistent_status()",
       "source_file": "tests/test_notifications_center.py",
@@ -5019,7 +5211,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": ".test_expired_approval_cannot_be_retrieved_or_approved()",
       "source_file": "tests/test_notifications_center.py",
@@ -5031,7 +5223,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": ".test_expired_task_response_still_contains_spec_for_executor_expiry_gate()",
       "source_file": "tests/test_notifications_center.py",
@@ -5043,7 +5235,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": ".test_legacy_approval_without_binding_metadata_is_not_authorized()",
       "source_file": "tests/test_notifications_center.py",
@@ -5055,35 +5247,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": ".test_migration_adds_nullable_approval_fields_without_backfilling_legacy_rows()",
       "source_file": "tests/test_notifications_center.py",
       "source_location": "L577"
-    },
-    {
-      "id": "tests_test_notifications_center_notificationcentertests_test_notification_center_has_mandatory_loud_alerts_without_mute_control",
-      "label": ".test_notification_center_has_mandatory_loud_alerts_without_mute_control()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_notification_center_has_mandatory_loud_alerts_without_mute_control()",
-      "source_file": "tests/test_notifications_center.py",
-      "source_location": "L75"
-    },
-    {
-      "id": "tests_test_notifications_center_notificationcentertests_test_notification_center_requires_human_authentication",
-      "label": ".test_notification_center_requires_human_authentication()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_notification_center_requires_human_authentication()",
-      "source_file": "tests/test_notifications_center.py",
-      "source_location": "L54"
     },
     {
       "id": "tests_test_notifications_center_notificationcentertests_test_notification_filters_and_unsafe_external_url_are_rejected",
@@ -5091,23 +5259,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": ".test_notification_filters_and_unsafe_external_url_are_rejected()",
       "source_file": "tests/test_notifications_center.py",
       "source_location": "L129"
-    },
-    {
-      "id": "tests_test_notifications_center_notificationcentertests_test_only_admin_sees_notification_center_test_button",
-      "label": ".test_only_admin_sees_notification_center_test_button()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_only_admin_sees_notification_center_test_button()",
-      "source_file": "tests/test_notifications_center.py",
-      "source_location": "L66"
     },
     {
       "id": "tests_test_notifications_center_notificationcentertests_test_openapi_describes_both_task_specification_variants",
@@ -5115,23 +5271,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": ".test_openapi_describes_both_task_specification_variants()",
       "source_file": "tests/test_notifications_center.py",
       "source_location": "L354"
-    },
-    {
-      "id": "tests_test_notifications_center_notificationcentertests_test_openclaw_approval_decision_endpoint_is_key_owned_action_bound_and_read_only",
-      "label": ".test_openclaw_approval_decision_endpoint_is_key_owned_action_bound_and_read_only()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_openclaw_approval_decision_endpoint_is_key_owned_action_bound_and_read_only()",
-      "source_file": "tests/test_notifications_center.py",
-      "source_location": "L423"
     },
     {
       "id": "tests_test_notifications_center_notificationcentertests_test_openclaw_approval_decision_returns_denied_and_hides_non_owned_records",
@@ -5139,7 +5283,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": ".test_openclaw_approval_decision_returns_denied_and_hides_non_owned_records()",
       "source_file": "tests/test_notifications_center.py",
@@ -5151,7 +5295,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": ".test_openclaw_approval_request_can_be_approved_or_denied()",
       "source_file": "tests/test_notifications_center.py",
@@ -5163,7 +5307,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": ".test_openclaw_approval_request_can_be_denied_with_reason()",
       "source_file": "tests/test_notifications_center.py",
@@ -5175,7 +5319,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": ".test_openclaw_ingestion_requires_api_key()",
       "source_file": "tests/test_notifications_center.py",
@@ -5187,7 +5331,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": ".test_task_binding_corruption_fails_closed()",
       "source_file": "tests/test_notifications_center.py",
@@ -5199,155 +5343,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 9,
-      "community_name": "create_access_token",
+      "community_name": "NotificationCenterTests",
       "file_type": "code",
       "norm_label": ".test_task_bound_creation_rejects_unsupported_or_unsafe_specs_and_client_decisions()",
       "source_file": "tests/test_notifications_center.py",
       "source_location": "L362"
-    },
-    {
-      "id": "tests_test_startup_applicationstartuptests_test_real_startup_scheduler_health_docs_and_status",
-      "label": ".test_real_startup_scheduler_health_docs_and_status()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_real_startup_scheduler_health_docs_and_status()",
-      "source_file": "tests/test_startup.py",
-      "source_location": "L18"
-    },
-    {
-      "id": "tests_test_telegram_supportsalestelegramendpointtests_setup",
-      "label": ".setUp()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".setup()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L396"
-    },
-    {
-      "id": "tests_test_telegram_supportsalestelegramendpointtests_teardown",
-      "label": ".tearDown()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".teardown()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L406"
-    },
-    {
-      "id": "tests_test_telegram_supportsalestelegramendpointtests_test_disabled_and_in_progress_requests_are_rejected",
-      "label": ".test_disabled_and_in_progress_requests_are_rejected()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_disabled_and_in_progress_requests_are_rejected()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L430"
-    },
-    {
-      "id": "tests_test_telegram_supportsalestelegramendpointtests_test_endpoint_is_admin_only_and_uses_sales_sender",
-      "label": ".test_endpoint_is_admin_only_and_uses_sales_sender()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_endpoint_is_admin_only_and_uses_sales_sender()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L412"
-    },
-    {
-      "id": "tests_test_telegram_supportsalestelegramendpointtests_test_sender_errors_are_safe_and_clear",
-      "label": ".test_sender_errors_are_safe_and_clear()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_sender_errors_are_safe_and_clear()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L449"
-    },
-    {
-      "id": "tests_test_telegram_telegramtestendpointtests_test_endpoint_handles_unexpected_sender_failure_without_exposing_details",
-      "label": ".test_endpoint_handles_unexpected_sender_failure_without_exposing_details()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_endpoint_handles_unexpected_sender_failure_without_exposing_details()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L325"
-    },
-    {
-      "id": "tests_test_telegram_telegramtestendpointtests_test_endpoint_reports_disabled_and_does_not_send",
-      "label": ".test_endpoint_reports_disabled_and_does_not_send()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_endpoint_reports_disabled_and_does_not_send()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L310"
-    },
-    {
-      "id": "tests_test_telegram_telegramtestendpointtests_test_endpoint_requires_auth_and_sends_no_release_event",
-      "label": ".test_endpoint_requires_auth_and_sends_no_release_event()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_endpoint_requires_auth_and_sends_no_release_event()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L292"
-    },
-    {
-      "id": "tests_test_telegram_telegramtestendpointtests_test_test_message_is_visibly_marked_as_test",
-      "label": ".test_test_message_is_visibly_marked_as_test()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_test_message_is_visibly_marked_as_test()",
-      "source_file": "tests/test_telegram.py",
-      "source_location": "L340"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_default_session_lifetime_is_eight_hours_and_expired_token_is_rejected",
-      "label": ".test_default_session_lifetime_is_eight_hours_and_expired_token_is_rejected()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_default_session_lifetime_is_eight_hours_and_expired_token_is_rejected()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L127"
-    },
-    {
-      "id": "tests_test_web_webdashboardtests_test_https_browser_session_marks_cookie_secure",
-      "label": ".test_https_browser_session_marks_cookie_secure()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 9,
-      "community_name": "create_access_token",
-      "file_type": "code",
-      "norm_label": ".test_https_browser_session_marks_cookie_secure()",
-      "source_file": "tests/test_web.py",
-      "source_location": "L196"
     },
     {
       "id": "app_auth",
@@ -5416,17 +5416,6 @@
       "source_location": "L1"
     },
     {
-      "id": "basesettings",
-      "label": "BaseSettings",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "code",
-      "norm_label": "basesettings",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "declarativebase",
       "label": "DeclarativeBase",
       "_origin": "ast",
@@ -5447,6 +5436,17 @@
       "norm_label": "listens_for",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "tests_browser_todos",
+      "label": "browser_todos.py",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "auth.py",
+      "file_type": "code",
+      "norm_label": "browser_todos.py",
+      "source_file": "tests/browser_todos.py",
+      "source_location": "L1"
     },
     {
       "id": "tests_test_api",
@@ -5581,17 +5581,6 @@
       "source_location": "L1"
     },
     {
-      "id": "app_config_rationale_36",
-      "label": "Fail startup on missing/unsafe credentials in production mode.",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "auth.py",
-      "file_type": "rationale",
-      "norm_label": "fail startup on missing/unsafe credentials in production mode.",
-      "source_file": "app/config.py",
-      "source_location": "L36"
-    },
-    {
       "id": "app_models_rationale_166",
       "label": "Add nullable approval-binding fields without granting legacy rows access.",
       "_origin": "ast",
@@ -5612,6 +5601,17 @@
       "norm_label": "compare stored and fetched releases; current-version classification is separate.",
       "source_file": "app/versioning.py",
       "source_location": "L28"
+    },
+    {
+      "id": "tests_browser_todos_rationale_1",
+      "label": "Run explicitly: PLAYWRIGHT_BROWSERS_PATH=... python tests/browser_todos.py.\u2026",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "auth.py",
+      "file_type": "rationale",
+      "norm_label": "run explicitly: playwright_browsers_path=... python tests/browser_todos.py....",
+      "source_file": "tests/browser_todos.py",
+      "source_location": "L1"
     },
     {
       "id": "app_schemas",
@@ -6407,6 +6407,28 @@
       "source_location": "L61"
     },
     {
+      "id": "basesettings",
+      "label": "BaseSettings",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "ProductionConfigTests",
+      "file_type": "code",
+      "norm_label": "basesettings",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "app_config_rationale_36",
+      "label": "Fail startup on missing/unsafe credentials in production mode.",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "ProductionConfigTests",
+      "file_type": "rationale",
+      "norm_label": "fail startup on missing/unsafe credentials in production mode.",
+      "source_file": "app/config.py",
+      "source_location": "L36"
+    },
+    {
       "id": "static_js_app",
       "label": "app.js",
       "_origin": "ast",
@@ -6608,28 +6630,6 @@
       "norm_label": "resolve every request against current db state so disable takes effect...",
       "source_file": "app/auth.py",
       "source_location": "L37"
-    },
-    {
-      "id": "tests_browser_todos",
-      "label": "browser_todos.py",
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "AttachmentTests",
-      "file_type": "code",
-      "norm_label": "browser_todos.py",
-      "source_file": "tests/browser_todos.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "tests_browser_todos_rationale_1",
-      "label": "Run explicitly: PLAYWRIGHT_BROWSERS_PATH=... python tests/browser_todos.py.\u2026",
-      "_origin": "ast",
-      "community": 49,
-      "community_name": "AttachmentTests",
-      "file_type": "rationale",
-      "norm_label": "run explicitly: playwright_browsers_path=... python tests/browser_todos.py....",
-      "source_file": "tests/browser_todos.py",
-      "source_location": "L1"
     },
     {
       "id": "app_main_rationale_175",
@@ -7396,6 +7396,18 @@
       "source_url": null
     },
     {
+      "id": "base64",
+      "label": "base64",
+      "_origin": "semantic",
+      "community": 0,
+      "community_name": "auth.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "base64",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "concurrent_futures",
       "label": "concurrent_futures",
       "_origin": "semantic",
@@ -7468,6 +7480,18 @@
       "type": "external"
     },
     {
+      "id": "io",
+      "label": "io",
+      "_origin": "semantic",
+      "community": 0,
+      "community_name": "auth.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "io",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "jwt",
       "label": "jwt",
       "_origin": "semantic",
@@ -7500,6 +7524,18 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "pathlib",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "playwright_sync_api",
+      "label": "playwright_sync_api",
+      "_origin": "semantic",
+      "community": 0,
+      "community_name": "auth.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "playwright_sync_api",
       "source_file": "",
       "type": "external"
     },
@@ -7564,6 +7600,18 @@
       "type": "external"
     },
     {
+      "id": "sys",
+      "label": "sys",
+      "_origin": "semantic",
+      "community": 0,
+      "community_name": "auth.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "sys",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "tempfile",
       "label": "tempfile",
       "_origin": "semantic",
@@ -7620,18 +7668,6 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "unittest_mock",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "pydantic",
-      "label": "pydantic",
-      "_origin": "semantic",
-      "community": 10,
-      "community_name": "schemas.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "pydantic",
       "source_file": "",
       "type": "external"
     },
@@ -7732,6 +7768,54 @@
       "type": "external"
     },
     {
+      "id": "starlette_requests",
+      "label": "starlette_requests",
+      "_origin": "semantic",
+      "community": 19,
+      "community_name": "Principal",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "starlette_requests",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "starlette_responses",
+      "label": "starlette_responses",
+      "_origin": "semantic",
+      "community": 19,
+      "community_name": "Principal",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "starlette_responses",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "uuid",
+      "label": "uuid",
+      "_origin": "semantic",
+      "community": 19,
+      "community_name": "Principal",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "uuid",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "zipfile",
+      "label": "zipfile",
+      "_origin": "semantic",
+      "community": 19,
+      "community_name": "Principal",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "zipfile",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "bs4",
       "label": "bs4",
       "_origin": "semantic",
@@ -7800,6 +7884,18 @@
       "external": true,
       "file_type": "concept",
       "norm_label": "json",
+      "source_file": "",
+      "type": "external"
+    },
+    {
+      "id": "pydantic",
+      "label": "pydantic",
+      "_origin": "semantic",
+      "community": 22,
+      "community_name": "task_spec.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "pydantic",
       "source_file": "",
       "type": "external"
     },
@@ -7960,18 +8056,6 @@
       "type": "external"
     },
     {
-      "id": "base64",
-      "label": "base64",
-      "_origin": "semantic",
-      "community": 49,
-      "community_name": "AttachmentTests",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "base64",
-      "source_file": "",
-      "type": "external"
-    },
-    {
       "id": "cryptography_fernet",
       "label": "cryptography_fernet",
       "_origin": "semantic",
@@ -7984,79 +8068,13 @@
       "type": "external"
     },
     {
-      "id": "io",
-      "label": "io",
-      "community": 0,
-      "community_name": "auth.py",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "io",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "starlette_requests",
-      "label": "starlette_requests",
+      "id": "starlette_exceptions",
+      "label": "starlette_exceptions",
       "community": 19,
       "community_name": "Principal",
       "external": true,
       "file_type": "concept",
-      "norm_label": "starlette_requests",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "starlette_responses",
-      "label": "starlette_responses",
-      "community": 19,
-      "community_name": "Principal",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "starlette_responses",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "uuid",
-      "label": "uuid",
-      "community": 19,
-      "community_name": "Principal",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "uuid",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "zipfile",
-      "label": "zipfile",
-      "community": 19,
-      "community_name": "Principal",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "zipfile",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "playwright_sync_api",
-      "label": "playwright_sync_api",
-      "community": 49,
-      "community_name": "AttachmentTests",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "playwright_sync_api",
-      "source_file": "",
-      "type": "external"
-    },
-    {
-      "id": "sys",
-      "label": "sys",
-      "community": 49,
-      "community_name": "AttachmentTests",
-      "external": true,
-      "file_type": "concept",
-      "norm_label": "sys",
+      "norm_label": "starlette_exceptions",
       "source_file": "",
       "type": "external"
     }
@@ -9739,7 +9757,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L148",
+      "source_location": "L149",
       "weight": 1.0
     },
     {
@@ -9751,7 +9769,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L192",
+      "source_location": "L193",
       "weight": 1.0
     },
     {
@@ -9763,7 +9781,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L194",
+      "source_location": "L195",
       "weight": 1.0
     },
     {
@@ -9775,7 +9793,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L175",
+      "source_location": "L176",
       "weight": 1.0
     },
     {
@@ -9787,7 +9805,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L87",
+      "source_location": "L88",
       "weight": 1.0
     },
     {
@@ -9799,7 +9817,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L134",
+      "source_location": "L135",
       "weight": 1.0
     },
     {
@@ -9811,7 +9829,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L147",
+      "source_location": "L148",
       "weight": 1.0
     },
     {
@@ -9823,7 +9841,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L148",
+      "source_location": "L149",
       "weight": 1.0
     },
     {
@@ -9835,7 +9853,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L154",
+      "source_location": "L155",
       "weight": 1.0
     },
     {
@@ -12979,7 +12997,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_todo_attachments.py",
-      "source_location": "L82",
+      "source_location": "L83",
       "weight": 1.0
     },
     {
@@ -12991,7 +13009,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_todo_attachments.py",
-      "source_location": "L96",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -13015,7 +13033,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_todo_attachments.py",
-      "source_location": "L107",
+      "source_location": "L108",
       "weight": 1.0
     },
     {
@@ -16291,7 +16309,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L12",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -16303,7 +16321,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L12",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -16315,7 +16333,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L14",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -16327,7 +16345,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L14",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -16339,7 +16357,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L14",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -16495,12 +16513,12 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "tests/browser_todos.py",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
       "source": "tests_browser_todos",
-      "target": "base64",
+      "target": "os",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -16512,7 +16530,7 @@
     },
     {
       "source": "tests_browser_todos",
-      "target": "sys",
+      "target": "base64",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -16520,6 +16538,18 @@
       "context": "import",
       "source_file": "tests/browser_todos.py",
       "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_browser_todos",
+      "target": "sys",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "tests/browser_todos.py",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -18828,7 +18858,7 @@
     },
     {
       "source": "app_todo_attachments",
-      "target": "sqlalchemy",
+      "target": "starlette_responses",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -18840,19 +18870,19 @@
     },
     {
       "source": "app_todo_attachments",
-      "target": "app_auth",
+      "target": "sqlalchemy",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L12",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
       "source": "app_todo_attachments",
-      "target": "app_config",
+      "target": "app_auth",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -18864,7 +18894,7 @@
     },
     {
       "source": "app_todo_attachments",
-      "target": "app_models",
+      "target": "app_config",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -18872,6 +18902,18 @@
       "context": "import",
       "source_file": "app/todo_attachments.py",
       "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "app_todo_attachments",
+      "target": "app_models",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "app/todo_attachments.py",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -18912,7 +18954,7 @@
     },
     {
       "source": "app_todo_attachments",
-      "target": "starlette_requests",
+      "target": "starlette_exceptions",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -18924,7 +18966,7 @@
     },
     {
       "source": "app_todo_attachments",
-      "target": "starlette_responses",
+      "target": "starlette_requests",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -19044,7 +19086,7 @@
     },
     {
       "source": "tests_browser_todos",
-      "target": "tests_test_todo_attachments",
+      "target": "playwright_sync_api",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -19056,7 +19098,7 @@
     },
     {
       "source": "tests_browser_todos",
-      "target": "app_auth",
+      "target": "tests_test_todo_attachments",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -19068,6 +19110,18 @@
     },
     {
       "source": "tests_browser_todos",
+      "target": "app_auth",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "tests/browser_todos.py",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_browser_todos",
       "target": "pathlib",
       "relation": "imports_from",
       "_origin": "ast",
@@ -19075,19 +19129,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "tests/browser_todos.py",
-      "source_location": "L7",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_browser_todos",
-      "target": "playwright_sync_api",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "tests/browser_todos.py",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -21019,7 +21061,7 @@
       "confidence_score": 1.0,
       "context": "submodule_import",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L80",
+      "source_location": "L81",
       "weight": 1.0
     },
     {
@@ -22860,7 +22902,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/todo_attachments.py",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -22871,7 +22913,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/todo_attachments.py",
-      "source_location": "L35",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -22882,7 +22924,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/todo_attachments.py",
-      "source_location": "L66",
+      "source_location": "L67",
       "weight": 1.0
     },
     {
@@ -22893,7 +22935,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/todo_attachments.py",
-      "source_location": "L78",
+      "source_location": "L79",
       "weight": 1.0
     },
     {
@@ -22904,7 +22946,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/todo_attachments.py",
-      "source_location": "L167",
+      "source_location": "L168",
       "weight": 1.0
     },
     {
@@ -22915,7 +22957,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/todo_attachments.py",
-      "source_location": "L185",
+      "source_location": "L186",
       "weight": 1.0
     },
     {
@@ -22926,7 +22968,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/todo_attachments.py",
-      "source_location": "L83",
+      "source_location": "L84",
       "weight": 1.0
     },
     {
@@ -22937,7 +22979,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/todo_attachments.py",
-      "source_location": "L91",
+      "source_location": "L92",
       "weight": 1.0
     },
     {
@@ -23674,7 +23716,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/browser_todos.py",
-      "source_location": "L22",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -25808,7 +25850,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_todo_attachments.py",
-      "source_location": "L101",
+      "source_location": "L102",
       "weight": 1.0
     },
     {
@@ -25874,7 +25916,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_todo_attachments.py",
-      "source_location": "L81",
+      "source_location": "L82",
       "weight": 1.0
     },
     {
@@ -25885,7 +25927,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_todo_attachments.py",
-      "source_location": "L95",
+      "source_location": "L96",
       "weight": 1.0
     },
     {
@@ -26648,7 +26690,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "app/todo_attachments.py",
-      "source_location": "L108",
+      "source_location": "L109",
       "weight": 1.0
     },
     {
@@ -27553,7 +27595,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "app/todo_attachments.py",
-      "source_location": "L120",
+      "source_location": "L121",
       "weight": 0.8
     },
     {
@@ -27564,7 +27606,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "app/todo_attachments.py",
-      "source_location": "L83",
+      "source_location": "L84",
       "weight": 0.8
     },
     {
@@ -27575,7 +27617,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "app/todo_attachments.py",
-      "source_location": "L67",
+      "source_location": "L68",
       "weight": 0.8
     },
     {
@@ -27949,7 +27991,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "tests/test_todo_attachments.py",
-      "source_location": "L85",
+      "source_location": "L86",
       "weight": 0.8
     },
     {

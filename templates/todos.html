@@ -3,15 +3,15 @@
 {% block content %}
 <section class="todo-workspace" aria-labelledby="todo-page-title">
   <header class="todo-heading">
-    <h1 id="todo-page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="m8 12 3 3 5-7"/></svg>To-Dos</h1>
+    <div class="todo-title-block"><p class="todo-breadcrumb">WORKSPACE <span>/</span> TASKS</p><h1 id="todo-page-title">To-Dos</h1><p class="todo-subtitle">Keep track of the work that matters.</p></div>
     <button type="button" id="todo-new-top" class="button button-primary">＋ New Task</button>
   </header>
   <nav class="todo-views" aria-label="Task views"><button type="button" data-view="my" aria-pressed="false">My Tasks</button><button type="button" data-view="all" aria-pressed="true">All Tasks</button></nav>
   <div class="todo-toolbar" aria-label="Task controls">
     <span class="todo-view-label"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12v10H2zM2 6h12M6 6v7"/></svg>Tasks <span id="todo-count"></span></span>
     <div class="todo-toolbar-controls">
-      <label class="todo-tool todo-tool-select" title="Filter: All Tasks"><span>Filter</span><select id="todo-filter" aria-label="Filter tasks"><option value="all">All Tasks</option><option value="my">My Tasks</option><option value="assigned_by_me">Assigned by Me</option><option value="pending">Pending</option><option value="completed">Completed</option></select></label>
-      <label class="todo-tool todo-tool-select" title="Sort: Due Date"><span>Sort</span><select id="todo-sort" aria-label="Sort tasks"><option value="due_date">Due Date</option><option value="title">Task Name</option><option value="created_at">Created Date</option><option value="assignee">Assignee</option></select></label>
+      <label class="todo-tool todo-tool-select" title="Filter: All Tasks"><span id="todo-filter-label">All Tasks</span><select id="todo-filter" aria-label="Filter tasks"><option value="all">All Tasks</option><option value="my">My Tasks</option><option value="assigned_by_me">Assigned by Me</option><option value="pending">Pending</option><option value="completed">Completed</option></select></label>
+      <label class="todo-tool todo-tool-select" title="Sort: Due Date"><span id="todo-sort-label">Due Date</span><select id="todo-sort" aria-label="Sort tasks"><option value="due_date">Due Date</option><option value="title">Task Name</option><option value="created_at">Created Date</option><option value="assignee">Assignee</option></select></label>
       <button type="button" class="todo-tool todo-search-toggle" id="todo-search-toggle" aria-label="Search tasks" aria-expanded="false" aria-controls="todo-search"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3"/></svg></button>
       <input type="search" id="todo-search" class="todo-search-input" placeholder="Search tasks…" aria-label="Search title and description" hidden>
     </div>
@@ -22,8 +22,8 @@
       <caption class="todo-sr-only">Team tasks. Open a task name for details. Edit assignee or due date directly.</caption>
       <colgroup><col class="todo-col-check"><col class="todo-col-title"><col class="todo-col-assign"><col class="todo-col-due"><col class="todo-col-attachments"><col class="todo-col-actions"></colgroup>
       <thead><tr>
-        <th scope="col"><span class="todo-sr-only">Completed</span><span aria-hidden="true">☑</span></th>
-        <th scope="col"><span class="todo-column-icon" aria-hidden="true">Aa</span>Task Name</th>
+        <th scope="col">Status</th>
+        <th scope="col">Task</th>
         <th scope="col"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5" r="2.5"/><path d="M3 14v-2a5 5 0 0 1 10 0v2"/></svg>Assign</th>
         <th scope="col"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4h10v10H3zM5 2v4m6-4v4M3 8h10"/></svg>Due</th>
         <th scope="col">Attachments</th>

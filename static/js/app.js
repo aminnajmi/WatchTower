@@ -1508,6 +1508,7 @@
       $$('.todo-views button').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.view === $('#todo-filter').value)));
       const select = event.currentTarget;
       select.parentElement.title = `${selector === '#todo-filter' ? 'Filter' : 'Sort'}: ${select.selectedOptions[0].text}`;
+      $(`#${selector === '#todo-filter' ? 'todo-filter-label' : 'todo-sort-label'}`).textContent = select.selectedOptions[0].text;
       select.parentElement.dataset.active = String(select.selectedIndex !== 0);
       offset = 0;
       feedback();

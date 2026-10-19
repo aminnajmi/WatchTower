@@ -1,12 +1,12 @@
 # Graph Report - WatchTower  (2026-10-19)
 
 ## Corpus Check
-- 60 files · ~45,802 words
+- 60 files · ~45,890 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 9 file(s) not represented in the graph (top: (none) 5, .example 1, .db-shm 1)
 
 ## Summary
-- 661 nodes · 1745 edges · 53 communities (22 shown, 31 thin omitted)
+- 662 nodes · 1747 edges · 57 communities (22 shown, 35 thin omitted)
 - Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 139 edges (avg confidence: 0.94)
 - Token cost: 0 input · 0 output
 
@@ -25,7 +25,7 @@
 - cryptography_fernet
 - Dashboard Templates and Docs
 - DeploymentHealthCheckTests
-- create_access_token
+- NotificationCenterTests
 - schemas.py
 - get
 - Compose Configuration
@@ -67,7 +67,11 @@
 - principal_for_username
 - AttachmentTests
 - _authenticate_login
+- create_access_token
 - WebDashboardTests
+- hash_user_password
+- TodoTests
+- SupportSalesTelegramEndpointTests
 - sanitized_validation_error
 
 ## God Nodes (most connected - your core abstractions)
@@ -91,8 +95,8 @@
   tests/test_telegram.py → app/auth.py
 - `TelegramTestEndpointTests` --uses--> `Principal`  [INFERRED]
   tests/test_telegram.py → app/auth.py
-- `ProductionConfigTests` --uses--> `Settings`  [INFERRED]
-  tests/test_production_config.py → app/config.py
+- `SchedulerExecutionTests` --uses--> `Base`  [INFERRED]
+  tests/test_scheduler.py → app/models.py
 
 ## Import Cycles
 - None detected.
@@ -100,11 +104,11 @@
 ## Hyperedges (group relationships)
 - **Graphify Build Pipeline** — _codex_skills_graphify_skill_graphify, _codex_skills_graphify_references_extraction_spec_graphify, _codex_skills_graphify_references_github_and_merge_graphify [EXTRACTED 1.00]
 
-## Communities (53 total, 31 thin omitted)
+## Communities (57 total, 35 thin omitted)
 
 ### Community 0 - "auth.py"
-Cohesion: 0.08
-Nodes (49): generate_password_hash(), _hash_password(), hash_user_password(), verify_password(), verify_user_password(), Fail startup on missing/unsafe credentials in production mode., Settings, Base (+41 more)
+Cohesion: 0.09
+Nodes (48): generate_password_hash(), _hash_password(), verify_password(), verify_user_password(), Base, _configure_sqlite_connection(), ensure_sqlite_directory(), init_db() (+40 more)
 
 ### Community 2 - "Release"
 Cohesion: 0.15
@@ -126,13 +130,9 @@ Nodes (14): Add and Watch Reference, Exports Reference, Extraction Specification
 Cohesion: 0.20
 Nodes (11): FastAPI Release Tracking Service, OS Release Tracker README, Release Semantics, Web Dashboard, Shared Dashboard Layout, Dashboard and Operating Systems Index, Release Events Page, Login Page (+3 more)
 
-### Community 9 - "create_access_token"
-Cohesion: 0.06
-Nodes (5): create_access_token(), NotificationCenterTests, ApplicationStartupTests, SupportSalesTelegramEndpointTests, TelegramTestEndpointTests
-
 ### Community 10 - "schemas.py"
-Cohesion: 0.15
-Nodes (11): CheckResult, NotificationCreate, PasswordChange, PasswordReset, BaseModel, field_validator, model_validator, ReleaseInfo (+3 more)
+Cohesion: 0.16
+Nodes (10): CheckResult, NotificationCreate, PasswordChange, PasswordReset, BaseModel, field_validator, model_validator, ReleaseInfo (+2 more)
 
 ### Community 11 - "get"
 Cohesion: 0.23
@@ -151,16 +151,20 @@ Cohesion: 0.15
 Nodes (19): check(), create_user(), delete_user(), disable_user(), enable_user(), _ensure_another_active_admin(), get_account(), _get_managed_user() (+11 more)
 
 ### Community 19 - "Principal"
-Cohesion: 0.08
+Cohesion: 0.09
 Nodes (47): authenticate_token(), Principal, Request, _request_origin(), require_admin(), change_own_password(), Todo, TodoAttachment (+39 more)
 
 ### Community 22 - "task_spec.py"
 Cohesion: 0.07
-Nodes (34): get_openclaw_approval_decision(), Return only an OpenClaw request's action-bound approval decision., _task_binding_is_valid(), BusinessActionTask, canonical_task_json(), PublicWebsiteInspectionTask, BaseModel, field_validator (+26 more)
+Nodes (35): get_openclaw_approval_decision(), Return only an OpenClaw request's action-bound approval decision., _task_binding_is_valid(), BusinessActionTask, canonical_task_json(), PublicWebsiteInspectionTask, BaseModel, field_validator (+27 more)
 
 ### Community 23 - "TelegramSendResult"
 Cohesion: 0.09
 Nodes (20): send(), notify(), Deliver to configured channels independently; report aggregate success., _failure(), Send a Telegram message without exposing credentials in errors or logs., Send only to the independently configured Support-Sales group., send(), send_support_sales() (+12 more)
+
+### Community 24 - "ProductionConfigTests"
+Cohesion: 0.27
+Nodes (4): Fail startup on missing/unsafe credentials in production mode., Settings, BaseSettings, ProductionConfigTests
 
 ### Community 44 - "main.py"
 Cohesion: 0.10
@@ -178,13 +182,13 @@ Nodes (4): FakeProvider, SchedulerExecutionTests, latest(), _done()
 Cohesion: 0.25
 Nodes (8): principal_for_username(), Resolve every request against current DB state so disable takes effect…, verify_access_token(), create_web_session(), deny_notification(), NotificationDenyRequest, BaseModel, WebSessionRequest
 
-### Community 49 - "AttachmentTests"
-Cohesion: 0.19
-Nodes (5): base64, playwright_sync_api, sys, Run explicitly: PLAYWRIGHT_BROWSERS_PATH=... python tests/browser_todos.py.…, AttachmentTests
-
 ### Community 50 - "_authenticate_login"
 Cohesion: 0.33
 Nodes (6): _authenticate_login(), login(), login_form(), DB user credentials first; retain the configured admin as bootstrap fallback., POST fallback for browsers when client-side JavaScript is unavailable., _set_session_cookie()
+
+### Community 51 - "create_access_token"
+Cohesion: 0.16
+Nodes (3): create_access_token(), ApplicationStartupTests, TelegramTestEndpointTests
 
 ### Community 56 - "sanitized_validation_error"
 Cohesion: 0.67
@@ -192,18 +196,18 @@ Nodes (3): sanitized_validation_error(), exception_handler, RequestValidationErr
 
 ## Knowledge Gaps
 - **47 isolated node(s):** `Create and retrieve an approval`, `Task specification v1`, `Executor network safeguards`, `Storage and deployment`, `API` (+42 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 177 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **31 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 178 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **35 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `Release` connect `Release` to `auth.py`, `TelegramSendResult`, `WebDashboardTests`, `SchedulerExecutionTests`?**
   _High betweenness centrality (0.046) - this node is a cross-community bridge._
-- **Why does `NotificationCenterTests` connect `create_access_token` to `auth.py`, `task_spec.py`?**
+- **Why does `NotificationCenterTests` connect `NotificationCenterTests` to `auth.py`, `create_access_token`, `hash_user_password`, `task_spec.py`?**
   _High betweenness centrality (0.043) - this node is a cross-community bridge._
-- **Why does `create_access_token()` connect `create_access_token` to `auth.py`, `main.py`, `SchedulerExecutionTests`, `_authenticate_login`, `Principal`?**
-  _High betweenness centrality (0.040) - this node is a cross-community bridge._
+- **Why does `create_access_token()` connect `create_access_token` to `auth.py`, `main.py`, `SchedulerExecutionTests`, `_authenticate_login`, `hash_user_password`, `SupportSalesTelegramEndpointTests`?**
+  _High betweenness centrality (0.039) - this node is a cross-community bridge._
 - **Are the 14 inferred relationships involving `Release` (e.g. with `AlmaLinuxProvider` and `ArchLinuxProvider`) actually correct?**
   _`Release` has 14 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 24 inferred relationships involving `Principal` (e.g. with `approve_notification()` and `change_own_password()`) actually correct?**

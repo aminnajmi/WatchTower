@@ -240,9 +240,9 @@
     "semantic_hash": ""
   },
   "static/js/app.js": {
-    "mtime": 1792421813.521603,
-    "seen": 1792421864.005762,
-    "ast_hash": "58bc9120bd7868915ac2b84d82439b52",
+    "mtime": 1792422698.7792196,
+    "seen": 1792422738.587596,
+    "ast_hash": "4929edc088c3632ac231473cb1c6fdff",
     "semantic_hash": ""
   },
   "tests/test_startup.py": {
@@ -420,9 +420,9 @@
     "semantic_hash": ""
   },
   "templates/todos.html": {
-    "mtime": 1792421813.5240834,
-    "seen": 1792421864.005829,
-    "ast_hash": "3bef927fb8c3e910b3eec32628657f5b",
+    "mtime": 1792422695.890523,
+    "seen": 1792422738.587713,
+    "ast_hash": "336b49bdc82b3baa612d88cabdb2c6b7",
     "semantic_hash": ""
   },
   "app/todo_attachments.py": {
