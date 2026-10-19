@@ -53,7 +53,7 @@
       throw new Error('Your session has expired. Please log in again.');
     }
     const contentType = response.headers.get('content-type') || '';
-    const body = contentType.includes('application/json') ? await response.json() : null;
+    const body = response.status !== 204 && contentType.includes('application/json') ? await response.json() : null;
     if (!response.ok) throw new Error(body?.detail || body?.error || `Request failed (${response.status})`);
     return body;
   }
@@ -559,7 +559,7 @@
     const passwords = $('#new-user-passwords');
     const passwordInputs = [$('#managed-password'), $('#managed-confirm-password')];
     const showError = (box, message) => { box.textContent = message; box.hidden = !message; };
-    const close = () => dialog.close();
+    const close = () => { if (!uploading) dialog.close(); };
     $('#add-user').addEventListener('click', () => {
       form.reset();
       $('#edit-user-id').value = '';
@@ -571,7 +571,14 @@
       passwords.hidden = false;
       passwordInputs.forEach(input => { input.required = true; input.disabled = false; });
       showError(error, '');
-      dialog.showModal();
+      $('#todo-assignee-search').value = '';
+      $('#todo-assignee-search').disabled = !todo.can_edit;
+      $('#todo-panel-complete').checked = todo.is_completed;
+      $('#todo-panel-complete').disabled = !todo.can_complete;
+      $('#todo-panel-delete').hidden = !todo.can_delete;
+      $('#todo-metadata').textContent = `Created by ${todo.created_by.username} · ${dateText(todo.created_at)} · Updated ${dateText(todo.updated_at)}`;
+      if (!dialog.open) dialog.showModal();
+      loadAttachments(todo.id);
     });
     $('#user-dialog-close').addEventListener('click', close);
     $('#user-dialog-cancel').addEventListener('click', close);
@@ -639,7 +646,14 @@
       $('#user-dialog-help').textContent = 'Update the username, role, or account status.';
       $('#user-form-submit').textContent = 'Save changes';
       $('#user-form-error').hidden = true;
-      dialog.showModal();
+      $('#todo-assignee-search').value = '';
+      $('#todo-assignee-search').disabled = !todo.can_edit;
+      $('#todo-panel-complete').checked = todo.is_completed;
+      $('#todo-panel-complete').disabled = !todo.can_complete;
+      $('#todo-panel-delete').hidden = !todo.can_delete;
+      $('#todo-metadata').textContent = `Created by ${todo.created_by.username} · ${dateText(todo.created_at)} · Updated ${dateText(todo.updated_at)}`;
+      if (!dialog.open) dialog.showModal();
+      loadAttachments(todo.id);
       return;
     }
     if (button.dataset.userAction === 'toggle') {
@@ -779,6 +793,7 @@
     const taskBound = Boolean(task && task.task_type === 'public_website_inspection');
     const chips = [];
     if (!taskBound && notification.task_name) chips.push(`<span class="notification-chip">Task: ${escapeHtml(notification.task_name)}</span>`);
+    if (notification.source === 'watchtower' && /^\d+$/.test(notification.task_id || '')) chips.push(`<a class="notification-chip" href="/todos?task=${encodeURIComponent(notification.task_id)}">Open task</a>`);
     if (!taskBound && notification.task_id) chips.push(`<span class="notification-chip">Task ID: ${escapeHtml(notification.task_id)}</span>`);
     chips.push(`<span class="notification-chip">${escapeHtml(notificationSeverityLabel(notification.severity))}</span>`);
     chips.push(`<span class="notification-chip">${escapeHtml(notification.status || 'new')}</span>`);
@@ -1065,9 +1080,10 @@
       const date = todo.due_date ? new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', year: 'numeric' }).format(parseApiDate(todo.due_date)) : '';
       return `<tr data-todo-id="${todo.id}" class="${todo.is_completed ? 'is-completed' : ''}">
         <td class="todo-check-cell"><input type="checkbox" data-complete="${todo.id}" ${todo.is_completed ? 'checked' : ''} ${todo.can_complete ? '' : 'disabled'} aria-label="${todo.is_completed ? 'Reopen' : 'Complete'} ${esc(todo.title)}"></td>
-        <td class="todo-title-cell"><button type="button" class="todo-cell-button todo-title-button" data-inline="title" ${todo.can_edit ? '' : 'disabled'} title="${esc(todo.description || todo.title)}">${esc(todo.title)}</button></td>
+        <td class="todo-title-cell"><button type="button" class="todo-cell-button todo-title-button" data-open-task="${todo.id}" title="${esc(todo.description || todo.title)}">${esc(todo.title)}</button>${todo.description ? `<span class="todo-row-description">${esc(todo.description.slice(0, 100))}</span>` : ''}</td>
         <td><button type="button" class="todo-cell-button todo-person" data-inline="assignee" ${todo.can_edit ? '' : 'disabled'} aria-label="Assign ${esc(todo.title)}" aria-haspopup="dialog">${assigned ? `${avatar(assigned)}<span>${esc(assigned)}</span>` : '<span class="todo-placeholder">Unassigned</span>'}</button></td>
         <td><button type="button" class="todo-cell-button todo-date ${late ? 'is-overdue' : ''}" data-inline="due" ${todo.can_edit ? '' : 'disabled'} aria-label="Due date for ${esc(todo.title)}" title="${late ? 'Overdue · ' : ''}${esc(todo.due_date ? dateText(todo.due_date) : 'Set due date')}">${date || '<span class="todo-placeholder">—</span>'}${late ? '<span class="todo-overdue-dot" aria-label="Overdue"></span>' : ''}</button></td>
+        <td><button type="button" class="todo-cell-button" data-open-task="${todo.id}" aria-label="Attachments for ${esc(todo.title)}"><svg class="todo-paperclip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m8 12 6-6a3 3 0 0 1 4 4l-8 8a5 5 0 0 1-7-7l9-9"/><path d="m6 14 8-8"/></svg> ${todo.attachment_count || 0}</button></td>
         <td class="todo-actions-cell"><button type="button" class="todo-row-actions" data-actions="${todo.id}" aria-label="Actions for ${esc(todo.title)}" aria-haspopup="dialog">···</button></td>
       </tr>`;
     }
@@ -1197,13 +1213,13 @@
           return load();
         }
         items = new Map(result.items.map(todo => [todo.id, todo]));
-        list.innerHTML = result.items.length ? result.items.map(row).join('') : `<tr><td colspan="5" class="todo-table-message">${query || $('#todo-filter').value !== 'all' ? 'No tasks match this view.' : 'No tasks yet. Add your first task below.'}</td></tr>`;
+        list.innerHTML = result.items.length ? result.items.map(row).join('') : `<tr><td colspan="6" class="todo-table-message">${query || $('#todo-filter').value !== 'all' ? 'No tasks match this view.' : 'No tasks yet. Add your first task below.'}</td></tr>`;
         $('#todo-count').textContent = result.total;
         $('#todo-pagination').innerHTML = result.total > pageSize ? `<span>${offset + 1}–${Math.min(offset + pageSize, result.total)} of ${result.total}</span><div><button type="button" data-page="prev" ${offset === 0 ? 'disabled' : ''}>Previous</button><button type="button" data-page="next" ${offset + pageSize >= result.total ? 'disabled' : ''}>Next</button></div>` : `<span>${result.total} ${result.total === 1 ? 'task' : 'tasks'}</span>`;
       } catch (error) {
         if (serial !== requestId) return;
         feedback(error.message);
-        if (!items.size) list.innerHTML = '<tr><td colspan="5" class="todo-table-message">Could not load tasks. <button type="button" data-retry>Try again</button></td></tr>';
+        if (!items.size) list.innerHTML = '<tr><td colspan="6" class="todo-table-message">Could not load tasks. <button type="button" data-retry>Try again</button></td></tr>';
       } finally { if (serial === requestId) list.removeAttribute('aria-busy'); }
     }
 
@@ -1220,11 +1236,19 @@
       $('#todo-due').value = localDate(todo.due_date);
       $('#todo-title-error').textContent = '';
       $('#todo-form-error').textContent = '';
+      $('#todo-attachment-status').textContent = '';
       for (const field of ['todo-title', 'todo-description', 'todo-assignee', 'todo-due']) $('#'+field).disabled = !todo.can_edit;
       $('#todo-save').hidden = !todo.can_edit;
       $('#todo-save').disabled = false;
       $('#todo-save').textContent = 'Save Changes';
-      dialog.showModal();
+      $('#todo-assignee-search').value = '';
+      $('#todo-assignee-search').disabled = !todo.can_edit;
+      $('#todo-panel-complete').checked = todo.is_completed;
+      $('#todo-panel-complete').disabled = !todo.can_complete;
+      $('#todo-panel-delete').hidden = !todo.can_delete;
+      $('#todo-metadata').textContent = `Created by ${todo.created_by.username} · ${dateText(todo.created_at)} · Updated ${dateText(todo.updated_at)}`;
+      if (!dialog.open) dialog.showModal();
+      loadAttachments(todo.id);
     }
 
     list.addEventListener('click', async event => {
@@ -1233,6 +1257,7 @@
       if (button.hasAttribute('data-retry')) { load(); return; }
       const todo = items.get(Number(button.closest('[data-todo-id]')?.dataset.todoId));
       if (!todo || saving.has(todo.id)) return;
+      if (button.dataset.openTask) { openDetails(todo); return; }
       if (button.dataset.inline === 'title' || button.dataset.inline === 'due') editCell(button, todo, button.dataset.inline);
       if (button.dataset.inline === 'assignee') {
         try { await getUsers(); } catch (error) { feedback(error.message); return; }
@@ -1311,6 +1336,11 @@
       $('#todo-new-row').hidden = true;
       $('#todo-draft-title').focus();
     });
+    $('#todo-new-top').addEventListener('click', () => { $('#todo-new').click(); draft.scrollIntoView({ block: 'nearest' }); });
+    $$('.todo-views button').forEach(button => button.addEventListener('click', () => {
+      $('#todo-filter').value = button.dataset.view;
+      $('#todo-filter').dispatchEvent(new Event('change'));
+    }));
     $('#todo-draft-cancel').addEventListener('click', cancelDraft);
     draft.addEventListener('keydown', event => {
       if (event.key === 'Escape') { event.preventDefault(); cancelDraft(); }
@@ -1343,7 +1373,7 @@
       const title = $('#todo-title').value.trim();
       if (!title) { $('#todo-title-error').textContent = 'Enter a task title.'; $('#todo-title').focus(); return; }
       const button = $('#todo-save');
-      if (button.disabled) return;
+      if (button.disabled || uploading) return;
       button.disabled = true;
       button.textContent = 'Saving…';
       const payload = { title, description: $('#todo-description').value.trim(), assigned_to_user_id: Number($('#todo-assignee').value) || null, due_date: $('#todo-due').value ? new Date($('#todo-due').value).toISOString() : null };
@@ -1355,9 +1385,127 @@
       } catch (error) { $('#todo-form-error').textContent = error.message; }
       finally { button.disabled = false; button.textContent = 'Save Changes'; }
     });
-    $('#todo-close').addEventListener('click', () => dialog.close());
-    $('#todo-cancel').addEventListener('click', () => dialog.close());
+
+    let attachmentRequest = 0;
+    let uploading = false;
+    async function loadAttachments(id) {
+      const serial = ++attachmentRequest;
+      $('#todo-attachment-list').textContent = 'Loading attachments…';
+      try {
+        const files = await api(`/api/v1/todos/${id}/attachments`);
+        if (serial !== attachmentRequest || String(id) !== $('#todo-id').value) return;
+        $('#todo-attachment-list').innerHTML = files.length ? files.map(file => {
+          const url = `/api/v1/todos/${id}/attachments/${file.id}`;
+          const preview = file.content_type.startsWith('image/') || file.content_type === 'application/pdf';
+          return `<article class="todo-attachment">
+            ${file.content_type.startsWith('image/') ? `<a href="${url}?inline=true" target="_blank" rel="noopener"><img src="${url}?inline=true" alt="${esc(file.original_filename)}" loading="lazy"></a>` : '<span class="todo-file-icon" aria-hidden="true">▤</span>'}
+            <div><strong>${esc(file.original_filename)}</strong><small>${file.file_size < 1024 ? file.file_size + ' B' : (file.file_size / 1024).toFixed(1) + ' KB'} · ${esc(file.original_filename.split('.').pop().toUpperCase())}</small><small>${esc(file.uploaded_by)} · ${esc(dateText(file.created_at))}</small>
+            <div class="todo-file-actions">${preview ? `<a href="${url}?inline=true" target="_blank" rel="noopener">Preview</a>` : ''}<a href="${url}">Download</a>${file.can_delete ? `<button type="button" data-remove-attachment="${file.id}">Remove</button>` : ''}</div></div></article>`;
+        }).join('') : '<p class="todo-attachment-empty">No attachments yet. Add screenshots or documents to give your teammate more context.</p>';
+      } catch (error) {
+        if (serial === attachmentRequest) $('#todo-attachment-list').textContent = error.message;
+      }
+    }
+    function uploadFile(id, file) {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', `/api/v1/todos/${id}/attachments`);
+        xhr.upload.onprogress = event => {
+          if (event.lengthComputable) $('#todo-upload-progress').value = event.loaded / event.total * 100;
+        };
+        xhr.onerror = () => reject(new Error('Upload failed. Check your connection and retry.'));
+        xhr.onload = () => {
+          if (xhr.status === 401) expireBrowserSession();
+          let result;
+          try { result = JSON.parse(xhr.responseText); } catch { /* Handle proxy errors too. */ }
+          if (xhr.status >= 200 && xhr.status < 300) resolve(result);
+          else reject(new Error(typeof result?.detail === 'string' ? result.detail : `Upload failed (${xhr.status}).`));
+        };
+        const data = new FormData();
+        data.append('files', file);
+        xhr.send(data);
+      });
+    }
+    async function uploadFiles(files) {
+      if (uploading || !files.length) return;
+      const id = $('#todo-id').value;
+      uploading = true;
+      $('#todo-upload-progress').hidden = false;
+      $('#todo-dropzone').setAttribute('aria-disabled', 'true');
+      $('#todo-panel-delete').disabled = true;
+      let completed = 0;
+      try {
+        for (const file of files) {
+          $('#todo-attachment-status').textContent = `Uploading ${file.name} (${++completed}/${files.length})…`;
+          $('#todo-upload-progress').value = 0;
+          await uploadFile(id, file);
+        }
+        $('#todo-attachment-status').textContent = 'Upload complete.';
+      } catch (error) { $('#todo-attachment-status').textContent = error.message; }
+      finally {
+        uploading = false;
+        $('#todo-upload-progress').hidden = true;
+        $('#todo-dropzone').removeAttribute('aria-disabled');
+        $('#todo-panel-delete').disabled = false;
+        $('#todo-files').value = '';
+        await loadAttachments(id);
+        await load();
+      }
+    }
+    const dropzone = $('#todo-dropzone');
+    dropzone.addEventListener('click', event => { if (event.target !== $('#todo-files') && !uploading) $('#todo-files').click(); });
+    dropzone.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); if (!uploading) $('#todo-files').click(); }
+    });
+    $('#todo-files').addEventListener('change', event => uploadFiles(Array.from(event.target.files)));
+    dialog.addEventListener('dragover', event => { event.preventDefault(); dropzone.classList.add('is-dragging'); });
+    dialog.addEventListener('dragleave', event => { if (!dialog.contains(event.relatedTarget)) dropzone.classList.remove('is-dragging'); });
+    dialog.addEventListener('drop', event => {
+      event.preventDefault(); dropzone.classList.remove('is-dragging');
+      uploadFiles(Array.from(event.dataTransfer.files));
+    });
+    dialog.addEventListener('paste', event => {
+      const files = Array.from(event.clipboardData.files).filter(file => file.type.startsWith('image/'));
+      if (files.length) { event.preventDefault(); uploadFiles(files); }
+    });
+    // Keep the task identity stable until uploads finish.
+    dialog.addEventListener('cancel', event => { if (uploading) event.preventDefault(); });
+    $('#todo-attachment-list').addEventListener('click', async event => {
+      const button = event.target.closest('[data-remove-attachment]');
+      if (!button || !window.confirm('Remove this attachment?')) return;
+      button.disabled = true;
+      const id = $('#todo-id').value;
+      try {
+        await api(`/api/v1/todos/${id}/attachments/${button.dataset.removeAttachment}`, { method: 'DELETE' });
+        await loadAttachments(id); await load();
+      } catch (error) { $('#todo-attachment-status').textContent = error.message; button.disabled = false; }
+    });
+    $('#todo-assignee-search').addEventListener('input', event => {
+      const query = event.target.value.toLowerCase();
+      $$('#todo-assignee option').forEach(option => { option.hidden = !!option.value && !option.textContent.toLowerCase().includes(query); });
+    });
+    $('#todo-panel-complete').addEventListener('change', async event => {
+      const input = event.target;
+      input.disabled = true;
+      try {
+        const updated = await api(`/api/v1/todos/${$('#todo-id').value}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_completed: input.checked }) });
+        items.set(updated.id, updated); await load();
+      } catch (error) { input.checked = !input.checked; $('#todo-form-error').textContent = error.message; }
+      finally { input.disabled = false; }
+    });
+    $('#todo-panel-delete').addEventListener('click', async event => {
+      if (uploading || !window.confirm('Delete this task and all its attachments?')) return;
+      event.target.disabled = true;
+      try {
+        await api(`/api/v1/todos/${$('#todo-id').value}`, { method: 'DELETE' });
+        dialog.close(); await load();
+      } catch (error) { $('#todo-form-error').textContent = error.message; }
+      finally { event.target.disabled = false; }
+    });
+    $('#todo-close').addEventListener('click', () => { if (!uploading) dialog.close(); });
+    $('#todo-cancel').addEventListener('click', () => { if (!uploading) dialog.close(); });
     for (const selector of ['#todo-filter', '#todo-sort']) $(selector).addEventListener('change', event => {
+      $$('.todo-views button').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.view === $('#todo-filter').value)));
       const select = event.currentTarget;
       select.parentElement.title = `${selector === '#todo-filter' ? 'Filter' : 'Sort'}: ${select.selectedOptions[0].text}`;
       select.parentElement.dataset.active = String(select.selectedIndex !== 0);
@@ -1390,6 +1538,11 @@
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k' && !dialog.open) { event.preventDefault(); toggleSearch(true); }
     });
     await load();
+    const linkedTask = new URLSearchParams(window.location.search).get('task');
+    if (/^\d+$/.test(linkedTask || '')) {
+      try { await openDetails(await api(`/api/v1/todos/${linkedTask}`)); }
+      catch (error) { feedback(error.message); }
+    }
   }
 
   document.addEventListener('DOMContentLoaded', () => {

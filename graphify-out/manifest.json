@@ -18,9 +18,9 @@
     "semantic_hash": ""
   },
   "app/config.py": {
-    "mtime": 1791793984.9385808,
-    "seen": 1791794070.2512362,
-    "ast_hash": "b4e6509c46f0b9770ad60bab61cd6811",
+    "mtime": 1792421327.1450202,
+    "seen": 1792421686.569482,
+    "ast_hash": "bb95aa42ef5379ebe85bc43021f1afcb",
     "semantic_hash": ""
   },
   "app/create_admin.py": {
@@ -36,9 +36,9 @@
     "semantic_hash": ""
   },
   "app/models.py": {
-    "mtime": 1791906470.1391032,
-    "seen": 1791906771.9304278,
-    "ast_hash": "6f1a24806d368deadd47abfc8fd57307",
+    "mtime": 1792421327.1424744,
+    "seen": 1792421686.569491,
+    "ast_hash": "4bba6ab707b1ec966d76ed28adddefff",
     "semantic_hash": ""
   },
   "app/notifications/__init__.py": {
@@ -228,9 +228,9 @@
     "semantic_hash": ""
   },
   "docker-compose.yml": {
-    "mtime": 1791647528.221668,
-    "seen": 1791647548.40137,
-    "ast_hash": "9e3a05ca303c1808f21f31c9f1ab172e",
+    "mtime": 1792421327.1464186,
+    "seen": 1792421686.570087,
+    "ast_hash": "c146bc128f27dcba02500af6ba9092e3",
     "semantic_hash": ""
   },
   "requirements.txt": {
@@ -240,9 +240,9 @@
     "semantic_hash": ""
   },
   "static/js/app.js": {
-    "mtime": 1791908756.4570715,
-    "seen": 1791908855.448535,
-    "ast_hash": "816d941901e75919649f7dc1f1ebbd32",
+    "mtime": 1792421813.521603,
+    "seen": 1792421864.005762,
+    "ast_hash": "58bc9120bd7868915ac2b84d82439b52",
     "semantic_hash": ""
   },
   "tests/test_startup.py": {
@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "app/todos.py": {
-    "mtime": 1791907643.2390654,
-    "seen": 1791908267.88657,
-    "ast_hash": "c25f6be705d460bd915a1a0a761e534c",
+    "mtime": 1792421327.1495335,
+    "seen": 1792421686.5698938,
+    "ast_hash": "cdee0d8f4825cdfb97dd75ba1fb283c8",
     "semantic_hash": ""
   },
   "tests/test_todos.py": {
@@ -420,9 +420,33 @@
     "semantic_hash": ""
   },
   "templates/todos.html": {
-    "mtime": 1791908756.3381727,
-    "seen": 1791908855.448597,
-    "ast_hash": "fde62102102173a2e785828698bcad0c",
+    "mtime": 1792421813.5240834,
+    "seen": 1792421864.005829,
+    "ast_hash": "3bef927fb8c3e910b3eec32628657f5b",
+    "semantic_hash": ""
+  },
+  "app/todo_attachments.py": {
+    "mtime": 1792421744.9303422,
+    "seen": 1792421864.005755,
+    "ast_hash": "7095e5ee2fba550cc7b00b96945439b9",
+    "semantic_hash": ""
+  },
+  "tests/browser_todos.py": {
+    "mtime": 1792421813.5204444,
+    "seen": 1792421864.005764,
+    "ast_hash": "01d97bf8e3515cd9c9e9972cbe573099",
+    "semantic_hash": ""
+  },
+  "tests/test_todo_attachments.py": {
+    "mtime": 1792421744.9325254,
+    "seen": 1792421864.005779,
+    "ast_hash": "21e284db099dcaa8f86040829bfdb64f",
+    "semantic_hash": ""
+  },
+  "docs/todo-attachments.md": {
+    "mtime": 1792421670.9372582,
+    "seen": 1792421686.5700932,
+    "ast_hash": "61c26f362c80403403bc424b800e16b9",
     "semantic_hash": ""
   }
 }

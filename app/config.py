@@ -4,6 +4,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     app_env: str = "development"
     database_url: str = "sqlite:///./os_tracker.db"
+    todo_attachment_dir: str = "./data/todo-attachments"
+    todo_attachment_max_bytes: int = 20 * 1024 * 1024
+    todo_attachment_max_count: int = 20
+    todo_attachment_extensions: str = "png,jpg,jpeg,webp,pdf,txt,docx,xlsx,zip"
     request_timeout_seconds: float = 20
     allowed_hosts: str = "*"
 

@@ -9,3 +9,6 @@ data/*.sqlite
 data/*.sqlite3
 deploy.sh
 os_tracker.db
+
+# Private task uploads (back up alongside the database).
+data/todo-attachments/

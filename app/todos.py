@@ -7,7 +7,7 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.orm.exc import StaleDataError
 
 from .auth import Principal, authenticate_token
-from .models import Notification, SessionLocal, Todo, User
+from .models import Notification, SessionLocal, Todo, TodoAttachment, User
 
 router = APIRouter(prefix="/api/v1/todos", tags=["todos"])
 
@@ -107,6 +107,7 @@ def _serialize(db, todo, user):
         "completed_at": todo.completed_at, "can_edit": can_edit,
         "can_complete": user.role == "admin" or is_assignee,
         "can_delete": can_edit,
+        "attachment_count": db.scalar(select(func.count(TodoAttachment.id)).where(TodoAttachment.task_id == todo.id)) or 0,
     }
 
 
@@ -268,8 +269,19 @@ def delete_todo(todo_id: int, principal: Principal = Depends(authenticate_token)
         todo = _todo(db, todo_id, user)
         if user.role != "admin" and todo.created_by_user_id != user.id:
             raise HTTPException(403, "Only the creator or an administrator can delete this item")
+        from .todo_attachments import attachment_path
+        attachments = db.scalars(select(TodoAttachment).where(TodoAttachment.task_id == todo.id)).all()
+        paths = [attachment_path(item.stored_filename) for item in attachments]
+        for item in attachments:
+            db.delete(item)
         db.delete(todo)
         db.commit()
+        for path in paths:
+            path.unlink(missing_ok=True)
         return Response(status_code=204)
     finally:
         db.close()
+
+# Register attachment routes after the task helpers are defined.
+from .todo_attachments import register_routes
+register_routes(router)

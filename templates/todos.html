@@ -4,7 +4,9 @@
 <section class="todo-workspace" aria-labelledby="todo-page-title">
   <header class="todo-heading">
     <h1 id="todo-page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="m8 12 3 3 5-7"/></svg>To-Dos</h1>
+    <button type="button" id="todo-new-top" class="button button-primary">＋ New Task</button>
   </header>
+  <nav class="todo-views" aria-label="Task views"><button type="button" data-view="my" aria-pressed="false">My Tasks</button><button type="button" data-view="all" aria-pressed="true">All Tasks</button></nav>
   <div class="todo-toolbar" aria-label="Task controls">
     <span class="todo-view-label"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12v10H2zM2 6h12M6 6v7"/></svg>Tasks <span id="todo-count"></span></span>
     <div class="todo-toolbar-controls">
@@ -17,25 +19,26 @@
   <p id="todo-feedback" class="todo-feedback" role="status" hidden></p>
   <div class="todo-table-scroll" tabindex="0" role="region" aria-label="Task table, scroll horizontally on smaller screens">
     <table class="todo-table">
-      <caption class="todo-sr-only">Team tasks. Click a task name, assignee, or due date to edit.</caption>
-      <colgroup><col class="todo-col-check"><col class="todo-col-title"><col class="todo-col-assign"><col class="todo-col-due"><col class="todo-col-actions"></colgroup>
+      <caption class="todo-sr-only">Team tasks. Open a task name for details. Edit assignee or due date directly.</caption>
+      <colgroup><col class="todo-col-check"><col class="todo-col-title"><col class="todo-col-assign"><col class="todo-col-due"><col class="todo-col-attachments"><col class="todo-col-actions"></colgroup>
       <thead><tr>
         <th scope="col"><span class="todo-sr-only">Completed</span><span aria-hidden="true">☑</span></th>
         <th scope="col"><span class="todo-column-icon" aria-hidden="true">Aa</span>Task Name</th>
         <th scope="col"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="5" r="2.5"/><path d="M3 14v-2a5 5 0 0 1 10 0v2"/></svg>Assign</th>
         <th scope="col"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4h10v10H3zM5 2v4m6-4v4M3 8h10"/></svg>Due</th>
+        <th scope="col">Attachments</th>
         <th scope="col"><span class="todo-sr-only">Actions</span></th>
       </tr></thead>
-      <tbody id="todo-list"><tr><td colspan="5" class="todo-table-message">Loading tasks…</td></tr></tbody>
+      <tbody id="todo-list"><tr><td colspan="6" class="todo-table-message">Loading tasks…</td></tr></tbody>
       <tfoot>
         <tr id="todo-draft" hidden>
           <td><span class="todo-draft-marker" aria-hidden="true">＋</span></td>
           <td><input id="todo-draft-title" form="todo-create-form" maxlength="200" placeholder="Task name" aria-label="New task name" required></td>
           <td><select id="todo-draft-assignee" form="todo-create-form" aria-label="Assign new task"><option value="">Unassigned</option></select></td>
           <td><input id="todo-draft-due" form="todo-create-form" type="date" aria-label="New task due date"></td>
-          <td class="todo-draft-actions"><button type="submit" form="todo-create-form" id="todo-draft-save" aria-label="Save new task" title="Save (Enter)">✓</button><button type="button" id="todo-draft-cancel" aria-label="Cancel new task" title="Cancel (Escape)">×</button></td>
+          <td></td><td class="todo-draft-actions"><button type="submit" form="todo-create-form" id="todo-draft-save" aria-label="Save new task" title="Save (Enter)">✓</button><button type="button" id="todo-draft-cancel" aria-label="Cancel new task" title="Cancel (Escape)">×</button></td>
         </tr>
-        <tr id="todo-new-row"><td colspan="5"><button type="button" id="todo-new" class="todo-new-button"><span aria-hidden="true">＋</span> New Task</button></td></tr>
+        <tr id="todo-new-row"><td colspan="6"><button type="button" id="todo-new" class="todo-new-button"><span aria-hidden="true">＋</span> New Task</button></td></tr>
       </tfoot>
     </table>
   </div>
@@ -49,11 +52,24 @@
     <div class="todo-dialog-heading"><div><span class="eyebrow">TASK DETAILS</span><h2 id="todo-dialog-title">New Task</h2></div><button type="button" class="icon-button" id="todo-close" aria-label="Close dialog">×</button></div>
     <input id="todo-id" type="hidden">
     <label class="todo-field">Task title<input id="todo-title" maxlength="200" required placeholder="What needs to be done?"><small class="todo-error" id="todo-title-error"></small></label>
-    <label class="todo-field">Description <span class="muted">Optional</span><textarea id="todo-description" rows="3" maxlength="12000" placeholder="Add a little more detail…"></textarea></label>
+    <label class="todo-field">Description<textarea id="todo-description" rows="3" maxlength="12000" placeholder="Add a little more detail…"></textarea></label>
     <div class="todo-field-grid">
-      <label class="todo-field">Assigned to<select id="todo-assignee"><option value="">Unassigned</option></select></label>
+      <label class="todo-field">Assigned to<input type="search" id="todo-assignee-search" placeholder="Find a teammate…" aria-label="Search assignees"><select id="todo-assignee"><option value="">Unassigned</option></select></label>
       <label class="todo-field">Due date<input id="todo-due" type="datetime-local"></label>
     </div>
+    <label class="todo-panel-status"><input type="checkbox" id="todo-panel-complete"> Completed</label>
+    <p id="todo-metadata" class="muted"></p>
+    <section class="todo-attachments" aria-labelledby="todo-attachments-title">
+      <h3 id="todo-attachments-title">Attachments</h3>
+      <div id="todo-dropzone" class="todo-dropzone" tabindex="0" role="button" aria-label="Upload files; drag files here or paste a screenshot">
+        <strong>Drop files or choose files</strong><span>Paste screenshots here · up to 20 MB per file</span>
+        <input type="file" id="todo-files" multiple accept=".png,.jpg,.jpeg,.webp,.pdf,.txt,.docx,.xlsx,.zip" hidden>
+      </div>
+      <progress id="todo-upload-progress" max="100" value="0" aria-label="Upload progress" hidden></progress>
+      <p id="todo-attachment-status" role="status"></p>
+      <div id="todo-attachment-list"></div>
+    </section>
+    <button type="button" id="todo-panel-delete" class="todo-delete">Delete task</button>
     <p id="todo-form-error" class="todo-error" role="alert"></p>
     <div class="todo-dialog-actions"><button type="button" id="todo-cancel" class="button button-secondary">Cancel</button><button type="submit" id="todo-save" class="button button-primary">Save Task</button></div>
   </form>

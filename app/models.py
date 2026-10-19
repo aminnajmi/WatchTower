@@ -124,6 +124,20 @@ class Todo(Base):
     __mapper_args__ = {"version_id_col": version_id}
 
 
+
+class TodoAttachment(Base):
+    __tablename__ = "todo_attachments"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    task_id: Mapped[int] = mapped_column(ForeignKey("todos.id", ondelete="CASCADE"), index=True)
+    original_filename: Mapped[str] = mapped_column(String(255))
+    stored_filename: Mapped[str] = mapped_column(String(64), unique=True)
+    file_size: Mapped[int] = mapped_column(Integer)
+    content_type: Mapped[str] = mapped_column(String(100))
+    uploaded_by_user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
 def ensure_sqlite_directory(database_url: str) -> None:
     url = make_url(database_url)
     if url.get_backend_name() != "sqlite" or not url.database or url.database == ":memory:":
